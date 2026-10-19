@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 
-<!-- Código de instalación Cliengo para https://godoyroseroia.github.io/AGENTE/ -->
+<!-- Código de instalación Cliengo para https://godoyroserocesar.github.io/SGC/ -->
 <script type="text/javascript">
   (function () {
     var ldk = document.createElement('script');
@@ -2306,7 +2306,7 @@ video {
                 <div class="flex flex-wrap gap-2">
                     <button onclick="generarReporteEstudiantes()" class="bg-blue-600 text-white px-3 py-2 rounded-xl text-xs font-bold">📋 Reporte Estudiantes</button>
                     <button onclick="generarReporteNPTPorTrimestre()" class="bg-brand-600 text-white px-3 py-2 rounded-xl text-xs font-bold">📊 Reporte por Trimestre</button>
-                    <button onclick="exportarReporteNPTPorTrimestreCSV()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold">📎 CSV Trimestre</button>
+                    <button onclick="exportarReporteNPTPorTrimestreCSV()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold">📊 Reporte de notas por trimestre</button>
                     <button onclick="generarReporteNPTIndividual()" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-xs font-bold">👤 Reporte Individual</button>
                     <button onclick="cerrarSesionDocente()" class="inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors">🚪 Salir</button>
                 </div>
@@ -2385,7 +2385,7 @@ video {
                                 <button id="npt-btn-evaluar-todos" onclick="evaluarTodosPendientesIA()" class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-indigo-700">🤖 Evaluar todos los pendientes</button>
                                 <button id="npt-btn-reevaluar-pendientes-verificar" onclick="reevaluarTodosPendientesVerificarIA()" class="bg-violet-600 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-violet-700">🔁 Re-evaluar IA pendientes de verificar</button>
                                 <button id="npt-btn-verificar-todos" onclick="verificarTodosPendientesNPT()" class="bg-emerald-700 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-emerald-800">✅ Verificar todos los pendientes</button>
-                                <button onclick="exportarNPTCSV()" class="bg-emerald-600 text-white px-3 py-1 rounded-lg text-xs font-bold">📎 Exportar CSV</button>
+                                <button onclick="exportarNPTCSV()" class="bg-emerald-600 text-white px-3 py-1 rounded-lg text-xs font-bold">📊 Exportar hoja de cálculo (.xlsx)</button>
                             </div>
                         </div>
                         <div id="npt-otros-medios-info" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-xs text-amber-800">
@@ -2454,7 +2454,7 @@ video {
                         <div class="flex justify-end mt-2"><button onclick="guardarObservacionCurso()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-xs font-bold">💾 Guardar observación del curso</button></div>
                     </section>
                     <section class="bg-slate-50 rounded-xl p-4">
-                        <div class="flex flex-wrap justify-between items-end gap-3 mb-3"><div><h4 class="font-bold text-sm">📊 Reporte de asistencia y novedades</h4><p class="text-[11px] text-slate-500 mt-1">Incluye asignatura, asistencia, novedades individuales y observaciones generales del curso dentro del rango seleccionado.</p></div><button onclick="generarReporteAsistencia()" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-bold">📥 Generar reporte CSV</button></div>
+                        <div class="flex flex-wrap justify-between items-end gap-3 mb-3"><div><h4 class="font-bold text-sm">📊 Reporte de asistencia y novedades</h4><p class="text-[11px] text-slate-500 mt-1">Incluye asignatura, asistencia, novedades individuales y observaciones generales del curso dentro del rango seleccionado.</p></div><button onclick="generarReporteAsistencia()" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-bold">👁️ Previsualizar reporte</button></div>
                         <div class="flex flex-wrap gap-3"><label class="text-xs">Desde <input id="asistencia-reporte-desde" type="date" class="ml-1 px-2 py-1 border rounded"></label><label class="text-xs">Hasta <input id="asistencia-reporte-hasta" type="date" class="ml-1 px-2 py-1 border rounded"></label></div>
                     </section>
                 </div>
@@ -2469,7 +2469,7 @@ video {
                                 <option value="2">2do Trimestre</option>
                                 <option value="3">3er Trimestre</option>
                             </select>
-                            <button onclick="exportarCuadroGeneralCSV()" class="bg-emerald-600 text-white px-3 py-1 rounded-lg text-xs font-bold">📎 Exportar CSV</button>
+                            <button onclick="exportarCuadroGeneralCSV()" class="bg-emerald-600 text-white px-3 py-1 rounded-lg text-xs font-bold">📊 Exportar hoja de cálculo (.xlsx)</button>
                         </div>
                     </div>
                     <div class="overflow-x-auto border rounded-xl">
@@ -2491,7 +2491,7 @@ video {
                         </table>
                         <div id="cuadro-general-no-datos" class="hidden text-center py-8 text-slate-400">📭 No hay estudiantes para mostrar.</div>
                     </div>
-                    <p class="text-[11px] text-purple-600 mt-2">🔁 Cuando aparece bajo una nota, indica que hubo recuperación: si esta superó a la original, la nota mostrada es el <strong>promedio</strong> entre ambas (la nota efectiva que entra a la fórmula); si no la superó, se conservó la nota original. Pasa el mouse sobre el badge para ver el detalle. El CSV exportado incluye además las notas originales y de recuperación por separado, como respaldo.</p>
+                    <p class="text-[11px] text-purple-600 mt-2">🔁 Cuando aparece bajo una nota, indica que hubo recuperación: si esta superó a la original, la nota mostrada es el <strong>promedio</strong> entre ambas (la nota efectiva que entra a la fórmula); si no la superó, se conservó la nota original. Pasa el mouse sobre el badge para ver el detalle. La hoja de cálculo incluye además las notas originales y de recuperación por separado, como respaldo.</p>
                 </div>
 
                 <!-- TAB CONFIGURACIÓN -->
@@ -3296,6 +3296,10 @@ video {
             return `${curso} - ${paralelo}`;
         }
 
+        function asignaturasReporteCurso(curso, paralelo) {
+            const asignaturas = [...new Set((horarioDocente || []).filter(x => x.curso === curso && x.paralelo === paralelo).map(x => texto(x.asignatura).trim()).filter(Boolean))];
+            return asignaturas.join(' / ') || 'No especificada en el horario';
+        }
         function validarFiltroReporte() {
             if (!cursoActual || !paraleloActual) {
                 alert("Seleccione un curso y un paralelo antes de generar el reporte.");
@@ -3766,7 +3770,7 @@ video {
                 _authIdentity?.uid === FIREBASE_DOCENTE_UID_AUTORIZADO;
         }
 
-        async function cargarDatosFirebase() {
+        async function cargarDatosFirebase(opciones = {}) {
             if(!_authIdentity?.uid||!_authIdentity?.email) throw new Error('Inicia sesión antes de cargar datos.');
             document.getElementById('loading-data')?.classList.remove('hidden');
             try {
@@ -3801,15 +3805,18 @@ video {
                         curso:estudiante.curso,paralelo:estudiante.paralelo,clavesCurso,clavesParalelo,
                         actualizadoEn:new Date().toISOString()
                     });
-                    let calificacionesPropias=null;
-                    for(const ruta of RUTAS_CALIFICACIONES) {
-                        try {
-                            const valor=await leerValorRutaFirebase(ruta+'/'+ced);
-                            if(valor!==null&&valor!==undefined) { calificacionesPropias=valor;rutaCalificaciones=ruta;break; }
-                        } catch(e) { console.warn('[AUTH] Sin permiso para consultar '+ruta+'/'+ced+':',e?.message||e); }
-                    }
                     estudiantes=[estudiante];
-                    calificaciones=normalizarListaCalificaciones(calificacionesPropias||{});
+                    calificaciones=[];
+                    if(opciones.precargarCalificaciones!==false) {
+                        let calificacionesPropias=null;
+                        for(const ruta of RUTAS_CALIFICACIONES) {
+                            try {
+                                const valor=await leerValorRutaFirebase(ruta+'/'+ced);
+                                if(valor!==null&&valor!==undefined) { calificacionesPropias=valor;rutaCalificaciones=ruta;break; }
+                            } catch(e) { console.warn('[AUTH] Sin permiso para consultar '+ruta+'/'+ced+':',e?.message||e); }
+                        }
+                        calificaciones=normalizarListaCalificaciones(calificacionesPropias||{});
+                    }
                 }
                 datosInicialesCargados=true;
                 actualizarSelectores();
@@ -4465,24 +4472,21 @@ video {
             try {
                 const identidad=await iniciarSesionFirebase(correoCompleto,password);
                 if(identidad.claims?.email_verified!==true) throw new Error('EMAIL_NOT_VERIFIED');
-                await cargarDatosFirebase();
+                // La validación del aula no necesita las calificaciones legacy; se cargarán
+                // después de mostrar el acceso para evitar que una lectura histórica lo demore.
+                await cargarDatosFirebase({precargarCalificaciones:false});
                 const est=estudiantes.find(e=>texto(e.correo).trim().toLowerCase()===correoCompleto&&e.cedula===ced);
                 if(!est) throw new Error('El correo autenticado no corresponde a esa cédula o el estudiante no está en la nómina.');
-                const nptOk=await esperarModuloNPT();
-                if(!nptOk) throw new Error('No se pudieron cargar los datos académicos del estudiante. Revisa permisos y conexión.');
-                try{await cargarConfigSistema();actualizarSelectoresTrimestre();actualizarBadgePeriodo();}
-                catch(e){console.warn('[NPT] No se pudo refrescar configuración antes del acceso:',e.message);}
                 estudianteActual=est;
                 document.getElementById('login-error')?.classList.add('hidden');
                 document.getElementById('input-clave-estudiante').value='';
-                await cargarArchivosEstudianteNPT(est.cedula);
-                // Reservar el acceso diario solo después de cargar el aula y antes de mostrarla.
-                // El servidor valida el límite; compare-and-set protege sesiones simultáneas.
+                // La reserva diaria es el último requisito de autorización previo al aula.
                 await registrarAccesoEstudiante(est.cedula);
                 document.getElementById('npt-student-name').innerText=est.nombre+' · '+(est.curso||'')+' "'+(est.paralelo||'')+'"';
                 document.getElementById('quiz-badge').innerText=est.nombre;
                 mostrarPantalla('screen-npt');
-                renderTrimestresEstudiante();
+                mostrarCargaInicialAulaEstudiante();
+                void cargarAulaEstudianteEnSegundoPlano(est);
             } catch(e) {
                 console.error('[AUTH] No se pudo completar el acceso estudiantil:',e);
                 limpiarSesionFirebase();
@@ -4493,6 +4497,48 @@ video {
             } finally {
                 if(btn){btn.disabled=false;btn.textContent=btn.dataset.labelOriginal||'Ingresar';delete btn.dataset.labelOriginal;}
             }
+        }
+        function mostrarCargaInicialAulaEstudiante(mensaje='Preparando tus notas del trimestre…') {
+            const cont=document.getElementById('npt-trimestres-container');
+            const anual=document.getElementById('npt-resultado-anual-container');
+            if(cont) cont.innerHTML=`<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 text-center" role="status" aria-live="polite"><div class="text-2xl mb-2 animate-pulse">⏳</div><p class="text-sm font-bold text-slate-700">${escapeHtml(mensaje)}</p><p class="text-xs text-slate-500 mt-1">Tu acceso ya fue validado; estamos cargando la información académica.</p></div>`;
+            if(anual) anual.innerHTML='';
+        }
+        async function cargarCalificacionesEstudianteEnSegundoPlano(est) {
+            const resultados=await Promise.all(RUTAS_CALIFICACIONES.map(async ruta=>{
+                try { return {ruta,valor:await leerValorRutaFirebase(`${ruta}/${est.cedula}`)}; }
+                catch(e) { console.warn('[AUTH] Sin permiso para consultar calificaciones complementarias:',e?.message||e); return {ruta,valor:null}; }
+            }));
+            const elegido=resultados.find(x=>x.valor!==null&&x.valor!==undefined);
+            if(elegido&&estudianteActual?.cedula===est.cedula) {
+                rutaCalificaciones=elegido.ruta;
+                calificaciones=normalizarListaCalificaciones(elegido.valor);
+            }
+        }
+        async function cargarAulaEstudianteEnSegundoPlano(est) {
+            try {
+                const [nptOk]=await Promise.all([
+                    esperarModuloNPT(),
+                    cargarConfigSistema({soloEsencialEstudiante:true}).then(()=>{actualizarSelectoresTrimestre();actualizarBadgePeriodo();})
+                ]);
+                if(!nptOk) throw new Error('No se pudieron cargar todos los datos académicos. Verifica permisos y conexión.');
+                if(estudianteActual?.cedula!==est.cedula) return;
+                renderTrimestresEstudiante();
+                void cargarCalificacionesEstudianteEnSegundoPlano(est);
+                void cargarArchivosEstudianteNPT(est.cedula).then(()=>{
+                    if(estudianteActual?.cedula===est.cedula) renderTrimestresEstudiante();
+                });
+            } catch(e) {
+                console.error('[NPT] No se pudo completar la carga del aula:',e);
+                if(estudianteActual?.cedula!==est.cedula) return;
+                const cont=document.getElementById('npt-trimestres-container');
+                if(cont) cont.innerHTML=`<div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center" role="alert"><p class="text-sm font-bold text-amber-800">El aula abrió, pero no se pudieron cargar los datos académicos.</p><p class="text-xs text-amber-700 mt-1">${escapeHtml(e.message||'Revisa tu conexión a internet.')}</p><button type="button" onclick="reintentarCargaAulaEstudiante()" class="mt-3 bg-amber-600 text-white px-4 py-2 rounded-lg text-xs font-bold">Reintentar carga</button></div>`;
+            }
+        }
+        function reintentarCargaAulaEstudiante() {
+            if(!estudianteActual) return;
+            mostrarCargaInicialAulaEstudiante('Reintentando la carga académica…');
+            void cargarAulaEstudianteEnSegundoPlano(estudianteActual);
         }
         // ==================== EXAMEN TRIMESTRAL — lógica de rendición ====================
         function mezclarArrayExamen(arr) {
@@ -4573,15 +4619,19 @@ video {
         // (reutiliza mezclarArrayExamen, NPT_EXAMEN_NUM_PREGUNTAS, mostrarPreguntaExamen, etc.)
         function comenzarExamenRecuperacionTrimestre(numTrimestre) {
             if (!estudianteActual) return;
-            if (!nptRecuperacionPermitidaEnTrimestre(estudianteActual.curso, estudianteActual.paralelo, numTrimestre)) {
-                alert('No puedes rendir la recuperación porque el trimestre está cerrado.');
+            const { curso, paralelo, cedula } = estudianteActual;
+            const fechaFinRecuperacion = nptFechaFinRecuperacionExamen(cedula, curso, paralelo, numTrimestre);
+            if (nptRecuperacionExamenVencida(cedula, curso, paralelo, numTrimestre)) {
+                alert(fechaFinRecuperacion
+                    ? `El plazo para rendir la recuperación del examen terminó el ${formatearFechaMaxima(fechaFinRecuperacion)}.`
+                    : 'No se puede calcular el plazo: el examen original no tiene una fecha de rendición ni una fecha máxima configurada.');
                 return;
             }
-            if (!nptExamenRecuperacionEstudianteHabilitado(estudianteActual.curso, estudianteActual.paralelo, numTrimestre, estudianteActual.cedula)) {
+            if (!nptExamenRecuperacionEstudianteHabilitado(curso, paralelo, numTrimestre, cedula)) {
                 alert('No tienes habilitado el examen de recuperación de este trimestre.');
                 return;
             }
-            const bancoOriginal = nptExamenesRecuperacionPreguntas(estudianteActual.curso, estudianteActual.paralelo, numTrimestre);
+            const bancoOriginal = nptExamenesRecuperacionPreguntas(curso, paralelo, numTrimestre);
             if (!bancoOriginal || bancoOriginal.length === 0) {
                 alert('El docente aún no ha publicado el banco de preguntas de RECUPERACIÓN del examen para este trimestre.');
                 return;
@@ -4728,8 +4778,11 @@ video {
         function comenzarInsumoTestRecuperacionNPT(numTrimestre, slotId) {
             if (!estudianteActual) return;
             const { curso, paralelo, cedula } = estudianteActual;
-            if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, numTrimestre)) {
-                alert('No puedes rendir la recuperación porque el trimestre está cerrado.');
+            if (nptRecuperacionInsumoVencida(curso, paralelo, numTrimestre)) {
+                const fin = nptFechaFinTrimestre(numTrimestre);
+                alert(fin
+                    ? `El plazo para rendir recuperaciones de insumos terminó al cierre del trimestre (${formatearFechaMaxima(fin)}).`
+                    : 'El trimestre está cerrado y no se configuró una fecha de cierre para calcular el plazo de recuperación.');
                 return;
             }
             const etiqueta = nptInsumoEtiqueta(curso, paralelo, numTrimestre, slotId);
@@ -5324,7 +5377,7 @@ video {
             const contenido = `
                 <div class="filtro">
                     <strong>Docente:</strong> ${escapeHtml(NPT_NOMBRE_DOCENTE)}<br>
-                    <strong>Estudiante:</strong> ${escapeHtml(est?.nombre || reg.nombre || '')} &nbsp; <strong>Cédula:</strong> ${escapeHtml(cedula)}<br>
+                    <strong>Estudiante:</strong> ${escapeHtml(est?.nombre || reg.nombre || '')}<br>
                     <strong>Curso/Paralelo:</strong> ${escapeHtml(est?.curso||'')} "${escapeHtml(est?.paralelo||'')}"<br>
                     <strong>Período:</strong> ${escapeHtml(t?.label||'')} — <strong>${escapeHtml(etiquetaCampo)}</strong>${esInsumoTest ? ' (🧪 Test)' : ''}<br>
                     <strong>Inicio:</strong> ${escapeHtml(horaIni)} &nbsp; <strong>Fin:</strong> ${escapeHtml(horaFin)}
@@ -5340,7 +5393,7 @@ video {
                     ${filas}
                 </table>`;
             const nombreArchivoCampo = esInsumoTest ? `insumo_${campo}` : `examen${esRecuperacion ? '_recuperacion' : ''}`;
-            abrirODescargarReporte(`Reporte de ${etiquetaCampo} — ${est?.nombre || reg.nombre || cedula}`, contenido, `reporte_${nombreArchivoCampo}_${cedula}_t${numTrimestre}_${fechaArchivo()}.html`);
+            abrirODescargarReporte(`Reporte de ${etiquetaCampo} — ${est?.nombre || reg.nombre || cedula}`, contenido, `reporte_${nombreArchivoCampo}_t${numTrimestre}_${fechaArchivo()}.html`);
         }
 
         // Reporte del examen SUPLETORIO — función separada de imprimirReporteExamenDocente porque
@@ -5363,7 +5416,7 @@ video {
             const contenido = `
                 <div class="filtro">
                     <strong>Docente:</strong> ${escapeHtml(NPT_NOMBRE_DOCENTE)}<br>
-                    <strong>Estudiante:</strong> ${escapeHtml(est?.nombre || reg.nombre || '')} &nbsp; <strong>Cédula:</strong> ${escapeHtml(cedula)}<br>
+                    <strong>Estudiante:</strong> ${escapeHtml(est?.nombre || reg.nombre || '')}<br>
                     <strong>Curso/Paralelo:</strong> ${escapeHtml(est?.curso||'')} "${escapeHtml(est?.paralelo||'')}"<br>
                     <strong>Período:</strong> Examen Supletorio (Anual)<br>
                     <strong>Promedio anual previo:</strong> ${(reg.promedioAnualPrevio !== null && reg.promedioAnualPrevio !== undefined) ? formatearNota(reg.promedioAnualPrevio) : '-'} &nbsp; <strong>Resultado:</strong> ${aprobo ? '✅ Aprueba la materia' : '⛔ Pierde la materia'}<br>
@@ -5379,7 +5432,7 @@ video {
                     <tr><th class="col-num">#</th><th>Pregunta</th><th class="col-abrev">Respuesta del estudiante</th><th class="col-abrev">Correcta</th><th class="col-abrev">Resultado</th></tr>
                     ${filas}
                 </table>`;
-            abrirODescargarReporte(`Reporte de Examen Supletorio — ${est?.nombre || reg.nombre || cedula}`, contenido, `reporte_supletorio_${cedula}_${fechaArchivo()}.html`);
+            abrirODescargarReporte(`Reporte de Examen Supletorio — ${est?.nombre || reg.nombre || cedula}`, contenido, `reporte_supletorio_${fechaArchivo()}.html`);
         }
 
         // ==================== NAVEGACIÓN ====================
@@ -5414,11 +5467,12 @@ video {
                 const identidad=await iniciarSesionFirebase(email,password);
                 if(FIREBASE_DOCENTE_UID_AUTORIZADO==='PENDIENTE_CONFIGURAR_UID'||identidad.uid!==FIREBASE_DOCENTE_UID_AUTORIZADO) throw new Error('CUENTA_DOCENTE_NO_AUTORIZADA');
                 console.info('[AUTH] Sesión Firebase iniciada para docente.');
-                await cargarDatosFirebase();
-                const datosOk=await esperarDatosIniciales(),nptOk=await esperarModuloNPT();
+                const [datosOk,nptOk]=await Promise.all([
+                    cargarDatosFirebase().then(()=>esperarDatosIniciales()),
+                    esperarModuloNPT(),
+                    cargarConfigSistema().then(()=>{actualizarSelectoresTrimestre();actualizarBadgePeriodo();})
+                ]);
                 if(!datosOk||!nptOk) throw new Error('Se inició sesión, pero no fue posible cargar los datos del sistema.');
-                try { await cargarConfigSistema(); actualizarSelectoresTrimestre(); actualizarBadgePeriodo(); }
-                catch(e) { console.warn('[NPT] No se pudo refrescar configuración antes del acceso docente:',e.message); }
                 cargarArchivosDocenteFiltradosNPT().then(actualizarPaneles).catch(e=>console.warn('[NPT] Precarga docente:',e.message));
                 actualizarPaneles();
                 mostrarPantalla('screen-docente-panel');
@@ -6064,6 +6118,20 @@ video {
         function nptRecuperacionPermitidaEnTrimestre(curso, paralelo, n) {
             return !nptTrimestreCerrado(curso, paralelo, n);
         }
+        function nptFechaFinTrimestre(numTrimestre) {
+            const hasta = cfgTrimestres?.[numTrimestre]?.hasta;
+            if (!hasta) return null;
+            const soloFecha = String(hasta).trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            if (soloFecha) return new Date(Number(soloFecha[1]), Number(soloFecha[2]) - 1, Number(soloFecha[3]), 23, 59, 59, 999);
+            const fecha = nptParseFecha(hasta);
+            if (!fecha) return null;
+            if (!/[T ]\d{1,2}:\d{2}/.test(String(hasta))) fecha.setHours(23, 59, 59, 999);
+            return fecha;
+        }
+        function nptRecuperacionInsumoVencida(curso, paralelo, numTrimestre) {
+            const fin = nptFechaFinTrimestre(numTrimestre);
+            return fin ? Date.now() > fin.getTime() : nptTrimestreCerrado(curso, paralelo, numTrimestre);
+        }
         function nptEstudianteHabilitado(curso, paralelo, n, cedula) {
             const mapa = nptNodoTrimestre(nptHabilitacionEstudiantes, curso, paralelo, n);
             // Compatibilidad con la estructura anterior: si no existe una definición individual,
@@ -6333,6 +6401,17 @@ video {
         // concepto y mismo helper de vencimiento (fechaMaximaVencida) que ya usan los insumos.
         function nptExamenFechaMaxima(curso, paralelo, n) {
             return nptTrimestreInfo(curso, paralelo, n)?.examenFechaMaxima || null;
+        }
+        function nptFechaFinRecuperacionExamen(cedula, curso, paralelo, numTrimestre) {
+            const examen = nptNotas[cedula]?.[`trimestre${numTrimestre}`]?.examen;
+            // Si no rindió el examen, usa el vencimiento programado como única referencia verificable.
+            const fechaBase = examen?.horaFin || examen?.fecha || examen?.horaInicio || nptExamenFechaMaxima(curso, paralelo, numTrimestre);
+            const inicio = nptParseFecha(fechaBase);
+            return inicio ? new Date(inicio.getTime() + NPT_DIAS_LIMITE_RECUPERACION_EXAMEN * 86400000) : null;
+        }
+        function nptRecuperacionExamenVencida(cedula, curso, paralelo, numTrimestre) {
+            const fin = nptFechaFinRecuperacionExamen(cedula, curso, paralelo, numTrimestre);
+            return !fin || Date.now() > fin.getTime();
         }
         // ¿Puede el estudiante rendir el examen ahora? (habilitado + no vencida su fecha máxima)
         function nptExamenPuedeRendir(curso, paralelo, n, cedula) {
@@ -8013,6 +8092,7 @@ video {
         // la recuperación para ESE estudiante en ESE insumo/examen (mismo mecanismo que ya usa el
         // docente para habilitarla manualmente).
         const NPT_DIAS_LIMITE_SOLICITUD_RECUPERACION = 7;
+        const NPT_DIAS_LIMITE_RECUPERACION_EXAMEN = 7;
         // ==================== FORMATO DE FECHA ESTÁNDAR DEL SISTEMA: dd/mm/aaaa ====================
         // Todas las fechas mostradas al usuario (reportes, pantallas, CSV) deben pasar por una de
         // estas dos funciones — así se garantiza el mismo formato sin importar el idioma/configuración
@@ -8462,43 +8542,8 @@ video {
             });
         }
         function exportarCuadroGeneralCSV() {
-            const t = parseInt(document.getElementById('cuadro-filtro-trimestre')?.value || '1', 10);
-            const alumnos = estudiantesFiltrados();
-            if (alumnos.length === 0) { alert('No hay estudiantes para exportar con el filtro actual.'); return; }
-            // Las columnas base (Insumo 1..8, Examen) muestran la nota EFECTIVA (la que entra a la
-            // fórmula: original promediada con recuperación si esta existe). Las columnas "(Original)"
-            // y "(Rec.)" quedan aparte, solo como respaldo/auditoría de cómo se llegó a la nota
-            // efectiva. Se exporta por número de espacio (no por nombre) porque cada curso/paralelo
-            // puede tener insumos distintos — usa el Cuadro General en pantalla para ver el nombre
-            // real de cada insumo del curso que tengas seleccionado.
-            const encabezadosInsumo = NPT_INSUMO_SLOTS.map((slotId, i) => `Insumo ${i+1}`);
-            const ESTADO_ANUAL_CSV = { aprueba: 'Aprueba', pierde: 'Pierde', supletorio: 'Supletorio', pendiente: 'Pendiente (plazo vencido)' };
-            let csv = 'Estudiante,Cédula,Curso,Paralelo,' + encabezadosInsumo.join(',') + ',Promedio Insumos,Examen,Nota Final,Promedio Anual,Estado Final,'
-                + encabezadosInsumo.map(h => `${h} (Original)`).join(',') + ',Examen (Original),'
-                + encabezadosInsumo.map(h => `${h} (Rec.)`).join(',') + ',Examen (Rec.)\n';
-            alumnos.forEach(est => {
-                const notasEfectivas = NPT_INSUMO_SLOTS.map(slotId => notaEfectivaNPT(est.cedula, t, slotId));
-                const notasOriginales = NPT_INSUMO_SLOTS.map(slotId => notaNPTDe(est.cedula, t, slotId));
-                const notasRec = NPT_INSUMO_SLOTS.map(slotId => notaNPTDe(est.cedula, t, nptClaveRecuperacionInsumo(slotId)));
-                const nExamen = notaEfectivaNPT(est.cedula, t, 'examen');
-                const promInsumos = calcularPromedioInsumosNPT(est.cedula, t);
-                const notaFinal = calcularPromedioNPT(est.cedula, t);
-                const nExamenOrig = notaNPTDe(est.cedula, t, 'examen');
-                const nExamenRec = notaNPTDe(est.cedula, t, 'examenRecuperacion');
-                const infoAnual = nptEstadoAnualNPT(est.cedula);
-                const fmt = v => v !== null ? formatearNota(v) : '';
-                csv += [
-                    csvCampo(est.nombre), csvCampo(est.cedula), csvCampo(est.curso), csvCampo(est.paralelo),
-                    ...notasEfectivas.map(v => csvCampo(fmt(v))),
-                    csvCampo(fmt(promInsumos)), csvCampo(fmt(nExamen)), csvCampo(fmt(notaFinal)),
-                    csvCampo(fmt(infoAnual.promedioAnual)), csvCampo(ESTADO_ANUAL_CSV[infoAnual.estado] || ''),
-                    ...notasOriginales.map(v => csvCampo(fmt(v))), csvCampo(fmt(nExamenOrig)),
-                    ...notasRec.map(v => csvCampo(fmt(v))), csvCampo(fmt(nExamenRec))
-                ].join(',') + '\n';
-            });
-            descargarArchivo(`cuadro_general_T${t}_${fechaArchivo()}.csv`, csv, 'text/csv;charset=utf-8');
-        }
-        // Construye el HTML del desglose por criterio + la tabla de observaciones de una evaluación IA.
+            generarReporteNPTPorTrimestre();
+        }        // Construye el HTML del desglose por criterio + la tabla de observaciones de una evaluación IA.
         // No asume nombres de criterio ni cantidad de filas: la rúbrica activa en cada insumo puede
         // cambiar en cualquier momento (distinta para Cuaderno, Libro, o entre trimestres), así que
         // simplemente recorre lo que el Worker haya devuelto para ESA evaluación en particular.
@@ -8989,59 +9034,79 @@ video {
             });
         }
 
-        // Recolecta, en la vista actual (respetando el filtro de trimestre y estudiantesFiltrados()),
-        // toda entrega YA CALIFICADA (nota registrada, sin importar si vino de IA, de un insumo tipo
-        // Test autocalificado, o de una nota ingresada manualmente) cuya casilla "Verificar nota" del
-        // modal "Asignar Nota NPT" todavía no está marcada. Incluye tanto la nota original de cada
-        // insumo activo como su recuperación (si existe). El examen NO se incluye: no tiene ese
-        // checkbox en su fila (se revisa con "🖨️ Ver examen" directamente).
+        function nptNotaMarcadaComoVerificada(registro) {
+            const valor=registro?.verificado;
+            return valor===true || valor===1 || String(valor??'').trim().toLowerCase()==='true';
+        }
+
+        // Recolecta tanto notas guardadas como resultados de IA que todavía no se han convertido
+        // en una nota confirmada por el docente. Respeta el filtro de trimestre y estudiantesFiltrados().
+        // Incluye claves dinámicas e históricas; el examen no usa este flujo de verificación.
         function nptFilasPendientesVerificarNota() {
             const filtroT = document.getElementById('npt-filtro-trimestre')?.value || '';
             const alumnos = estudiantesFiltrados();
             const pendientes = [];
+            const tiposBase = new Set([...NPT_INSUMO_SLOTS, ...NPT_INSUMOS_ENTREGA]);
             alumnos.forEach(est => {
                 trimestresEfectivos().forEach(t => {
                     if (filtroT && String(t.num) !== filtroT) return;
-                    nptInsumosActivosNPT(est.curso, est.paralelo, t.num).forEach(tp => {
-                        const nota = nptNotas[est.cedula]?.[`trimestre${t.num}`]?.[tp.id] || null;
-                        if (nota && !nota.verificado) pendientes.push({ cedula: est.cedula, numTrimestre: t.num, tipo: tp.id });
-                        const claveRec = nptClaveRecuperacionInsumo(tp.id);
-                        const notaRec = nptNotas[est.cedula]?.[`trimestre${t.num}`]?.[claveRec] || null;
-                        if (notaRec && !notaRec.verificado) pendientes.push({ cedula: est.cedula, numTrimestre: t.num, tipo: claveRec });
+                    const notasTrim=nptNotas[est.cedula]?.[`trimestre${t.num}`];
+                    const iaTrim=nptEvaluacionesIA[est.cedula]?.[`trimestre${t.num}`];
+                    const tipos=new Set([...Object.keys(notasTrim||{}),...Object.keys(iaTrim||{})]);
+                    tipos.forEach(tipo=>{
+                        const tipoBase=nptTipoBaseDeClaveInsumo(tipo);
+                        const esTipoVerificable=tiposBase.has(tipoBase) && (tipo===tipoBase || nptEsClaveRecuperacionInsumo(tipo));
+                        if(!esTipoVerificable) return;
+                        const nota=notasTrim?.[tipo];
+                        if(nota && typeof nota==='object' && nota.nota!==null && nota.nota!==undefined && nota.nota!=='' && Number.isFinite(Number(nota.nota))) {
+                            if(!nptNotaMarcadaComoVerificada(nota)) pendientes.push({cedula:est.cedula,numTrimestre:t.num,tipo,origen:'nota'});
+                            return;
+                        }
+                        const ia=iaTrim?.[tipo];
+                        if(ia && ia.nota!==null && ia.nota!==undefined && ia.nota!=='' && Number.isFinite(Number(ia.nota))) {
+                            pendientes.push({cedula:est.cedula,numTrimestre:t.num,tipo,origen:'ia'});
+                        }
                     });
                 });
             });
             return pendientes;
         }
 
-        // Botón "Verificar todos los pendientes": para cada entrega YA CALIFICADA que aún no tiene
-        // marcada la casilla "Verificar nota" (en la vista actual), la marca — exactamente lo mismo
-        // que hace guardarNotaNPT cuando el docente abre "✏️ Editar / Verificar" y presiona "Guardar
-        // Nota" con la casilla activada, sin cambiar el valor de la nota ya registrada — pero para
-        // todas las filas pendientes de una sola vez. No llama a la IA ni depende de que exista una
-        // evaluación de IA: aplica igual a insumos tipo Test (autocalificados) y a notas ingresadas
-        // manualmente.
+        // Verifica notas ya guardadas y convierte evaluaciones IA pendientes en notas docentes,
+        // usando su puntaje y comentario originales. No ejecuta ni vuelve a llamar al servicio IA.
         let nptVerificarMasivaEnCurso = false;
         async function verificarTodosPendientesNPT() {
             if (nptVerificarMasivaEnCurso) return;
             const pendientes = nptFilasPendientesVerificarNota();
             if (pendientes.length === 0) {
-                alert('No hay notas pendientes de verificar en la vista actual: todas las entregas ya calificadas están verificadas.');
+                alert('No se encontraron notas ni evaluaciones IA pendientes de verificar para los estudiantes y trimestres seleccionados.');
                 return;
             }
-            if (!confirm(`Se va a marcar como VERIFICADA la nota ya registrada de ${pendientes.length} entrega(s) (el valor de la nota NO cambia, solo se activa la casilla "Verificar nota"). Esto habilita, donde aplica, que el estudiante pueda imprimir su reporte. ¿Continuar?`)) return;
+            if (!confirm(`Se van a verificar ${pendientes.length} pendiente(s). Las notas ya guardadas conservarán su puntaje. Las evaluaciones IA que aún no tienen nota confirmada se guardarán con el puntaje y comentario de IA como nota verificada por el docente. Esto habilita, donde aplica, que el estudiante pueda imprimir su reporte. ¿Continuar?`)) return;
 
             nptVerificarMasivaEnCurso = true;
             const btn = document.getElementById('npt-btn-verificar-todos');
             if (btn) { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); btn.textContent = 'Verificando...'; }
 
             let ok = 0, fallidas = 0;
-            for (const { cedula, numTrimestre, tipo } of pendientes) {
+            for (const { cedula, numTrimestre, tipo, origen } of pendientes) {
                 try {
                     const actual = nptNotas[cedula]?.[`trimestre${numTrimestre}`]?.[tipo];
-                    if (!actual) { fallidas++; continue; }
-                    const registro = { ...actual, verificado: true, fechaVerificacion: new Date().toISOString() };
+                    if (actual && nptNotaMarcadaComoVerificada(actual)) continue;
+                    const evaluacionIA=nptEvaluacionesIA[cedula]?.[`trimestre${numTrimestre}`]?.[tipo];
+                    const base=actual || (origen==='ia' && evaluacionIA ? {
+                        nota:Math.round(Number(evaluacionIA.nota)*100)/100,
+                        observacion:texto(evaluacionIA.comentario||''),
+                        fechaNota:evaluacionIA.fecha||new Date().toISOString(),
+                        docente:NPT_NOMBRE_DOCENTE,cedula,
+                        nombre:estudiantes.find(e=>e.cedula===cedula)?.nombre||'',
+                        trimestre:numTrimestre,tipo,origen:null
+                    } : null);
+                    if(!base || !Number.isFinite(Number(base.nota))) { fallidas++; continue; }
+                    const registro = { ...base, verificado: true, fechaVerificacion: new Date().toISOString() };
                     await guardarValorFirebase(`nptNotas/${cedula}/trimestre${numTrimestre}/${tipo}`, registro);
+                    if(!nptNotas[cedula]) nptNotas[cedula]={};
+                    if(!nptNotas[cedula][`trimestre${numTrimestre}`]) nptNotas[cedula][`trimestre${numTrimestre}`]={};
                     nptNotas[cedula][`trimestre${numTrimestre}`][tipo] = registro;
                     ok++;
                 } catch(e) {
@@ -9599,7 +9664,7 @@ video {
                     <button type="button" class="sgc-btn sgc-btn-sm sgc-btn-soft-danger" data-act="bulk-rechazar" ${nPend ? '' : 'disabled'}>❌ Rechazar${nPend ? ` (${nPend})` : ''}</button>
                     <button type="button" class="sgc-btn sgc-btn-sm" data-act="bulk-reabrir" ${nRes ? '' : 'disabled'}>↩ Reabrir${nRes ? ` (${nRes})` : ''}</button>
                     <button type="button" class="sgc-btn sgc-btn-sm sgc-btn-soft-danger" data-act="bulk-eliminar" ${nSel ? '' : 'disabled'}>🗑️ Eliminar${nSel ? ` (${nSel})` : ''}</button>
-                    <button type="button" class="sgc-btn sgc-btn-sm" data-act="csv" ${visibles.length ? '' : 'disabled'} title="Descargar lo que se ve en la lista">⬇ CSV</button>
+                    <button type="button" class="sgc-btn sgc-btn-sm" data-act="csv" ${visibles.length ? '' : 'disabled'} title="Descargar lo que se ve en la lista">⬇ Hoja .xlsx</button>
                 </div>`;
             const todos = document.getElementById('sgc-sol-todos');
             if (todos) {
@@ -9867,7 +9932,7 @@ video {
         function aprobarSolicitudRecuperacionNPT(cedula, numTrimestre, clave) { return sgcSolAprobar([`${cedula}|${numTrimestre}|${clave}`]); }
         function rechazarSolicitudRecuperacionNPT(cedula, numTrimestre, clave) { return sgcSolRechazar([`${cedula}|${numTrimestre}|${clave}`]); }
 
-        // Exporta a CSV exactamente lo que se ve en la lista (respeta pestaña, búsqueda, filtros y orden).
+        // Exporta a hoja de cálculo lo que se ve en la lista (respeta pestaña, búsqueda, filtros y orden).
         function sgcSolExportarCSV() {
             const win = sgcSolWin();
             const base = sgcSolFiltrar(sgcSolEntradas());
@@ -9875,7 +9940,7 @@ video {
             if (!filas.length) { sgcFwToast(win, 'No hay solicitudes para exportar.', 'info'); return; }
             // Evita que Excel interprete como fórmula un texto escrito por el representante (=, +, -, @).
             const seguro = (v) => { const x = texto(v); return csvCampo(/^[=+\-@\t\r]/.test(x) ? "'" + x : x); };
-            let csv = 'Estudiante,Cédula,Curso,Paralelo,Trimestre,Evaluación,Estado,Nota original,Motivo,Representante,Cédula representante,Fecha solicitud,Fecha respuesta,Motivo de rechazo\n';
+            let csv = 'Docente,' + csvCampo(NPT_NOMBRE_DOCENTE) + '\n\nEstudiante,Cédula,Curso,Paralelo,Trimestre,Evaluación,Estado,Nota original,Motivo,Representante,Cédula representante,Fecha solicitud,Fecha respuesta,Motivo de rechazo\n';
             filas.forEach(e => {
                 const s = e.s;
                 const t = trimestresEfectivos().find(x => x.num === e.num);
@@ -10084,69 +10149,77 @@ video {
 
         // ---- Exportar CSV NPT ----
         function exportarNPTCSV() {
+            if (!validarFiltroReporte()) return;
             const filtroT = document.getElementById('npt-filtro-trimestre')?.value || '';
             const alumnos = estudiantesFiltrados();
-            let csv = 'Estudiante,Cédula,Curso,Paralelo,Trimestre,Tipo,Archivo,Fecha Entrega,Nota,Verificado,Observación,Desglose IA (criterio: obtenido/máximo),Observaciones IA (ubicación — aspecto: hallazgo)\n';
-            let total = 0;
-            const agregarFila = (est, t, etiquetaTipo, arch, nota, ia) => {
-                // El desglose/observaciones se aplanan a texto porque la cantidad de criterios y su
-                // nombre varían según la rúbrica activa de cada insumo/trimestre: una columna por
-                // criterio no funcionaría igual para todos los insumos.
-                const desgloseTexto = (ia?.desglose || [])
-                    .map(d => `${d.criterio}: ${formatearNota(d.obtenido)}/${formatearNota(d.maximo)}`).join('; ');
-                const observacionesTexto = (ia?.observaciones || [])
-                    .map(o => `${o.ubicacion ? o.ubicacion + ' — ' : ''}${o.aspecto ? o.aspecto + ': ' : ''}${o.observacion}`).join(' | ');
-                csv += [
-                    csvCampo(est.nombre), csvCampo(est.cedula),
-                    csvCampo(est.curso), csvCampo(est.paralelo),
-                    csvCampo(t.label), csvCampo(etiquetaTipo),
-                    csvCampo(arch?.nombre || (arch?.origen === 'otros_medios' ? (arch?.url ? `Evidencia (otros medios): ${arch.url}` : 'Otros medios (sin evidencia)') : 'Sin entrega')),
-                    csvCampo(nptFormatoFechaHora(arch?.fechaEntrega)),
-                    csvCampo(nota ? formatearNota(nota.nota) : 'Sin calificar'),
-                    csvCampo(nota?.verificado ? 'Sí' : 'No'),
-                    csvCampo(nota?.observacion || ''),
-                    csvCampo(desgloseTexto),
-                    csvCampo(observacionesTexto)
-                ].join(',') + '\n';
-                total++;
+            const columnas = new Map();
+            const datosPorEstudiante = new Map();
+
+            const detalleEvaluacion = (arch, nota, ia) => {
+                const partes = [];
+                if (arch) {
+                    partes.push('Entrega: ' + (arch.nombre || (arch.url ? 'Evidencia: ' + arch.url : 'Archivo registrado')));
+                    if (arch.fechaEntrega) partes.push('Fecha: ' + nptFormatoFechaHora(arch.fechaEntrega));
+                }
+                if (nota) {
+                    partes.push('Nota: ' + formatearNota(nota.nota) + ' · Verificada: ' + (nptNotaMarcadaComoVerificada(nota) ? 'Sí' : 'Pendiente'));
+                    if (nota.observacion) partes.push('Observación docente: ' + nota.observacion);
+                }
+                if (ia?.desglose?.length) {
+                    partes.push('Desglose IA: ' + ia.desglose.map(d => d.criterio + ': ' + formatearNota(d.obtenido) + '/' + formatearNota(d.maximo)).join('; '));
+                }
+                if (ia?.observaciones?.length) {
+                    partes.push('Observaciones IA: ' + ia.observaciones.map(o => (o.ubicacion ? o.ubicacion + ' — ' : '') + (o.aspecto ? o.aspecto + ': ' : '') + (o.observacion || '')).join(' | '));
+                }
+                return partes.join('\n');
             };
+            const agregar = (est, trim, id, etiqueta, arch, nota, ia) => {
+                if (!arch && !nota && !ia) return;
+                const clave = 't' + trim.num + '|' + id;
+                const encabezado = 'T' + trim.num + ' · ' + etiqueta;
+                columnas.set(clave, encabezado);
+                if (!datosPorEstudiante.has(est.cedula)) datosPorEstudiante.set(est.cedula, { estudiante: est, celdas: {} });
+                datosPorEstudiante.get(est.cedula).celdas[clave] = detalleEvaluacion(arch, nota, ia) || 'Registro disponible';
+            };
+
             alumnos.forEach(est => {
                 trimestresEfectivos().forEach(t => {
                     if (filtroT && String(t.num) !== filtroT) return;
+                    const rutaNotas = nptNotas[est.cedula]?.['trimestre' + t.num] || {};
+                    const rutaArchivos = nptArchivos[est.cedula]?.['trimestre' + t.num] || {};
+                    const rutaIA = nptEvaluacionesIA[est.cedula]?.['trimestre' + t.num] || {};
                     nptInsumosActivosNPT(est.curso, est.paralelo, t.num).forEach(tp => {
-                        const arch = nptArchivos[est.cedula]?.[`trimestre${t.num}`]?.[tp.id];
-                        const nota = nptNotas[est.cedula]?.[`trimestre${t.num}`]?.[tp.id];
-                        if (arch || nota) {
-                            const ia = nptEvaluacionesIA[est.cedula]?.[`trimestre${t.num}`]?.[tp.id];
-                            agregarFila(est, t, tp.label, arch, nota, ia);
-                        }
-                        // Recuperación de este insumo: fila aparte marcada "(Recuperación)". Su nota
-                        // ya está incorporada en la nota efectiva (promedio) que se ve en las
-                        // columnas de nota EFECTIVA de los otros reportes; esta fila es el respaldo
-                        // en detalle de esa recuperación puntual. Los insumos tipo Test se
-                        // autocalifican (sin archivo propio), igual que el examen.
-                        const claveRec = nptClaveRecuperacionInsumo(tp.id);
-                        const archRec = tp.tipo === 'test' ? null : (nptArchivos[est.cedula]?.[`trimestre${t.num}`]?.[claveRec] || null);
-                        const notaRec = nptNotas[est.cedula]?.[`trimestre${t.num}`]?.[claveRec];
-                        if (archRec || notaRec) {
-                            const iaRec = nptEvaluacionesIA[est.cedula]?.[`trimestre${t.num}`]?.[claveRec];
-                            agregarFila(est, t, `${tp.label} (Recuperación)`, archRec, notaRec, iaRec);
+                        const arch = rutaArchivos[tp.id] || null;
+                        const nota = rutaNotas[tp.id] || null;
+                        const ia = rutaIA[tp.id] || null;
+                        agregar(est, t, tp.id, tp.label, arch, nota, ia);
+                        const recuperacionActiva = tp.tipo !== 'test' &&
+                            nptInsumoRecuperacionEstudianteHabilitado(est.curso, est.paralelo, t.num, tp.id, est.cedula);
+                        if (recuperacionActiva) {
+                            const claveRec = nptClaveRecuperacionInsumo(tp.id);
+                            agregar(est, t, claveRec, tp.label + ' (Recuperación)', rutaArchivos[claveRec] || null, rutaNotas[claveRec] || null, rutaIA[claveRec] || null);
                         }
                     });
-                    // Examen y su recuperación: normalmente no tienen "archivo" propio (es una
-                    // evaluación automática dentro del sistema), salvo que la nota se haya
-                    // registrado por "Otros medios" — en ese caso sí existe un enlace de evidencia.
-                    const notaExamen = nptNotas[est.cedula]?.[`trimestre${t.num}`]?.examen;
-                    const archExamen = nptArchivos[est.cedula]?.[`trimestre${t.num}`]?.examen || null;
-                    if (notaExamen) agregarFila(est, t, '📝 Examen', archExamen, notaExamen, null);
-                    const notaExamenRec = nptNotas[est.cedula]?.[`trimestre${t.num}`]?.examenRecuperacion;
-                    if (notaExamenRec) agregarFila(est, t, '📝 Examen (Recuperación)', null, notaExamenRec, null);
+                    if (nptExamenEstudianteHabilitado(est.curso, est.paralelo, t.num, est.cedula)) {
+                        agregar(est, t, 'examen', 'Examen', rutaArchivos.examen || null, rutaNotas.examen || null, null);
+                        if (nptExamenRecuperacionEstudianteHabilitado(est.curso, est.paralelo, t.num, est.cedula)) {
+                            agregar(est, t, 'examenRecuperacion', 'Examen (Recuperación)', rutaArchivos.examenRecuperacion || null, rutaNotas.examenRecuperacion || null, null);
+                        }
+                    }
                 });
             });
-            if (total === 0) { alert('No hay datos para exportar con el filtro actual.'); return; }
-            descargarArchivo(`notas_trimestre_${fechaArchivo()}.csv`, csv, 'text/csv;charset=utf-8');
-        }
 
+            if (!datosPorEstudiante.size) { alert('No hay entregas recibidas para los filtros actuales.'); return; }
+            const encabezados = ['Estudiante', ...columnas.values()];
+            const filas = [encabezados];
+            datosPorEstudiante.forEach(reg => {
+                const est = reg.estudiante;
+                filas.push([est.nombre, ...columnas.keys().map(clave => reg.celdas[clave] || '')]);
+            });
+            const materia = asignaturasReporteCurso(cursoActual, paraleloActual);
+            abrirPrevisualizacionFilas('entregas_recibidas_' + fechaArchivo() + '.xlsx', filas, null,
+                [['Docente', NPT_NOMBRE_DOCENTE], ['Curso', cursoActual], ['Paralelo', paraleloActual], ['Materia', materia], ['Trimestre', filtroT || 'Todos los trimestres']]);
+        }
         // ---- Pantalla estudiante NPT (hub único) ----
         function irANPT() {
             if (!estudianteActual) return;
@@ -10253,7 +10326,9 @@ video {
                         // ---- Recuperación de este insumo tipo Test (banco de preguntas independiente) ----
                         const claveRecTest = nptClaveRecuperacionInsumo(tp.id);
                         const notaRecTest = nptNotas[cedula]?.[`trimestre${t.num}`]?.[claveRecTest] || null;
-                        const recHabTest = !trimestreCerrado && nptInsumoRecuperacionEstudianteHabilitado(curso, paralelo, t.num, tp.id, cedula);
+                        const recHabTestGeneral = nptInsumoRecuperacionHabilitado(curso, paralelo, t.num, tp.id);
+                        const recHabTestEstudiante = nptInsumoRecuperacionEstudianteHabilitado(curso, paralelo, t.num, tp.id, cedula);
+                        const recHabTest = recHabTestGeneral && recHabTestEstudiante && !nptRecuperacionInsumoVencida(curso, paralelo, t.num);
                         let recuperacionTestHtml = '';
                         if (notaRecTest) {
                             const notaRecTestVal = numero(notaRecTest.nota);
@@ -10273,6 +10348,9 @@ video {
                                 <p class="text-[10px] text-purple-500 mb-2">${notaTest ? `Tu nota actual es ${formatearNota(numero(notaTest.nota))}/10. Si tu recuperación es mayor, tu nota final será el promedio de ambas; si no la superas, se mantiene tu nota actual.` : 'Aún no tienes nota original de este insumo: tu nota final será la de esta recuperación.'}</p>
                                 <button onclick="comenzarInsumoTestRecuperacionNPT(${t.num},'${tp.id}')" class="w-full bg-purple-600 text-white py-2 rounded-xl text-xs font-bold hover:bg-purple-700">🔁 Rendir recuperación de ${escapeHtml(etiquetaTipo)}</button>
                             </div>`;
+                        } else if (recHabTestGeneral && recHabTestEstudiante && nptRecuperacionInsumoVencida(curso, paralelo, t.num)) {
+                            const finRecuperacionTest = nptFechaFinTrimestre(t.num);
+                            recuperacionTestHtml = `<div class="bg-slate-100 border border-slate-200 rounded-xl p-3 mt-2 text-center text-[11px] text-slate-600">🔒 El plazo de recuperación del insumo terminó${finRecuperacionTest ? ` el ${escapeHtml(formatearFechaMaxima(finRecuperacionTest))}` : ' al cerrarse el trimestre'}.</div>`;
                         }
 
                         return `<div class="mb-3">
@@ -10423,7 +10501,7 @@ video {
                         : null;
                     const recHabGeneral = nptInsumoRecuperacionHabilitado(curso, paralelo, t.num, tp.id);
                     const recHabEstudiante = nptInsumoRecuperacionEstudianteHabilitado(curso, paralelo, t.num, tp.id, cedula);
-                    const recHab = recHabGeneral && recHabEstudiante;
+                    const recHab = recHabGeneral && recHabEstudiante && !nptRecuperacionInsumoVencida(curso, paralelo, t.num);
                     const observacionDevRec = nptObservacionesDevolucion[cedula]?.[`trimestre${t.num}`]?.[claveRec] || null;
                     const avisoDevolucionRec = observacionDevRec
                         ? `<div class="bg-amber-50 border border-amber-300 rounded-xl p-3 mb-2 text-xs text-amber-800">
@@ -10465,6 +10543,9 @@ video {
                                 <button onclick="guardarURLInsumoRecuperacion(${t.num},'${tp.id}')" class="bg-purple-600 text-white text-xs font-bold px-3 py-2 rounded-xl hover:bg-purple-700">Enviar</button>
                             </div>
                         </div>`;
+                    } else if (recHabGeneral && recHabEstudiante && nptRecuperacionInsumoVencida(curso, paralelo, t.num)) {
+                        const finRecuperacionInsumo = nptFechaFinTrimestre(t.num);
+                        recuperacionHtml = `<div class="bg-slate-100 border border-slate-200 rounded-xl p-3 mt-2 text-center text-[11px] text-slate-600">🔒 El plazo para enviar esta recuperación terminó${finRecuperacionInsumo ? ` el ${escapeHtml(formatearFechaMaxima(finRecuperacionInsumo))}` : ' al cerrarse el trimestre'}.</div>`;
                     }
 
                     return `<div class="mb-3">
@@ -10515,7 +10596,8 @@ video {
                 // ---- Bloque de examen de RECUPERACIÓN (solo visible si aplica a este estudiante) ----
                 const examenRecHabGeneral = nptExamenRecuperacionHabilitado(curso, paralelo, t.num);
                 const examenRecHabEstudiante = nptExamenRecuperacionEstudianteHabilitado(curso, paralelo, t.num, cedula);
-                const examenRecHab = !trimestreCerrado && examenRecHabGeneral && examenRecHabEstudiante;
+                const fechaFinExamenRecuperacion = nptFechaFinRecuperacionExamen(cedula, curso, paralelo, t.num);
+                const examenRecHab = examenRecHabGeneral && examenRecHabEstudiante && !nptRecuperacionExamenVencida(cedula, curso, paralelo, t.num);
                 const notaExamenRecuperacion = nptNotas[cedula]?.[`trimestre${t.num}`]?.examenRecuperacion || null;
                 let examenRecHtml = '';
                 if (notaExamenRecuperacion) {
@@ -10526,7 +10608,9 @@ video {
                     </div>`;
                 } else if (examenRecHab) {
                     examenRecHtml = `<button onclick="comenzarExamenRecuperacionTrimestre(${t.num})" class="w-full bg-purple-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-purple-700 mt-2">🔁 Realizar examen de recuperación</button>
-                    <p class="text-[10px] text-purple-500 mt-1 text-center">${notaExamen ? 'Al calificarse, se promediará con tu nota del examen original.' : 'Aún no tienes nota del examen original: tu nota final será la de esta recuperación.'}</p>`;
+                    <p class="text-[10px] text-purple-500 mt-1 text-center">${notaExamen ? 'Al calificarse, se promediará con tu nota del examen original.' : 'Aún no tienes nota del examen original: tu nota final será la de esta recuperación.'} Disponible hasta ${escapeHtml(formatearFechaMaxima(fechaFinExamenRecuperacion))} (7 días después de la rendición o del vencimiento programado).</p>`;
+                } else if (examenRecHabGeneral && examenRecHabEstudiante && nptRecuperacionExamenVencida(cedula, curso, paralelo, t.num)) {
+                    examenRecHtml = `<div class="bg-slate-100 border border-slate-200 rounded-xl p-3 mt-2 text-center text-[11px] text-slate-600">🔒 El plazo para rendir la recuperación del examen terminó${fechaFinExamenRecuperacion ? ` el ${escapeHtml(formatearFechaMaxima(fechaFinExamenRecuperacion))}` : ' porque no existe una fecha verificable del examen original'}.</div>`;
                 }
 
                 return `<div class="bg-white rounded-2xl shadow-md border-2 ${hab ? 'trimestre-card habilitado' : 'trimestre-card bloqueado border-slate-100'} p-5">
@@ -10708,6 +10792,13 @@ video {
             const cedula = estudianteActual.cedula;
             const { curso, paralelo } = estudianteActual;
             if (!esInsumoURL(curso, paralelo, numTrimestre, tipoBase)) { alert('Este insumo no acepta enlace URL.'); return; }
+            if (nptRecuperacionInsumoVencida(curso, paralelo, numTrimestre)) {
+                const fin = nptFechaFinTrimestre(numTrimestre);
+                alert(fin
+                    ? `El plazo para enviar la recuperación terminó al cierre del trimestre (${formatearFechaMaxima(fin)}).`
+                    : 'El trimestre está cerrado y no se configuró una fecha de cierre para calcular el plazo de recuperación.');
+                return;
+            }
             if (!nptInsumoRecuperacionEstudianteHabilitado(curso, paralelo, numTrimestre, tipoBase, cedula)) {
                 alert('La recuperación de este insumo no está habilitada para ti. Consulta con el docente.');
                 return;
@@ -10751,6 +10842,11 @@ video {
             }
             if (validacion?.ok && validacion.requiereRevisionManual) {
                 if (!confirm(`⚠️ No pudimos leer automáticamente el contenido de ese enlace (${validacion.motivo || 'contenido insuficiente'}).\n\nSe puede enviar igual, pero si la IA tampoco encuentra evidencia al evaluar, registrará 0 según la rúbrica por falta de contenido evaluable. ¿Continuar?`)) return;
+            }
+
+            if (nptRecuperacionInsumoVencida(curso, paralelo, numTrimestre)) {
+                alert('El plazo de recuperación terminó mientras se validaba el enlace. No se guardó el envío.');
+                return;
             }
 
             const registro = {
@@ -10907,7 +11003,117 @@ video {
             return `"${texto(valor).replace(/"/g, '""')}"`;
         }
 
-        function descargarArchivo(nombre, contenido, tipo = 'text/plain;charset=utf-8') {
+        const SGC_XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        function sgcXmlEscape(valor) {
+            return String(valor ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[ch]));
+        }
+        function sgcExcelColumna(numero) {
+            let salida = '';
+            while (numero > 0) { const resto = (numero - 1) % 26; salida = String.fromCharCode(65 + resto) + salida; numero = Math.floor((numero - 1) / 26); }
+            return salida;
+        }
+        function sgcCrc32(bytes) {
+            let crc = 0xFFFFFFFF;
+            for (let i = 0; i < bytes.length; i++) {
+                crc ^= bytes[i];
+                for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xEDB88320 : 0);
+            }
+            return (crc ^ 0xFFFFFFFF) >>> 0;
+        }
+        function sgcZipSinCompresion(archivos) {
+            const encoder = new TextEncoder(), locales = [], centrales = [];
+            let desplazamiento = 0;
+            archivos.forEach(archivo => {
+                const nombre = encoder.encode(archivo.nombre), datos = encoder.encode(archivo.contenido), crc = sgcCrc32(datos);
+                const local = new Uint8Array(30 + nombre.length), lv = new DataView(local.buffer);
+                lv.setUint32(0, 0x04034B50, true); lv.setUint16(4, 20, true); lv.setUint16(6, 0, true); lv.setUint16(8, 0, true);
+                lv.setUint16(10, 0, true); lv.setUint16(12, 0, true); lv.setUint32(14, crc, true); lv.setUint32(18, datos.length, true);
+                lv.setUint32(22, datos.length, true); lv.setUint16(26, nombre.length, true); lv.setUint16(28, 0, true); local.set(nombre, 30);
+                locales.push(local, datos);
+                const central = new Uint8Array(46 + nombre.length), cv = new DataView(central.buffer);
+                cv.setUint32(0, 0x02014B50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true); cv.setUint16(8, 0, true);
+                cv.setUint16(10, 0, true); cv.setUint16(12, 0, true); cv.setUint16(14, 0, true); cv.setUint32(16, crc, true);
+                cv.setUint32(20, datos.length, true); cv.setUint32(24, datos.length, true); cv.setUint16(28, nombre.length, true);
+                cv.setUint16(30, 0, true); cv.setUint16(32, 0, true); cv.setUint16(34, 0, true); cv.setUint16(36, 0, true);
+                cv.setUint32(38, 0, true); cv.setUint32(42, desplazamiento, true); central.set(nombre, 46);
+                centrales.push(central); desplazamiento += local.length + datos.length;
+            });
+            const tamanoCentral = centrales.reduce((total, item) => total + item.length, 0);
+            const fin = new Uint8Array(22), fv = new DataView(fin.buffer), cantidad = archivos.length;
+            fv.setUint32(0, 0x06054B50, true); fv.setUint16(4, 0, true); fv.setUint16(6, 0, true);
+            fv.setUint16(8, cantidad, true); fv.setUint16(10, cantidad, true); fv.setUint32(12, tamanoCentral, true);
+            fv.setUint32(16, desplazamiento, true); fv.setUint16(20, 0, true);
+            return new Blob([...locales, ...centrales, fin], { type: SGC_XLSX_MIME });
+        }
+        function sgcCrearXlsx(filas, conFiltro = true) {
+            const datos = filas.length ? filas : [['Sin datos']];
+            const indiceMarcado = datos.findIndex(f => f.__cabecera);
+            const indiceCabecera = indiceMarcado >= 0 ? indiceMarcado : 0;
+            const filaCabeceraExcel = indiceCabecera + 1;
+            let cabeceras = (datos[0] || []).map(v => String(v ?? '').trim().toLowerCase());
+            const filasXml = datos.map((fila, ri) => {
+                const esCabecera = fila.__cabecera || ri === indiceCabecera;
+                if (esCabecera) cabeceras = fila.map(v => String(v ?? '').trim().toLowerCase());
+                const celdas = fila.map((valor, ci) => {
+                    const ref = sgcExcelColumna(ci + 1) + (ri + 1), textoCelda = String(valor ?? '');
+                    const etiqueta = cabeceras[ci] || '';
+                    const identificador = /cedula|identific|correo|fecha|estudiante|representante|curso|paralelo|tipo|estado|archivo|motivo|docente|nombre|codigo|celular|telefono|hora|unidad|tema|origen/i.test(etiqueta);
+                    const esValorNumerico = ri > 0 && !fila.__cabecera && !identificador && /^-?\d+(?:[.,]\d+)?$/.test(textoCelda.trim());
+                    const numero = esValorNumerico ? Number(textoCelda.replace(',', '.')) : NaN;
+                    if (Number.isFinite(numero)) return '<c r="' + ref + '" s="2"><v>' + numero + '</v></c>';
+                    const preserve = /^\s|\s$/.test(textoCelda) ? ' xml:space="preserve"' : '';
+                    const estilo = esCabecera ? ' s="1"' : (/\r|\n/.test(textoCelda) ? ' s="3"' : '');
+                    return '<c r="' + ref + '" t="inlineStr"' + estilo + '><is><t' + preserve + '>' + sgcXmlEscape(textoCelda) + '</t></is></c>';
+                }).join('');
+                return '<row r="' + (ri + 1) + '">' + celdas + '</row>';
+            }).join('');
+            const columnas = Math.max(1, ...datos.map(f => f.length));
+            const anchos = Array.from({length: columnas}, (_, i) => {
+                const max = datos.reduce((m, fila) => Math.max(m, String(fila[i] ?? '').length), 8);
+                return '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + Math.min(48, Math.max(12, max + 2)) + '" customWidth="1"/>';
+            }).join('');
+            const maxRef = sgcExcelColumna(columnas) + datos.length;
+            const ws = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+                '<sheetViews><sheetView workbookViewId="0"><pane ySplit="' + filaCabeceraExcel + '" topLeftCell="A' + (filaCabeceraExcel + 1) + '" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
+                '<sheetFormatPr defaultRowHeight="18"/><cols>' + anchos + '</cols><sheetData>' + filasXml + '</sheetData>' +
+                (conFiltro && datos.length > indiceCabecera + 1 ? '<autoFilter ref="A' + filaCabeceraExcel + ':' + sgcExcelColumna(columnas) + datos.length + '"/>' : '') +
+                '<pageMargins left="0.25" right="0.25" top="0.5" bottom="0.5" header="0.2" footer="0.2"/><pageSetup paperSize="9" orientation="landscape"/></worksheet>';
+            const workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Reporte" sheetId="1" r:id="rId1"/></sheets></workbook>';
+            const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><color rgb="FFFFFFFF"/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF075985"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="2" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+            const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
+            const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+            const bookRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+            return sgcZipSinCompresion([
+                {nombre:'[Content_Types].xml',contenido:contentTypes},{nombre:'_rels/.rels',contenido:rootRels},
+                {nombre:'xl/workbook.xml',contenido:workbook},{nombre:'xl/_rels/workbook.xml.rels',contenido:bookRels},
+                {nombre:'xl/worksheets/sheet1.xml',contenido:ws},{nombre:'xl/styles.xml',contenido:styles}
+            ]);
+        }
+        function sgcFilasReporteHtml(titulo, contenido) {
+            const doc = new DOMParser().parseFromString('<!doctype html><html><body><main>' + contenido + '</main></body></html>', 'text/html');
+            const filas = [[titulo], ['Docente', NPT_NOMBRE_DOCENTE], ['Generado', nptFormatoFechaHora(new Date())], []];
+            doc.querySelectorAll('h1,h2,h3,p,.filtro,table').forEach(nodo => {
+                if (nodo.tagName === 'TABLE') {
+                    nodo.querySelectorAll('tr').forEach(tr => {
+                        const fila = Array.from(tr.querySelectorAll('th,td')).map(c => (c.innerText || c.textContent || '').trim());
+                        if (tr.querySelector('th')) fila.__cabecera = true;
+                        filas.push(fila);
+                    });
+                    filas.push([]);
+                } else {
+                    const valor = (nodo.innerText || nodo.textContent || '').trim();
+                    if (valor) filas.push([valor]);
+                }
+            });
+            return filas;
+        }
+        function sgcNombreXlsx(nombre) {
+            return String(nombre || 'reporte').replace(/\.(csv|html?)$/i, '').replace(/[\\/:*?"<>|]/g, '_') + '.xlsx';
+        }
+
+        function descargarArchivo(nombre, contenido, tipo = 'text/plain;charset=utf-8', omitirPrevisualizacion = false) {
+            if (!omitirPrevisualizacion && /^text\/csv(?:;|$)/i.test(tipo)) { abrirPrevisualizacionCSV(nombre, contenido); return; }
             const blob = new Blob(["\uFEFF" + contenido], { type: tipo });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -10922,7 +11128,65 @@ video {
             }, 1500);
         }
 
-        function documentoReporte(titulo, contenido) {
+        function mostrarReporteEnModal(html, alCerrar = null) {
+            document.getElementById('sgc-reporte-preview-modal')?.remove();
+            const modal=document.createElement('div');modal.id='sgc-reporte-preview-modal';modal.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.72);display:flex;flex-direction:column;padding:12px;box-sizing:border-box';
+            const barra=document.createElement('div');barra.style.cssText='display:flex;justify-content:flex-end;background:#fff;padding:8px 12px;border-radius:10px 10px 0 0';
+            const cerrar=document.createElement('button');cerrar.type='button';cerrar.textContent='Cerrar vista previa';cerrar.style.cssText='background:#334155;color:#fff;border:0;border-radius:7px;padding:8px 12px;font-weight:700;cursor:pointer';
+            cerrar.addEventListener('click',()=>{modal.remove();if(typeof alCerrar==='function')alCerrar();});barra.appendChild(cerrar);
+            const marco=document.createElement('iframe');marco.title='Vista previa del reporte';marco.style.cssText='flex:1;width:100%;border:0;background:#fff;border-radius:0 0 10px 10px';marco.srcdoc=html;
+            modal.append(barra,marco);document.body.appendChild(modal);cerrar.focus();return modal;
+        }
+        function analizarCSVParaReporte(textoCSV) {
+            const filas=[];let fila=[],campo='',entreComillas=false;const texto=String(textoCSV||'').replace(/^\uFEFF/,'');
+            for(let i=0;i<texto.length;i++){const ch=texto[i];if(entreComillas){if(ch==='"'&&texto[i+1]==='"'){campo+='"';i++;}else if(ch==='"')entreComillas=false;else campo+=ch;}else if(ch==='"')entreComillas=true;else if(ch===','){fila.push(campo);campo='';}else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&texto[i+1]==='\n')i++;fila.push(campo);campo='';if(fila.some(v=>v!==''))filas.push(fila);fila=[];}else campo+=ch;}
+            if(campo!==''||fila.length){fila.push(campo);if(fila.some(v=>v!==''))filas.push(fila);}return filas;
+        }
+        function abrirPrevisualizacionCSV(nombreArchivo, contenidoCSV, ventanaPreabierta = null) {
+            const filasOriginales = analizarCSVParaReporte(contenidoCSV).filter(f => f.some(v => String(v ?? '').trim() !== ''));
+            if (!filasOriginales.length) { alert('La hoja de cálculo no contiene filas para previsualizar.'); return; }
+            const normalizar = v => String(v ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+            const indiceCabecera = filasOriginales.findIndex((fila, i) => i > 0 && fila.length >= 3 && fila.some(v => ['estudiante','fecha','evaluacion','tipo','asistencia'].includes(normalizar(v))));
+            const inicio = indiceCabecera >= 0 ? indiceCabecera : 0;
+            const filas = filasOriginales.slice(inicio).map(f => f.slice());
+            if (!filas.length) { alert('No se encontró la fila de encabezados del reporte.'); return; }
+            const esNomina = /reporte[_\s-]*estudiantes/i.test(String(nombreArchivo || ''));
+            const metadatos = [];
+            filasOriginales.slice(0, inicio).forEach(f => { if (f.length >= 2 && normalizar(f[0]) && String(f[1] ?? '').trim()) metadatos.push([String(f[0]).trim(), String(f[1]).trim()]); });
+            const encabezados = filas[0];
+            if (!esNomina) {
+                const quitar = encabezados.map((h,i) => /cedula|identificacion/i.test(normalizar(h)) ? i : -1).filter(i => i >= 0);
+                ['curso','paralelo','materia','asignatura'].forEach(etiqueta => {
+                    const i = encabezados.findIndex(h => normalizar(h) === etiqueta);
+                    if (i < 0) return;
+                    const valores = [...new Set(filas.slice(1).map(f => String(f[i] ?? '').trim()).filter(Boolean))];
+                    if (valores.length === 1) { metadatos.push([encabezados[i], valores[0]]); quitar.push(i); }
+                });
+                [...new Set(quitar)].sort((a,b) => b-a).forEach(i => filas.forEach(f => f.splice(i,1)));
+            }
+            abrirPrevisualizacionFilas(nombreArchivo, filas, ventanaPreabierta, metadatos);
+        }
+        function abrirPrevisualizacionFilas(nombreArchivo,filas,ventanaPreabierta=null,metadatos=[]) {
+            if(!Array.isArray(filas)||!filas.length){alert('La hoja de cálculo no contiene filas para previsualizar.');return;}
+            const nombre=sgcNombreXlsx(nombreArchivo||'reporte.xlsx');
+            const titulo=nombre.replace(/\.xlsx$/i,'').replace(/[_-]+/g,' ');
+            const filasXlsx = [...metadatos.map(f => f.slice()), [] , ...filas.map(f => f.slice())];
+            const filaCabecera = metadatos.length + 1;
+            filasXlsx[filaCabecera].__cabecera = true;
+            const urlXlsx=URL.createObjectURL(sgcCrearXlsx(filasXlsx));
+            const cab=filas[0];
+            const th=cab.map(v=>'<th>'+escapeHtml(v)+'</th>').join('');
+            const tbody=filas.slice(1).map(f=>'<tr>'+cab.map((_,i)=>'<td>'+escapeHtml(f[i]??'')+'</td>').join('')+'</tr>').join('');
+            const metaHtml=metadatos.length?'<div class="filtro">'+metadatos.map(f=>'<div><strong>'+escapeHtml(f[0])+':</strong> '+escapeHtml(f[1])+'</div>').join('')+'</div>':'';
+            const contenido='<div class="actions"><a class="xlsx-download" href="'+urlXlsx+'" download="'+escapeHtml(nombre)+'">📊 Descargar hoja de cálculo (.xlsx)</a></div>'+
+                metaHtml+'<div class="csv-table-wrap"><table class="csv-table"><thead><tr>'+th+'</tr></thead><tbody>'+tbody+'</tbody></table></div>'+
+                '<style>@page{size:landscape;margin:8mm}.csv-table-wrap{overflow-x:auto}table.csv-table{table-layout:auto;font-size:8px}.csv-table th,.csv-table td{padding:3px 4px;font-size:8px}@media print{.csv-table-wrap{overflow:visible}table.csv-table{width:100%;table-layout:fixed}}.xlsx-download{display:inline-block;background:#047857;color:#fff;text-decoration:none;padding:8px 12px;border-radius:6px;font-weight:700}</style>';
+            const html=documentoReporte(titulo,contenido,'landscape');
+            const win=ventanaPreabierta&&!ventanaPreabierta.closed?ventanaPreabierta:window.open('','_blank');
+            if(win&&!win.closed){win.document.open();win.document.write(html);win.document.close();win.focus();win.addEventListener('beforeunload',()=>URL.revokeObjectURL(urlXlsx),{once:true});return;}
+            mostrarReporteEnModal(html,()=>URL.revokeObjectURL(urlXlsx));
+        }
+        function documentoReporte(titulo, contenido, orientacion = 'portrait') {
             return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10954,7 +11218,7 @@ video {
         .col-cantidad { width: 80px; text-align: center; }
         .col-porcentaje { width: 80px; text-align: center; }
         .resumen { margin-top: 22px; page-break-inside: avoid; }
-        @page { margin: 12mm; }
+        @page { size: ${orientacion}; margin: ${orientacion === 'landscape' ? '8mm' : '12mm'}; }
         @media print {
             .actions { display: none; }
             body { margin: 0; }
@@ -10967,6 +11231,7 @@ video {
     ${NPT_ENCABEZADO_REPORTE_HTML}
     <header>
         <h1>${escapeHtml(titulo)}</h1>
+        <div class="meta"><strong>Docente:</strong> ${escapeHtml(NPT_NOMBRE_DOCENTE)}</div>
         <div class="meta">Generado: ${escapeHtml(nptFormatoFechaHora(new Date()))}</div>
     </header>
     <div class="actions"><button onclick="window.print()">Imprimir / Guardar PDF</button></div>
@@ -10976,18 +11241,35 @@ video {
 </html>`;
         }
 
-        function abrirODescargarReporte(titulo, contenido, nombreArchivo) {
-            const html = documentoReporte(titulo, contenido);
-            const win = window.open('', '_blank');
+        function sgcSanearReporteHtml(titulo, contenido) {
+            if (/reporte\s+de\s+estudiantes/i.test(String(titulo || ''))) return contenido;
+            const doc = new DOMParser().parseFromString('<!doctype html><html><body>' + String(contenido || '') + '</body></html>', 'text/html');
+            doc.querySelectorAll('table').forEach(tabla => {
+                const filas = [...tabla.rows];
+                if (!filas.length) return;
+                const indices = [...filas[0].cells].map((celda, i) => /c[eé]dula|identificaci[oó]n/i.test(celda.textContent || '') ? i : -1).filter(i => i >= 0).sort((a,b) => b-a);
+                filas.forEach(fila => indices.forEach(i => fila.cells[i]?.remove()));
+            });
+            return doc.body.innerHTML;
+        }
+        function abrirODescargarReporte(titulo, contenido, nombreArchivo, orientacion = 'portrait', ventanaPreabierta = null) {
+            const contenidoLimpio = sgcSanearReporteHtml(titulo, contenido);
+            const filasExcel = sgcFilasReporteHtml(titulo, contenidoLimpio);
+            const nombreHoja = sgcNombreXlsx(nombreArchivo);
+            const urlHoja = URL.createObjectURL(sgcCrearXlsx(filasExcel, false));
+            let html = documentoReporte(titulo, contenidoLimpio, orientacion);
+            const acciones = '<div class="actions"><a href="' + urlHoja + '" download="' + escapeHtml(nombreHoja) + '" style="display:inline-block;background:#047857;color:#fff;text-decoration:none;padding:8px 12px;border-radius:6px;font-weight:700;margin-right:8px">📊 Exportar hoja de cálculo (.xlsx)</a><button onclick="window.print()">Imprimir / Guardar PDF</button></div>';
+            html = html.replace('<div class="actions"><button onclick="window.print()">Imprimir / Guardar PDF</button></div>', acciones);
+            const win = ventanaPreabierta && !ventanaPreabierta.closed ? ventanaPreabierta : window.open('', '_blank');
             if (win && !win.closed) {
                 win.document.open();
                 win.document.write(html);
                 win.document.close();
                 win.focus();
+                win.addEventListener('beforeunload', () => URL.revokeObjectURL(urlHoja), { once: true });
                 return;
             }
-            descargarArchivo(nombreArchivo, html, 'text/html;charset=utf-8');
-            alert("El navegador bloqueó la ventana del reporte. Se descargó un archivo HTML que puedes abrir e imprimir.");
+            mostrarReporteEnModal(html, () => URL.revokeObjectURL(urlHoja));
         }
 
         // Tabla de resultados de diagnóstico (DAR/AAR/PAR/NAR).
@@ -11062,7 +11344,7 @@ video {
             if (!validarFiltroReporte()) return;
             const listaEvaluaciones = calificacionesFiltradas();
             if(!listaEvaluaciones.length) { alert("No hay evaluaciones para exportar en el filtro seleccionado."); return; }
-            let csv = "Estudiante,Curso,Paralelo,Nota,Fecha\n";
+            let csv = 'Docente,' + csvCampo(NPT_NOMBRE_DOCENTE) + "\n\nEstudiante,Curso,Paralelo,Nota,Fecha\n";
             listaEvaluaciones.forEach(c => {
                 let est = estudiantes.find(e => e.cedula === c.cedula);
                 csv += [
@@ -11079,15 +11361,25 @@ video {
         // ==================== REPORTES NPT (por trimestre / individual) ====================
         // Requisito #13: reportes de evaluados por trimestre de cada curso y paralelo (con notas de insumos), e individual por estudiante.
         function generarReporteNPTPorTrimestre() {
-            if (!validarFiltroReporte()) return;
             const alumnos = estudiantesFiltrados();
-            if (!alumnos.length) { alert('No hay estudiantes para el curso/paralelo seleccionado.'); return; }
-            const numTrim = trimestreActivoParaReportes();
+            generarReporteNotasCursoHtml(alumnos, trimestreActivoParaReportes());
+        }
+
+        function generarReporteNotasCursoHtml(alumnos, numTrim) {
+            if (!alumnos.length) { alert('No hay estudiantes para generar el reporte con los filtros actuales.'); return; }
             const t = trimestresEfectivos().find(x => x.num === numTrim);
             if (!t) { alert('No se encontró el trimestre seleccionado.'); return; }
             const periodo = cfgPeriodoActivo?.nombre || 'Período no configurado';
-            let html = `<div class="filtro"><strong>Filtro aplicado:</strong> ${escapeHtml(etiquetaFiltroReporte())}<br><strong>Período académico:</strong> ${escapeHtml(periodo)}<br><strong>Trimestre:</strong> ${escapeHtml(t.label)}${t.meses ? ' ('+escapeHtml(t.meses)+')' : ''}</div>`;
-            // Agrupar por curso/paralelo
+            let html = `<div class="filtro"><strong>Período académico:</strong> ${escapeHtml(periodo)}<br><strong>Trimestre:</strong> ${escapeHtml(t.label)}${t.meses ? ' ('+escapeHtml(t.meses)+')' : ''}<br><strong>Estudiantes incluidos:</strong> ${alumnos.length}</div>
+                <style>
+                    .reporte-notas-curso{table-layout:auto}
+                    .reporte-notas-curso th,.reporte-notas-curso td{text-align:center;vertical-align:middle}
+                    .reporte-notas-curso th:nth-child(2),.reporte-notas-curso td:nth-child(2){text-align:left;min-width:180px}
+                    .reporte-notas-curso thead{display:table-header-group}
+                    .reporte-notas-curso tr{break-inside:avoid;page-break-inside:avoid}
+                    .reporte-notas-pendiente{color:#64748b;font-style:italic;font-size:10px}
+                    @media print{.reporte-notas-curso{font-size:9px}.reporte-notas-curso th,.reporte-notas-curso td{padding:4px}}
+                </style>`;
             const grupos = {};
             alumnos.forEach(e => {
                 const key = `${e.curso||'Sin curso'} - ${e.paralelo||'Sin paralelo'}`;
@@ -11097,96 +11389,61 @@ video {
             Object.entries(grupos).forEach(([g, lista]) => {
                 const primero = lista[0];
                 const insumosGrupo = primero ? nptInsumosActivosNPT(primero.curso, primero.paralelo, t.num) : [];
-                const headerInsumos = insumosGrupo.map(ins => `<th class="col-abrev">${ins.icono} ${escapeHtml(ins.label.replace(/^[^ ]+ /, ''))}</th>`).join('');
-                html += `<h2>${escapeHtml(g)} (${lista.length})</h2><table><tr><th class="col-num">#</th><th class="col-nombre">Estudiante</th><th class="col-cedula">Cédula</th>${headerInsumos}<th class="col-abrev right">Prom. Insumos (70%)</th><th class="col-abrev">📝 Examen (30%)</th><th class="col-abrev right">Nota Final</th></tr>`;
-                const promediosGrupo = [];
-                const recuperacionesGrupo = [];
+                const examenActivo = primero ? nptExamenHabilitado(primero.curso, primero.paralelo, t.num) : false;
+                const headerInsumos = insumosGrupo.map(ins => `<th>${ins.icono} ${escapeHtml(ins.label.replace(/^[^ ]+ /, ''))}</th>`).join('');
+                if (!insumosGrupo.length && !examenActivo) {
+                    html += `<h2>${escapeHtml(g)} · ${escapeHtml(asignaturasReporteCurso(primero.curso, primero.paralelo))}</h2><p class="meta">No hay evaluaciones habilitadas para este grupo en el trimestre seleccionado.</p>`;
+                    return;
+                }
+                html += `<h2>${escapeHtml(g)} · ${escapeHtml(asignaturasReporteCurso(primero.curso, primero.paralelo))}</h2><table class="reporte-notas-curso"><thead><tr><th>#</th><th>Estudiante</th>${headerInsumos}${examenActivo ? '<th>Nota de examen</th>' : ''}</tr></thead><tbody>`;
+                const notaInsumoVerificada = (e, tipo) => {
+                    const registro = nptNotas[e.cedula]?.[`trimestre${t.num}`]?.[tipo];
+                    if (!registro || !nptNotaMarcadaComoVerificada(registro) || registro.nota === null || registro.nota === undefined || registro.nota === '') return null;
+                    const valor = Number(registro.nota);
+                    return Number.isFinite(valor) ? valor : null;
+                };
+                const notaEfectivaInsumoVerificada = (e, tipo) => {
+                    const registroOriginal=nptNotas[e.cedula]?.[`trimestre${t.num}`]?.[tipo];
+                    const original = notaInsumoVerificada(e, tipo);
+                    const recuperacionActiva = nptInsumoRecuperacionEstudianteHabilitado(e.curso, e.paralelo, t.num, tipo, e.cedula);
+                    const recuperacion = recuperacionActiva ? notaInsumoVerificada(e, nptClaveRecuperacionInsumo(tipo)) : null;
+                    if (recuperacion === null) return { valor: original, recuperada: false };
+                    // No presentar como efectiva una recuperación si existe una nota original
+                    // aún pendiente de validación docente: el cálculo dependería de un dato no confirmado.
+                    if (original === null && registroOriginal?.nota !== null && registroOriginal?.nota !== undefined && registroOriginal?.nota !== '') {
+                        return { valor: null, recuperada: false };
+                    }
+                    if (original === null) return { valor: recuperacion, recuperada: true };
+                    return { valor: original > recuperacion ? original : (original + recuperacion) / 2, recuperada: true };
+                };
                 lista.forEach((e, i) => {
-                    const promIns = calcularPromedioInsumosNPT(e.cedula, t.num);
-                    const notaFinal = calcularPromedioNPT(e.cedula, t.num);
-                    const nE = notaEfectivaNPT(e.cedula, t.num, 'examen');
-                    if (notaFinal !== null) promediosGrupo.push(notaFinal);
-                    // "🔁" marca las celdas cuya nota ya incluye el promedio con una recuperación.
-                    const c = (v, tipo) => {
-                        if (v === null) return '—';
-                        const tieneRec = tipo && notaNPTDe(e.cedula, t.num, claveRecuperacionNPT(tipo)) !== null;
-                        return formatearNota(v) + (tieneRec ? ' 🔁' : '');
+                    const celdaNota = dato => {
+                        if (dato.valor === null) return '<span class="reporte-notas-pendiente">Pendiente</span>';
+                        const detalle = dato.recuperada ? ` title="Nota efectiva con recuperación verificada"` : '';
+                        return `<span${detalle}>${formatearNota(dato.valor)}${dato.recuperada ? ' ↻' : ''}</span>`;
                     };
-                    const celdasInsumos = insumosGrupo.map(ins => `<td class="center">${c(notaEfectivaNPT(e.cedula, t.num, ins.id), ins.tipo === 'test' ? null : ins.id)}</td>`).join('');
-                    html += `<tr><td class="center">${i+1}</td><td>${escapeHtml(e.nombre)}</td><td>${escapeHtml(e.cedula)}</td>${celdasInsumos}<td class="right">${c(promIns)}</td><td class="center">${c(nE,'examen')}</td><td class="right"><strong>${c(notaFinal)}</strong></td></tr>`;
-                    // Recopilar recuperaciones (insumos tipo texto + examen) de este estudiante para
-                    // la tabla aparte. Los insumos tipo Test no tienen recuperación por reenvío.
-                    insumosGrupo.forEach(ins => {
-                        if (ins.tipo === 'test') return;
-                        const nRec = notaNPTDe(e.cedula, t.num, nptClaveRecuperacionInsumo(ins.id));
-                        if (nRec !== null) recuperacionesGrupo.push({ e, etiqueta: ins.label, tipo: ins.id, nota: nRec });
-                    });
-                    const nERec = notaNPTDe(e.cedula, t.num, 'examenRecuperacion');
-                    if (nERec !== null) recuperacionesGrupo.push({ e, etiqueta: '📝 Examen', tipo: 'examen', nota: nERec });
+                    const celdasInsumos = insumosGrupo.map(ins => `<td>${celdaNota(notaEfectivaInsumoVerificada(e, ins.id))}</td>`).join('');
+                    let celdaExamen = '';
+                    if (examenActivo) {
+                        const recuperacionExamenActiva = nptExamenRecuperacionEstudianteHabilitado(primero.curso, primero.paralelo, t.num, e.cedula);
+                        const notaOriginal = notaNPTDe(e.cedula, t.num, 'examen');
+                        const notaRecuperacion = recuperacionExamenActiva ? notaNPTDe(e.cedula, t.num, 'examenRecuperacion') : null;
+                        const nE = notaRecuperacion !== null
+                            ? (notaOriginal === null ? notaRecuperacion : (notaOriginal > notaRecuperacion ? notaOriginal : (notaOriginal + notaRecuperacion) / 2))
+                            : notaOriginal;
+                        celdaExamen = `<td>${nE === null ? '<span class="reporte-notas-pendiente">Pendiente</span>' : `${formatearNota(nE)}${notaRecuperacion !== null ? ' ↻' : ''}`}</td>`;
+                    }
+                    html += `<tr><td>${i+1}</td><td>${escapeHtml(e.nombre)}</td>${celdasInsumos}${celdaExamen}</tr>`;
                 });
-                html += `</table>`;
-                // ---- Recuperaciones registradas: detalle de cómo se llegó a la nota efectiva ----
-                html += `<h3>🔁 Recuperaciones registradas — ${escapeHtml(g)}</h3>`;
-                if (recuperacionesGrupo.length) {
-                    html += `<table><tr><th class="col-num">#</th><th class="col-nombre">Estudiante</th><th class="col-cedula">Cédula</th><th>Insumo / Examen</th><th class="right">Nota original</th><th class="right">Nota recuperación</th><th class="right">Nota efectiva</th></tr>`;
-                    recuperacionesGrupo.forEach((r, i) => {
-                        const original = notaNPTDe(r.e.cedula, t.num, r.tipo);
-                        const efectiva = notaEfectivaNPT(r.e.cedula, t.num, r.tipo);
-                        html += `<tr><td class="center">${i+1}</td><td>${escapeHtml(r.e.nombre)}</td><td>${escapeHtml(r.e.cedula)}</td><td>${r.etiqueta}</td><td class="right">${original !== null ? formatearNota(original) : '—'}</td><td class="right">${formatearNota(r.nota)}</td><td class="right"><strong>${formatearNota(efectiva)}</strong></td></tr>`;
-                    });
-                    html += `</table><p class="meta">La nota efectiva es la que se usó en la fórmula del Promedio de Insumos / del Examen de este trimestre: si la recuperación superó a la original, es el promedio de ambas; si no, es la original. Cuando no hay nota original, la efectiva es la de recuperación sola.</p>`;
-                } else {
-                    html += `<p class="meta">Sin recuperaciones registradas en este trimestre para ${escapeHtml(g)}.</p>`;
-                }
-                if (promediosGrupo.length) {
-                    const promCurso = promediosGrupo.reduce((a,b) => a+b, 0) / promediosGrupo.length;
-                    html += `<p class="meta">Nota final promedio del curso/paralelo en este trimestre: <strong>${promCurso.toFixed(2)}</strong> · Estudiantes con notas: ${promediosGrupo.length} de ${lista.length}</p>`;
-                    html += tablaResultadosEvaluacion(promediosGrupo, `RESULTADOS DEL DIAGNÓSTICO — CURSO: ${g} · ${escapeHtml(t.label)}`);
-                } else {
-                    html += `<p class="meta">Sin notas registradas en este trimestre para ${escapeHtml(g)}.</p>`;
-                }
+                html += `</tbody></table><p class="meta">Las notas de insumos se muestran cuando están verificadas por el docente. «Pendiente» indica que aún no hay una calificación docente confirmada. ↻ señala que se aplicó una recuperación verificada.</p>`;
             });
-            abrirODescargarReporte(`Reporte ${t.label} — Notas por insumo`, html, `reporte_trimestre_${t.num}_${fechaArchivo()}.html`);
+            abrirODescargarReporte(`Reporte de notas del curso — ${t.label}`, html, `reporte_notas_curso_t${t.num}_${fechaArchivo()}.html`, 'landscape');
         }
 
-        // Exporta a CSV el mismo contenido del Reporte por Trimestre (solo el trimestre activo).
+        // Conserva el manejador histórico para compatibilidad; genera la vista imprimible HTML/PDF.
         function exportarReporteNPTPorTrimestreCSV() {
-            if (!validarFiltroReporte()) return;
-            const alumnos = estudiantesFiltrados();
-            if (!alumnos.length) { alert('No hay estudiantes para el curso/paralelo seleccionado.'); return; }
-            const numTrim = trimestreActivoParaReportes();
-            const t = trimestresEfectivos().find(x => x.num === numTrim);
-            if (!t) { alert('No se encontró el trimestre seleccionado.'); return; }
-            // Columnas genéricas por posición (Insumo 1..8): como cada curso/paralelo puede tener
-            // insumos distintos (nombre y hasta cuáles de los 8 espacios usa), un CSV con nombres
-            // fijos ya no describe a todos los grupos por igual — se exporta por número de espacio,
-            // y la fila de cabecera indica qué insumo ocupa cada posición para el PRIMER estudiante
-            // de la lista (referencial; usa el reporte HTML para ver la etiqueta exacta por curso).
-            const encabezadosInsumo = NPT_INSUMO_SLOTS.map((slotId, i) => `Insumo ${i+1}`);
-            let csv = 'Estudiante,Cédula,Curso,Paralelo,' + encabezadosInsumo.join(',') + ',Promedio Insumos,Examen,Nota Final,'
-                + encabezadosInsumo.map(h => `${h} (Original)`).join(',') + ',Examen (Original),'
-                + encabezadosInsumo.map(h => `${h} (Rec.)`).join(',') + ',Examen (Rec.)\n';
-            alumnos.forEach(e => {
-                const notasEfectivas = NPT_INSUMO_SLOTS.map(slotId => notaEfectivaNPT(e.cedula, t.num, slotId));
-                const notasOriginales = NPT_INSUMO_SLOTS.map(slotId => notaNPTDe(e.cedula, t.num, slotId));
-                const notasRec = NPT_INSUMO_SLOTS.map(slotId => notaNPTDe(e.cedula, t.num, nptClaveRecuperacionInsumo(slotId)));
-                const nE = notaEfectivaNPT(e.cedula, t.num, 'examen');
-                const promIns = calcularPromedioInsumosNPT(e.cedula, t.num);
-                const notaFinal = calcularPromedioNPT(e.cedula, t.num);
-                const nEOrig = notaNPTDe(e.cedula, t.num, 'examen');
-                const nERec = notaNPTDe(e.cedula, t.num, 'examenRecuperacion');
-                const fmt = v => v !== null ? formatearNota(v) : '';
-                csv += [
-                    csvCampo(e.nombre), csvCampo(e.cedula), csvCampo(e.curso), csvCampo(e.paralelo),
-                    ...notasEfectivas.map(v => csvCampo(fmt(v))),
-                    csvCampo(fmt(promIns)), csvCampo(fmt(nE)), csvCampo(fmt(notaFinal)),
-                    ...notasOriginales.map(v => csvCampo(fmt(v))), csvCampo(fmt(nEOrig)),
-                    ...notasRec.map(v => csvCampo(fmt(v))), csvCampo(fmt(nERec))
-                ].join(',') + '\n';
-            });
-            descargarArchivo(`reporte_trimestre_${t.num}_${fechaArchivo()}.csv`, csv, 'text/csv;charset=utf-8');
+            generarReporteNPTPorTrimestre();
         }
-
         // ==================== Reporte Individual: ventana flotante con acceso a TODOS los estudiantes ====================
         // Sustituye al antiguo prompt() numerado (que el navegador truncaba y no permitía buscar ni moverse).
         // Curso, paralelo y trimestre se eligen dentro de la ventana; el reporte se genera con generarReporteNPTIndividualPara().
@@ -11349,75 +11606,46 @@ video {
             if (!est) return false;
             const t = trimestresEfectivos().find(x => x.num === numTrim);
             if (!t) { alert('No se encontró el trimestre seleccionado.'); return false; }
-            const periodo = cfgPeriodoActivo?.nombre || 'Período no configurado';
-            const formulaTxt = (() => {
-                const f = formulaPromedioEfectiva() || FORMULA_DEFECTO;
-                const pesoExamen = numero(f.examen, 30);
-                const cantidadInsumos = nptCantidadInsumosActivos(est.curso, est.paralelo, t.num);
-                return `Examen ${pesoExamen}% + Promedio de Insumos ${(100 - pesoExamen).toFixed(1)}% (suma de los ${cantidadInsumos} insumos activos ÷ ${cantidadInsumos})`;
-            })();
-            let html = `<div class="filtro"><strong>Estudiante:</strong> ${escapeHtml(est.nombre)}<br><strong>Cédula:</strong> ${escapeHtml(est.cedula)}<br><strong>Curso/Paralelo:</strong> ${escapeHtml(est.curso||'-')} "${escapeHtml(est.paralelo||'-')}"<br><strong>Período académico:</strong> ${escapeHtml(periodo)}<br><strong>Trimestre:</strong> ${escapeHtml(t.label)}${t.meses ? ' ('+escapeHtml(t.meses)+')' : ''}<br><strong>Fórmula aplicada:</strong> ${escapeHtml(formulaTxt)}</div>`;
-            html += `<table><tr><th>Estudiante</th><td>${escapeHtml(est.nombre)}</td></tr><tr><th>Cédula</th><td>${escapeHtml(est.cedula)}</td></tr><tr><th>Curso / Paralelo</th><td>${escapeHtml(est.curso||'-')} "${escapeHtml(est.paralelo||'-')}"</td></tr><tr><th>Correo</th><td>${escapeHtml(est.correo||'-')}</td></tr><tr><th>Representante</th><td>${escapeHtml(est.repNombre||'-')} — ${escapeHtml(est.repCelular||'-')}</td></tr></table>`;
-
-            const insumosEst = nptInsumosActivosNPT(est.curso, est.paralelo, t.num);
-            const nE = notaEfectivaNPT(est.cedula, t.num, 'examen');
-            const promIns = calcularPromedioInsumosNPT(est.cedula, t.num);
-            const prom = calcularPromedioNPT(est.cedula, t.num);
-            // "🔁" marca las notas que ya incluyen el promedio con una recuperación.
-            const c = (v, tipo) => {
-                if (v === null) return '—';
-                const tieneRec = tipo && notaNPTDe(est.cedula, t.num, claveRecuperacionNPT(tipo)) !== null;
-                return formatearNota(v) + (tieneRec ? ' 🔁' : '');
+            const insumos = nptInsumosActivosNPT(est.curso, est.paralelo, t.num);
+            const examenActivo = nptExamenHabilitado(est.curso, est.paralelo, t.num);
+            if (!insumos.length && !examenActivo) { alert('No hay evaluaciones habilitadas para este estudiante en el trimestre seleccionado.'); return false; }
+            const notaVerificada = tipo => {
+                const reg = nptNotas[est.cedula]?.[`trimestre${t.num}`]?.[tipo];
+                if (!reg || !nptNotaMarcadaComoVerificada(reg) || reg.nota === null || reg.nota === undefined || reg.nota === '') return null;
+                const n = Number(reg.nota);
+                return Number.isFinite(n) ? n : null;
             };
-            const colorBarra = v => v === null ? '#cbd5e1' : (v >= 9 ? '#059669' : v >= 7 ? '#10b981' : v >= 4 ? '#f59e0b' : '#ef4444');
-            const barra = (v) => {
-                if (v === null) return '<div style="background:#f1f5f9;height:10px;border-radius:5px;width:100%"></div>';
-                const pct = Math.max(0, Math.min(100, (v / 10) * 100));
-                return `<div style="background:#f1f5f9;height:14px;border-radius:7px;width:100%;position:relative"><div style="background:${colorBarra(v)};height:14px;border-radius:7px;width:${pct}%"></div><span style="position:absolute;right:6px;top:-1px;font-size:11px;font-weight:bold;color:#0f172a">${formatearNota(v)}</span></div>`;
-            };
-            html += `<h2>${escapeHtml(t.label)} ${t.meses ? '<span class="meta">('+escapeHtml(t.meses)+')</span>' : ''}</h2>`;
-            html += `<table><tr><th>Insumo</th><th>Nota</th><th style="width:45%">Visual</th></tr>`;
-            insumosEst.forEach(ins => {
-                const val = notaEfectivaNPT(est.cedula, t.num, ins.id);
-                html += `<tr><td>${ins.icono} ${escapeHtml(ins.label.replace(/^[^ ]+ /, ''))}${ins.tipo === 'test' ? ' <span class="meta">(Test)</span>' : ''}</td><td class="right">${c(val, ins.tipo === 'test' ? null : ins.id)}</td><td>${barra(val)}</td></tr>`;
-            });
-            html += `<tr><th>Promedio de Insumos (70%)</th><td class="right"><strong>${c(promIns)}</strong></td><td>${barra(promIns)}</td></tr>`;
-            html += `<tr><td>📝 Examen (30%)</td><td class="right">${c(nE,'examen')}</td><td>${barra(nE)}</td></tr>`;
-            html += `<tr><th>Nota Final del trimestre</th><td class="right"><strong>${prom !== null ? formatearNota(prom) : '—'}</strong></td><td>${barra(prom)}</td></tr></table>`;
-            html += `<p class="meta">🔁 = esta nota ya es el promedio entre la nota original y su recuperación (ver detalle abajo).</p>`;
-
-            if (prom !== null) {
-                html += `<div class="resumen"><h2>NOTA FINAL — ${escapeHtml(t.label)}</h2><p style="font-size:22px"><strong>${formatearNota(prom)} / 10</strong></p></div>`;
-                html += tablaResultadosEvaluacion([prom], `RESULTADOS DEL DIAGNÓSTICO — ${escapeHtml(est.nombre)} · ${escapeHtml(t.label)}`);
+            const celdaNota = dato => dato.valor === null
+                ? '<span class="reporte-notas-pendiente">Pendiente</span>'
+                : `${formatearNota(dato.valor)}${dato.recuperada ? ' ↻' : ''}`;
+            const columnas = insumos.map(ins => `<th>${ins.icono} ${escapeHtml(ins.label.replace(/^[^ ]+ /, ''))}</th>`).join('');
+            const celdas = insumos.map(ins => {
+                const originalReg = nptNotas[est.cedula]?.[`trimestre${t.num}`]?.[ins.id];
+                const original = notaVerificada(ins.id);
+                const recActiva = nptInsumoRecuperacionEstudianteHabilitado(est.curso, est.paralelo, t.num, ins.id, est.cedula);
+                const rec = recActiva ? notaVerificada(nptClaveRecuperacionInsumo(ins.id)) : null;
+                let dato = {valor:original, recuperada:false};
+                if (rec !== null) {
+                    dato = original === null && originalReg?.nota !== null && originalReg?.nota !== undefined && originalReg?.nota !== ''
+                        ? {valor:null,recuperada:false}
+                        : {valor:original === null ? rec : (original > rec ? original : (original + rec) / 2),recuperada:true};
+                }
+                return `<td>${celdaNota(dato)}</td>`;
+            }).join('');
+            let celdaExamen = '';
+            if (examenActivo) {
+                const original = notaNPTDe(est.cedula, t.num, 'examen');
+                const rec = nptExamenRecuperacionEstudianteHabilitado(est.curso, est.paralelo, t.num, est.cedula) ? notaNPTDe(est.cedula, t.num, 'examenRecuperacion') : null;
+                const efectiva = rec === null ? original : (original === null ? rec : (original > rec ? original : (original + rec) / 2));
+                celdaExamen = `<td>${efectiva === null ? '<span class="reporte-notas-pendiente">Pendiente</span>' : `${formatearNota(efectiva)}${rec !== null ? ' ↻' : ''}`}</td>`;
             }
-
-            // ---- Recuperaciones registradas (insumos tipo texto + examen): detalle de cómo se
-            // llegó a la nota efectiva. Los insumos tipo Test no tienen recuperación por reenvío. ----
-            const recuperaciones = [];
-            insumosEst.forEach(ins => {
-                if (ins.tipo === 'test') return;
-                const nRec = notaNPTDe(est.cedula, t.num, nptClaveRecuperacionInsumo(ins.id));
-                if (nRec !== null) recuperaciones.push({ etiqueta: ins.label, tipo: ins.id, nota: nRec });
-            });
-            const nERecInd = notaNPTDe(est.cedula, t.num, 'examenRecuperacion');
-            if (nERecInd !== null) recuperaciones.push({ etiqueta: '📝 Examen', tipo: 'examen', nota: nERecInd });
-            html += `<h2>🔁 Recuperaciones registradas</h2>`;
-            if (recuperaciones.length) {
-                html += `<table><tr><th>Insumo / Examen</th><th class="right">Nota original</th><th class="right">Nota recuperación</th><th class="right">Nota efectiva</th></tr>`;
-                recuperaciones.forEach(r => {
-                    const original = notaNPTDe(est.cedula, t.num, r.tipo);
-                    const efectiva = notaEfectivaNPT(est.cedula, t.num, r.tipo);
-                    html += `<tr><td>${r.etiqueta}</td><td class="right">${original !== null ? formatearNota(original) : '—'}</td><td class="right">${formatearNota(r.nota)}</td><td class="right"><strong>${formatearNota(efectiva)}</strong></td></tr>`;
-                });
-                html += `</table><p class="meta">La nota efectiva es la que se usó arriba, en la tabla principal y en la Nota Final del trimestre: si la recuperación superó a la original, es el promedio de ambas; si no, es la original. Cuando no hay nota original, la efectiva es la de recuperación sola.</p>`;
-            } else {
-                html += `<p class="meta">Sin recuperaciones registradas en este trimestre.</p>`;
-            }
-
-            abrirODescargarReporte(`Reporte Individual — ${est.nombre} — ${t.label}`, html, `reporte_individual_${est.cedula}_t${t.num}_${fechaArchivo()}.html`);
+            const html = `<div class="filtro"><strong>Estudiante:</strong> ${escapeHtml(est.nombre)}<br><strong>Curso:</strong> ${escapeHtml(est.curso || '-')} · <strong>Paralelo:</strong> ${escapeHtml(est.paralelo || '-')}<br><strong>Materia:</strong> ${escapeHtml(asignaturasReporteCurso(est.curso, est.paralelo))}<br><strong>Período:</strong> ${escapeHtml(cfgPeriodoActivo?.nombre || 'No configurado')} · <strong>Trimestre:</strong> ${escapeHtml(t.label)}${t.meses ? ' ('+escapeHtml(t.meses)+')' : ''}</div>
+                <style>.reporte-notas-curso{table-layout:auto}.reporte-notas-curso th,.reporte-notas-curso td{text-align:center;vertical-align:middle}.reporte-notas-curso th:nth-child(2),.reporte-notas-curso td:nth-child(2){text-align:left;min-width:180px}.reporte-notas-pendiente{color:#64748b;font-style:italic;font-size:10px}</style>
+                <table class="reporte-notas-curso"><thead><tr><th>#</th><th>Estudiante</th>${columnas}${examenActivo ? '<th>Nota de examen</th>' : ''}</tr></thead><tbody><tr><td>1</td><td>${escapeHtml(est.nombre)}</td>${celdas}${celdaExamen}</tr></tbody></table>
+                <p class="meta">Las notas de insumos se muestran cuando están verificadas por el docente. «Pendiente» indica que aún no hay una calificación docente confirmada. ↻ señala que se aplicó una recuperación.</p>`;
+            abrirODescargarReporte(`Reporte de notas individual — ${t.label}`, html, `reporte_notas_individual_t${t.num}_${fechaArchivo()}.html`, 'landscape');
             return true;
         }
-
         async function limpiarRegistros() { if(confirm("¿Borrar todas las calificaciones?")) await limpiarCalificaciones(); }
         async function limpiarNominaCompleta() { if(confirm("⚠️ ¿Vaciar toda la nómina? Esta acción es irreversible.")) await limpiarEstudiantes(); }
         async function generarDataSimulada() { if(confirm("Generar calificaciones aleatorias?")) { for(let e of estudiantesFiltrados()) { let correctas = Math.floor(Math.random()*11); await guardarCalificacion({ cedula:e.cedula, nombre:e.nombre, fecha: new Date().toISOString(), correctas, nota: correctas, curso:e.curso, paralelo:e.paralelo }); } alert("Calificaciones simuladas guardadas"); } }
@@ -11442,41 +11670,43 @@ video {
         }
 
         // ---- Carga de configuración del sistema ----
-        async function cargarConfigSistema() {
+        async function cargarConfigSistema(opciones = {}) {
             try {
-                let cfg;
-                if (esSesionDocenteFirebase()) {
-                    cfg = await leerValorRutaFirebase('configuracion');
-                } else {
-                    // El estudiante solo necesita configuración funcional; evita descargar
-                    // el nodo completo (incluida la firma y contadores de otras personas).
-                    const campos = ['periodoActivo','trimestres','formulaPromedio','firmaDocente','planificacionesCurriculares','calendarioAcademico','horarioDocente','contadores'];
-                    const pares = await Promise.all(campos.map(async campo => [campo, await leerValorRutaFirebase(`configuracion/${campo}`)]));
-                    cfg = Object.fromEntries(pares);
-                }
+                // Leer solo las ramas que usa esta función y en paralelo evita descargar
+                // de una sola vez configuración extensa (por ejemplo, el historial curricular).
+                const campos = opciones.soloEsencialEstudiante && !esSesionDocenteFirebase()
+                    ? ['periodoActivo','trimestres','formulaPromedio','firmaDocente']
+                    : ['periodoActivo','trimestres','formulaPromedio','firmaDocente','planificacionesCurriculares','calendarioAcademico','horarioDocente','contadores'];
+                const pares = await Promise.all(campos.map(async campo => [campo, await leerValorRutaFirebase(`configuracion/${campo}`)]));
+                const cfg = Object.fromEntries(pares);
                 cfgPeriodoActivo = (cfg && cfg.periodoActivo) || null;
                 cfgTrimestres = (cfg && cfg.trimestres) || null;
                 cfgFormulaPromedio = (cfg && cfg.formulaPromedio) || null;
-                cfgFirmaDocente = (cfg && cfg.firmaDocente) || null;
-                planificacionesCurriculares = (cfg && cfg.planificacionesCurriculares) || {};
-                calendarioAcademico = (cfg && cfg.calendarioAcademico) || {};
-                horarioDocente = Array.isArray(cfg && cfg.horarioDocente) ? cfg.horarioDocente.map(x => ({...x, dia: normalizarDiaHorario(x.dia), bloque: Number(x.bloque || HORARIO_BLOQUES.find(b => b.hora === x.hora)?.id || 0), asignatura: String(x.asignatura || '').trim()})).filter(x => HORARIO_DIAS.includes(x.dia) && x.hora && x.curso && x.paralelo) : [];
-                cntAccesosEstudiantes = (cfg && cfg.contadores && cfg.contadores.accesosEstudiantes) || 0;
-                cntAccesosDocente = (cfg && cfg.contadores && cfg.contadores.accesosDocente) || 0;
+                if (!opciones.soloEsencialEstudiante || esSesionDocenteFirebase()) {
+                    cfgFirmaDocente = (cfg && cfg.firmaDocente) || null;
+                    planificacionesCurriculares = (cfg && cfg.planificacionesCurriculares) || {};
+                    calendarioAcademico = (cfg && cfg.calendarioAcademico) || {};
+                    horarioDocente = Array.isArray(cfg && cfg.horarioDocente) ? cfg.horarioDocente.map(x => ({...x, dia: normalizarDiaHorario(x.dia), bloque: Number(x.bloque || HORARIO_BLOQUES.find(b => b.hora === x.hora)?.id || 0), asignatura: String(x.asignatura || '').trim()})).filter(x => HORARIO_DIAS.includes(x.dia) && x.hora && x.curso && x.paralelo) : [];
+                    cntAccesosEstudiantes = (cfg && cfg.contadores && cfg.contadores.accesosEstudiantes) || 0;
+                    cntAccesosDocente = (cfg && cfg.contadores && cfg.contadores.accesosDocente) || 0;
+                } else {
+                    cfgFirmaDocente = (cfg && cfg.firmaDocente) || null;
+                }
             } catch(e) {
                 console.warn('No se pudo cargar configuración del sistema:', e);
             }
+            if (opciones.soloEsencialEstudiante && !esSesionDocenteFirebase()) {
+                actualizarVistasContadores();
+                renderFirmaDocentePreview();
+                return;
+            }
             const cedulaSesion = estudiantes[0]?.cedula || normalizarCedula(document.getElementById('input-cedula')?.value || '');
-            try {
-                cntAccesosEstudiantesIndividuales = esSesionDocenteFirebase()
-                    ? ((await leerValorRutaFirebase('contadoresEstudiantesIndividuales')) || {})
-                    : (cedulaSesion ? {[cedulaSesion]: (await leerValorRutaFirebase(`contadoresEstudiantesIndividuales/${cedulaSesion}`)) || 0} : {});
-            } catch(e) { cntAccesosEstudiantesIndividuales = {}; }
-            try {
-                cntAccesosEstudiantesDiario = esSesionDocenteFirebase()
-                    ? ((await leerValorRutaFirebase('contadoresEstudiantesDiario')) || {})
-                    : (cedulaSesion ? {[cedulaSesion]: (await leerValorRutaFirebase(`contadoresEstudiantesDiario/${cedulaSesion}`)) || {}} : {});
-            } catch(e) { cntAccesosEstudiantesDiario = {}; }
+            const [individuales,diarios]=await Promise.all([
+                (async()=>{try{return esSesionDocenteFirebase()?((await leerValorRutaFirebase('contadoresEstudiantesIndividuales'))||{}):(cedulaSesion?{[cedulaSesion]:(await leerValorRutaFirebase(`contadoresEstudiantesIndividuales/${cedulaSesion}`))||0}:{})}catch(e){return {}}})(),
+                (async()=>{try{return esSesionDocenteFirebase()?((await leerValorRutaFirebase('contadoresEstudiantesDiario'))||{}):(cedulaSesion?{[cedulaSesion]:(await leerValorRutaFirebase(`contadoresEstudiantesDiario/${cedulaSesion}`))||{}}:{})}catch(e){return {}}})()
+            ]);
+            cntAccesosEstudiantesIndividuales=individuales;
+            cntAccesosEstudiantesDiario=diarios;
             actualizarVistasContadores();
             renderFirmaDocentePreview();
         }
@@ -11532,15 +11762,19 @@ video {
                 const diario = await incrementarContadorRESTCondicional(`contadoresEstudiantesDiario/${cedula}/${hoy}`, NPT_MAX_ACCESOS_DIARIOS);
                 if (!cntAccesosEstudiantesDiario[cedula]) cntAccesosEstudiantesDiario[cedula] = {};
                 cntAccesosEstudiantesDiario[cedula][hoy] = diario;
-                // Métricas complementarias: cada contador usa también CAS para no perder
-                // incrementos concurrentes, aunque el acceso diario ya quedó reservado.
-                try {
-                    cntAccesosEstudiantes = await incrementarContadorRESTCondicional('configuracion/contadores/accesosEstudiantes');
-                    cntAccesosEstudiantesIndividuales[cedula] = await incrementarContadorRESTCondicional(`contadoresEstudiantesIndividuales/${cedula}`);
-                } catch (e) {
-                    console.warn('Acceso diario registrado; no se pudo actualizar una métrica secundaria:', e.message);
-                }
                 actualizarVistasContadores();
+                // Solo el contador diario determina el acceso. Las métricas generales e
+                // individuales se incrementan en paralelo y no retrasan la apertura del aula.
+                void Promise.allSettled([
+                    incrementarContadorRESTCondicional('configuracion/contadores/accesosEstudiantes'),
+                    incrementarContadorRESTCondicional(`contadoresEstudiantesIndividuales/${cedula}`)
+                ]).then(([total,individual])=>{
+                    if(total.status==='fulfilled') cntAccesosEstudiantes=total.value;
+                    else console.warn('No se pudo actualizar el contador general:',total.reason?.message||total.reason);
+                    if(individual.status==='fulfilled') cntAccesosEstudiantesIndividuales[cedula]=individual.value;
+                    else console.warn('No se pudo actualizar el contador individual:',individual.reason?.message||individual.reason);
+                    actualizarVistasContadores();
+                });
             } catch(e) {
                 console.warn('No se pudo registrar acceso de estudiante:', e.message);
                 throw e;
@@ -11628,7 +11862,7 @@ video {
                 for (let n = 1; n <= 3; n++) {
                     const t = cfgTrimestres[n];
                     if (t && t.label) {
-                        out.push({ num: n, label: t.label, meses: t.meses || (t.desde && t.hasta ? `${t.desde} – ${t.hasta}` : '') });
+                        out.push({ num: n, label: t.label, meses: t.meses || (t.desde && t.hasta ? `${t.desde} – ${t.hasta}` : ''), desde: t.desde || null, hasta: t.hasta || null });
                     } else {
                         const def = NPT_TRIMESTRES.find(x => x.num === n);
                         out.push(def || { num: n, label: `${n}er Trimestre`, meses: '' });
@@ -12338,15 +12572,92 @@ video {
             }
         }
         async function generarReporteAsistencia() {
-            if(!horarioDocente.length) return alert('Primero configura el horario en Configuración.');
-            const desde=document.getElementById('asistencia-reporte-desde').value,hasta=document.getElementById('asistencia-reporte-hasta').value;if(!desde||!hasta||desde>hasta)return alert('Selecciona un rango de fechas válido.');
-            const fechas=[]; for(let d=new Date(`${desde}T12:00:00`),fin=new Date(`${hasta}T12:00:00`);d<=fin;d.setDate(d.getDate()+1)){const f=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;if(fechaEsLaborable(f))fechas.push(f);}
-            await Promise.all(fechas.map(async f=>{await cargarAsistenciaFecha(f);await cargarTemasAsistenciaFecha(f);}));
-            const out=[['Fecha','Día','Hora','Asignatura','Curso','Paralelo','Unidad','Tema de clase','Origen tema','Cédula','Estudiante','Estado','Novedad estudiante','Observación curso']];
-            for(const fecha of fechas){for(const clase of horarioDocente.filter(x=>normalizarDiaHorario(x.dia)===normalizarDiaHorario(asistenciaDia(fecha)))){const key=encodeURIComponent(`${clase.curso}|${clase.paralelo}`);let novCurso='';try{const n=await leerValorRutaFirebase(`asistenciaNovedadesCurso/${fecha}/${key}`);novCurso=n?.observacion||'';}catch(e){}for(const est of estudiantes.filter(e=>e.curso===clase.curso&&e.paralelo===clase.paralelo)){const reg=asistenciaRegistros[fecha]?.[asistenciaSesionId(clase)]?.[est.cedula],tema=asistenciaTemas[fecha]?.[asistenciaSesionId(clase)]||{};out.push([fecha,asistenciaDia(fecha),clase.hora,clase.asignatura||'',clase.curso,clase.paralelo,tema.unidad||'',tema.tema||'',tema.origen||'',est.cedula,est.nombre,reg?.estado||'Sin registrar',reg?.observacion||'',novCurso]);}}}
-            if(out.length===1)return alert('No hay clases configuradas en el horario dentro del rango seleccionado.');const csv='\uFEFF'+out.map(row=>row.map(escaparCSV).join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`reporte_asistencia_novedades_${desde}_${hasta}.csv`;a.click();URL.revokeObjectURL(url);
-        }
+            if (!horarioDocente.length) return alert('Primero configura el horario en Configuración.');
+            const desde = document.getElementById('asistencia-reporte-desde').value;
+            const hasta = document.getElementById('asistencia-reporte-hasta').value;
+            if (!desde || !hasta || desde > hasta) return alert('Selecciona un rango de fechas válido.');
 
+            const ventanaPrevia = window.open('', '_blank');
+            if (ventanaPrevia && !ventanaPrevia.closed) {
+                ventanaPrevia.document.write('<!DOCTYPE html><html lang="es"><meta charset="UTF-8"><title>Preparando reporte</title><body style="font-family:Arial,sans-serif;padding:24px;color:#334155">Preparando la vista previa del reporte de asistencia...</body></html>');
+                ventanaPrevia.document.close();
+            }
+            const fechas = [];
+            for (let d = new Date(desde + 'T12:00:00'), fin = new Date(hasta + 'T12:00:00'); d <= fin; d.setDate(d.getDate() + 1)) {
+                const f = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                if (fechaEsLaborable(f)) fechas.push(f);
+            }
+            try {
+                await Promise.all(fechas.map(async f => { await cargarAsistenciaFecha(f); await cargarTemasAsistenciaFecha(f); }));
+            } catch (e) {
+                if (ventanaPrevia && !ventanaPrevia.closed) ventanaPrevia.document.body.innerHTML = '<p style="font-family:Arial,sans-serif;padding:24px;color:#991b1b">No se pudieron cargar los datos del reporte. Cierre esta pestaña e inténtelo nuevamente.</p>';
+                alert('No se pudieron cargar los datos de asistencia para el reporte: ' + (e?.message || 'error desconocido'));
+                return;
+            }
+
+            const sesiones = [];
+            fechas.forEach(fecha => {
+                horarioDocente.filter(x => normalizarDiaHorario(x.dia) === normalizarDiaHorario(asistenciaDia(fecha)))
+                    .forEach(clase => sesiones.push({ fecha, clase, sid: asistenciaSesionId(clase), observacionCurso: '' }));
+            });
+            if (!sesiones.length) {
+                if (ventanaPrevia && !ventanaPrevia.closed) ventanaPrevia.close();
+                return alert('No hay clases configuradas en el horario dentro del rango seleccionado.');
+            }
+
+            const cacheObservacionesCurso = new Map();
+            await Promise.all(sesiones.map(async sesion => {
+                const ruta = sesion.fecha + '|' + sesion.clase.curso + '|' + sesion.clase.paralelo;
+                if (!cacheObservacionesCurso.has(ruta)) {
+                    const key = encodeURIComponent(sesion.clase.curso + '|' + sesion.clase.paralelo);
+                    cacheObservacionesCurso.set(ruta, leerValorRutaFirebase('asistenciaNovedadesCurso/' + sesion.fecha + '/' + key)
+                        .then(reg => reg?.observacion || '').catch(() => ''));
+                }
+                sesion.observacionCurso = await cacheObservacionesCurso.get(ruta);
+            }));
+
+            const gruposAsistencia = new Map();
+            sesiones.forEach(sesion => {
+                const clave = [sesion.clase.curso, sesion.clase.paralelo, sesion.clase.asignatura || ''].join('|');
+                if (!gruposAsistencia.has(clave)) gruposAsistencia.set(clave, { curso: sesion.clase.curso, paralelo: sesion.clase.paralelo, asignatura: sesion.clase.asignatura || '', sesiones: [] });
+                gruposAsistencia.get(clave).sesiones.push(sesion);
+            });
+            const totalEstudiantes = [...gruposAsistencia.values()].reduce((total, grupo) => total + estudiantes.filter(e => e.curso === grupo.curso && e.paralelo === grupo.paralelo).length, 0);
+            if (!totalEstudiantes) {
+                if (ventanaPrevia && !ventanaPrevia.closed) ventanaPrevia.close();
+                return alert('No hay estudiantes inscritos en las clases del rango seleccionado.');
+            }
+
+            const etiquetasEstado = { presente: 'Presente', ausente: 'Ausente', atraso: 'Atraso', justificado: 'Falta justificada' };
+            const cabeceras = ['Estudiante','Presentes','Ausentes','Atrasos','Faltas justificadas','Sin registro','Detalle por clase','Novedades individuales'];
+            let bloquesReporte = '';
+            gruposAsistencia.forEach(grupo => {
+                const alumnosGrupo = estudiantes.filter(est => est.curso === grupo.curso && est.paralelo === grupo.paralelo);
+                if (!alumnosGrupo.length) return;
+                const observacionesCurso = [...new Set(grupo.sesiones.filter(s => s.observacionCurso).map(s => s.fecha + ': ' + s.observacionCurso))];
+                const filasHtml = alumnosGrupo.map(est => {
+                    const conteo = { presente: 0, ausente: 0, atraso: 0, justificado: 0, sinRegistro: 0 };
+                    const detalle = [], novedades = [];
+                    grupo.sesiones.forEach(sesion => {
+                        const reg = asistenciaRegistros[sesion.fecha]?.[sesion.sid]?.[est.cedula];
+                        const estado = reg?.estado || '';
+                        if (Object.prototype.hasOwnProperty.call(etiquetasEstado, estado)) conteo[estado]++;
+                        else conteo.sinRegistro++;
+                        const tema = asistenciaTemas[sesion.fecha]?.[sesion.sid] || {};
+                        const temaTxt = [tema.unidad, tema.tema].filter(Boolean).join(' · ');
+                        detalle.push([sesion.fecha + ' (' + asistenciaDia(sesion.fecha) + ')', sesion.clase.hora || '', temaTxt ? 'Tema: ' + temaTxt : '', 'Estado: ' + (etiquetasEstado[estado] || 'Sin registrar'), reg?.observacion ? 'Novedad: ' + reg.observacion : ''].filter(Boolean).join(' · '));
+                        if (reg?.observacion) novedades.push(sesion.fecha + ': ' + reg.observacion);
+                    });
+                    const valores = [est.nombre, conteo.presente, conteo.ausente, conteo.atraso, conteo.justificado, conteo.sinRegistro, detalle.join('\n'), [...new Set(novedades)].join('\n')];
+                    return '<tr>' + valores.map(v => '<td>' + escapeHtml(v).replace(/\n/g, '<br>') + '</td>').join('') + '</tr>';
+                }).join('');
+                const contexto = '<div class="filtro"><strong>Clases programadas:</strong> ' + grupo.sesiones.length + ' · <strong>Estudiantes:</strong> ' + alumnosGrupo.length + (observacionesCurso.length ? '<br><strong>Observaciones del curso:</strong><br>' + observacionesCurso.map(escapeHtml).join('<br>') : '') + '</div>';
+                bloquesReporte += '<h2>' + escapeHtml(grupo.curso) + ' · Paralelo ' + escapeHtml(grupo.paralelo) + ' · ' + escapeHtml(grupo.asignatura || 'Materia no especificada') + '</h2>' + contexto + '<div class="asistencia-reporte-wrap"><table class="asistencia-reporte"><thead><tr>' + cabeceras.map(h => '<th>' + escapeHtml(h) + '</th>').join('') + '</tr></thead><tbody>' + filasHtml + '</tbody></table></div>';
+            });
+            const tabla = '<div class="filtro"><strong>Período del reporte:</strong> ' + escapeHtml(desde) + ' al ' + escapeHtml(hasta) + '</div><style>.asistencia-reporte-wrap{overflow-x:auto}table.asistencia-reporte{table-layout:auto;font-size:10px}.asistencia-reporte th,.asistencia-reporte td{padding:6px 7px;vertical-align:top}.asistencia-reporte th{white-space:nowrap}.asistencia-reporte td{white-space:pre-line;min-width:72px}.asistencia-reporte td:nth-child(1){min-width:150px;font-weight:700}.asistencia-reporte td:nth-child(7){min-width:280px}.asistencia-reporte td:nth-child(8){min-width:180px}.asistencia-reporte thead{display:table-header-group}.asistencia-reporte tr{break-inside:avoid;page-break-inside:avoid}@media print{.asistencia-reporte-wrap{overflow:visible}table.asistencia-reporte{width:100%;font-size:8px;table-layout:fixed}.asistencia-reporte th,.asistencia-reporte td{padding:4px;overflow-wrap:anywhere}}</style>' + bloquesReporte;
+            abrirODescargarReporte('Reporte de Asistencia y Novedades', tabla,
+                'reporte_asistencia_novedades_' + desde + '_' + hasta + '.html', 'landscape', ventanaPrevia);
+        }
         // ---- Período activo ----
         async function guardarPeriodoActivo() {
             const nombre = document.getElementById('cfg-periodo-nombre').value.trim();
@@ -13055,8 +13366,9 @@ video {
                 ${NPT_ENCABEZADO_REPORTE_HTML}
                 <h1>Notas del Trimestre (NPT)</h1>
                 <table>
+                    <tr><th>Docente</th><td>${escapeHtml(NPT_NOMBRE_DOCENTE)}</td></tr>
                     <tr><th>Estudiante</th><td>${escapeHtml(estudianteActual.nombre)}</td></tr>
-                    <tr><th>Cédula</th><td>${escapeHtml(cedula)}</td></tr>
+
                     <tr><th>Curso / Paralelo</th><td>${escapeHtml(estudianteActual.curso)} "${escapeHtml(estudianteActual.paralelo)}"</td></tr>
                     <tr><th>Período</th><td>${t?.label || ''}</td></tr>
                     <tr><th>Tipo de entrega</th><td>${escapeHtml(etiquetaTp)}</td></tr>
