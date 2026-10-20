@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 
-<!-- Código de instalación Cliengo para https://godoyroserocesar.github.io/SGC/ -->
+<!-- Código de instalación Cliengo para https://godoyroseroia.github.io/AGENTE/ -->
 <script type="text/javascript">
   (function () {
     var ldk = document.createElement('script');
@@ -14,6 +14,7 @@
 </script>
 
     <meta charset="UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SGC Sistema de Gestión de Calificaciones - Unidad Educativa Sagrado Corazón</title>
     <style id="tw-compiled">*, ::before, ::after {
@@ -2208,6 +2209,8 @@ video {
     .sgc-assist-matrix{border:1px solid #e2e8f0;border-radius:14px;overflow:auto;background:#fff}.sgc-assist-matrix table{min-width:900px;border-collapse:separate;border-spacing:0}.sgc-assist-matrix th{position:sticky;top:0;z-index:2;background:#f8fafc;border-bottom:1px solid #e2e8f0}.sgc-assist-matrix th,.sgc-assist-matrix td{padding:.55rem .5rem;border-right:1px solid #f1f5f9;vertical-align:middle}.sgc-assist-matrix th:last-child,.sgc-assist-matrix td:last-child{border-right:0}.sgc-assist-matrix tbody tr:hover{background:#f8fbff}.sgc-assist-student{position:sticky;left:0;z-index:1;background:#fff;min-width:210px}.sgc-assist-matrix thead .sgc-assist-student{z-index:3;background:#f8fafc}.sgc-assist-cell select{min-width:105px;font-size:.68rem;border:1px solid #cbd5e1;border-radius:8px;padding:.35rem .4rem;background:#fff}.sgc-assist-cell .hora{display:block;font-size:.58rem;color:#64748b;margin-top:.18rem}.sgc-assist-novedad{min-width:230px}.sgc-assist-novedad input{width:100%;font-size:.68rem;border:1px solid #cbd5e1;border-radius:8px;padding:.45rem .5rem}.sgc-assist-blank{color:#cbd5e1;text-align:center;font-size:.75rem}.sgc-assist-help{font-size:.68rem;color:#64748b}
 </style>
 
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-['Plus_Jakarta_Sans']">
 
@@ -2507,6 +2510,12 @@ video {
                 </div>
                     </section>
 
+                    <section class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3"><div><h4 class="font-bold text-sm text-blue-900">Avisos automáticos en Google Classroom (prueba)</h4><p class="text-[11px] text-blue-800 mt-1">Conecta la cuenta y carga tus cursos aquí. La relación entre curso/paralelo del sistema y Classroom se elige al configurar los insumos.</p></div><span id="npt-classroom-status" class="text-xs text-slate-600">Requiere configuración Google</span></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3"><input id="npt-classroom-client-id" type="text" placeholder="OAuth Client ID de Aplicación web" class="px-3 py-2 bg-white border rounded-lg text-xs"><button type="button" id="npt-classroom-btn-save" class="bg-white border border-blue-300 text-blue-800 px-3 py-2 rounded-lg text-xs font-bold">Guardar Client ID en este navegador</button></div>
+                        <div class="flex flex-wrap gap-2 mt-2"><button type="button" id="npt-classroom-btn-connect" class="bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold" style="background-color:#1d4ed8;color:#fff;opacity:1">Conectar / actualizar cursos</button><button type="button" id="npt-classroom-btn-pending" class="bg-amber-500 text-white px-3 py-2 rounded-lg text-xs font-bold">Enviar avisos pendientes</button></div>
+                        <p class="text-[11px] text-slate-600 mt-2">Client ID, lista de cursos y vínculos se guardan solo en este navegador. Al guardar una nueva vinculación, los avisos pendientes no se envían automáticamente.</p>
+                    </section>
                     <!-- (A) Período académico activo + trimestres -->
                     <section class="bg-slate-50 rounded-xl p-4">
                         <h4 class="font-bold text-sm mb-3">🗓️ Período académico y trimestres</h4>
@@ -3029,6 +3038,18 @@ video {
                         </div>
                     </div>
                     <p id="npt-insumos-contador" class="text-xs font-bold mb-2"></p>
+                    <div class="rounded-xl border border-blue-200 bg-blue-50 p-3 mb-3">
+                        <div class="flex flex-wrap items-start justify-between gap-2">
+                            <div><h5 class="text-xs font-bold text-blue-950">🔔 Anuncio de Classroom para este curso</h5><p id="npt-classroom-insumo-contexto" class="text-[11px] text-blue-900 mt-1"></p></div>
+                            <span id="npt-classroom-insumo-estado" class="text-[11px] text-slate-600"></span>
+                        </div>
+                        <label for="npt-classroom-insumo-course" class="block text-[11px] font-bold text-slate-700 mt-2 mb-1">Curso de Classroom relacionado</label>
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <select id="npt-classroom-insumo-course" class="flex-1 min-w-[220px] md:max-w-xl px-3 py-2 bg-white border border-blue-200 rounded-lg text-xs"><option value="">Aún no se han cargado cursos</option></select>
+                            <button type="button" id="npt-classroom-insumo-connect" class="px-3 py-2 rounded-lg text-xs font-bold text-white" style="background-color:#1d4ed8;color:#fff">Conectar / actualizar cursos</button>
+                        </div>
+                        <p class="text-[10px] text-slate-600 mt-1">Este vínculo se guarda junto con “Guardar cambios” y se reutiliza en los próximos insumos de este curso/paralelo. Solo se anuncian insumos que se habiliten por primera vez.</p>
+                    </div>
                     <div class="overflow-x-auto border rounded-xl">
                         <table class="min-w-full text-xs">
                             <thead class="bg-slate-50">
@@ -5467,11 +5488,14 @@ video {
                 const identidad=await iniciarSesionFirebase(email,password);
                 if(FIREBASE_DOCENTE_UID_AUTORIZADO==='PENDIENTE_CONFIGURAR_UID'||identidad.uid!==FIREBASE_DOCENTE_UID_AUTORIZADO) throw new Error('CUENTA_DOCENTE_NO_AUTORIZADA');
                 console.info('[AUTH] Sesión Firebase iniciada para docente.');
-                const [datosOk,nptOk]=await Promise.all([
-                    cargarDatosFirebase().then(()=>esperarDatosIniciales()),
-                    esperarModuloNPT(),
+                // Cargar los datos base una sola vez antes de iniciar NPT. Antes ambas ramas
+                // podían llamar a esperarDatosIniciales/cargarDatosFirebase al mismo tiempo,
+                // duplicando lecturas de nómina y calificaciones durante el acceso docente.
+                const [nptOk]=await Promise.all([
+                    (async()=>{await cargarDatosFirebase();return esperarModuloNPT();})(),
                     cargarConfigSistema().then(()=>{actualizarSelectoresTrimestre();actualizarBadgePeriodo();})
                 ]);
+                const datosOk=datosInicialesCargados;
                 if(!datosOk||!nptOk) throw new Error('Se inició sesión, pero no fue posible cargar los datos del sistema.');
                 cargarArchivosDocenteFiltradosNPT().then(actualizarPaneles).catch(e=>console.warn('[NPT] Precarga docente:',e.message));
                 actualizarPaneles();
@@ -6115,7 +6139,9 @@ video {
             return !nptTrimestreHabilitado(curso, paralelo, n)
                 || nptCantidadInsumosActivos(curso, paralelo, n) === 0;
         }
-        function nptRecuperacionPermitidaEnTrimestre(curso, paralelo, n) {
+        function nptRecuperacionPermitidaEnTrimestre(curso, paralelo, n, clave = null, cedula = null) {
+            if (clave === 'examen') return !nptRecuperacionExamenVencida(cedula, curso, paralelo, n);
+            if (clave) return !nptRecuperacionInsumoVencida(curso, paralelo, n);
             return !nptTrimestreCerrado(curso, paralelo, n);
         }
         function nptFechaFinTrimestre(numTrimestre) {
@@ -6130,7 +6156,9 @@ video {
         }
         function nptRecuperacionInsumoVencida(curso, paralelo, numTrimestre) {
             const fin = nptFechaFinTrimestre(numTrimestre);
-            return fin ? Date.now() > fin.getTime() : nptTrimestreCerrado(curso, paralelo, numTrimestre);
+            // El plazo académico de recuperación de los insumos depende exclusivamente
+            // del cierre registrado para el trimestre, no del estado del interruptor general.
+            return !fin || Date.now() > fin.getTime();
         }
         function nptEstudianteHabilitado(curso, paralelo, n, cedula) {
             const mapa = nptNodoTrimestre(nptHabilitacionEstudiantes, curso, paralelo, n);
@@ -6218,8 +6246,8 @@ video {
         const nptAutoSolicitudVencimientoMostrada = new Set();
         function abrirSolicitudRecuperacionNPT(numTrimestre, clave, etiqueta, notaOriginal, fechaNotaOriginal, porVencimientoSinEntrega = false) {
             if (!estudianteActual) return;
-            if (!nptRecuperacionPermitidaEnTrimestre(estudianteActual.curso, estudianteActual.paralelo, numTrimestre)) {
-                alert('La solicitud de recuperación no está disponible porque el trimestre está cerrado.');
+            if (!nptRecuperacionPermitidaEnTrimestre(estudianteActual.curso, estudianteActual.paralelo, numTrimestre, clave, estudianteActual.cedula)) {
+                alert(clave === 'examen' ? 'Venció el plazo de recuperación del examen: son 7 días desde la fecha programada para rendirlo.' : 'Venció el plazo de recuperación de insumos al finalizar el trimestre configurado.');
                 return;
             }
             nptSolicitudRecCtx = {
@@ -6265,8 +6293,8 @@ video {
             const { numTrimestre, clave, etiqueta, notaOriginal, fechaNotaOriginal, porVencimientoSinEntrega } = nptSolicitudRecCtx;
             const { cedula, nombre, curso, paralelo } = estudianteActual;
             const errEl = document.getElementById('npt-solicitud-rec-error');
-            if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, numTrimestre)) {
-                errEl.textContent = 'La solicitud de recuperación no puede enviarse porque el trimestre está cerrado.';
+            if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, numTrimestre, clave, cedula)) {
+                errEl.textContent = clave === 'examen' ? 'No se puede enviar la solicitud: venció el plazo de 7 días posteriores a la fecha programada del examen.' : 'No se puede enviar la solicitud: el trimestre ya terminó según la fecha de configuración.';
                 errEl.classList.remove('hidden');
                 return;
             }
@@ -6403,10 +6431,9 @@ video {
             return nptTrimestreInfo(curso, paralelo, n)?.examenFechaMaxima || null;
         }
         function nptFechaFinRecuperacionExamen(cedula, curso, paralelo, numTrimestre) {
-            const examen = nptNotas[cedula]?.[`trimestre${numTrimestre}`]?.examen;
-            // Si no rindió el examen, usa el vencimiento programado como única referencia verificable.
-            const fechaBase = examen?.horaFin || examen?.fecha || examen?.horaInicio || nptExamenFechaMaxima(curso, paralelo, numTrimestre);
-            const inicio = nptParseFecha(fechaBase);
+            // La fecha de referencia es la registrada por el docente para el primer examen.
+            // No se extiende el plazo por rendir tarde ni por la fecha en que se calificó.
+            const inicio = nptParseFecha(nptExamenFechaMaxima(curso, paralelo, numTrimestre));
             return inicio ? new Date(inicio.getTime() + NPT_DIAS_LIMITE_RECUPERACION_EXAMEN * 86400000) : null;
         }
         function nptRecuperacionExamenVencida(cedula, curso, paralelo, numTrimestre) {
@@ -6994,6 +7021,7 @@ video {
             nptGestionCtx = { trimestre: num };
             const t = trimestresEfectivos().find(x => x.num === num);
             document.getElementById('npt-gestion-titulo').textContent = `${t.label} · ${cursoActual} "${paraleloActual}"`;
+            nptClassroomPrepararVinculoInsumo();
 
             // Rúbricas: se regenera después de construir la tabla de insumos (más abajo), porque
             // depende de leer qué insumos quedan activos en esa tabla.
@@ -7199,6 +7227,7 @@ video {
             if (!nptGestionCtx || !cursoActual || !paraleloActual) return;
             const { trimestre } = nptGestionCtx;
             const cv = sanitizarClave(cursoActual), pv = sanitizarClave(paraleloActual);
+            const classroomInsumosPrevios = JSON.parse(JSON.stringify(nptConfig?.[cv]?.[pv]?.[trimestre]?.insumos || {}));
             const errEl = document.getElementById('npt-examen-json-error');
             const errRecExamenEl = document.getElementById('npt-examen-recuperacion-json-error');
             errEl.classList.add('hidden');
@@ -7566,6 +7595,9 @@ video {
                 cerrarGestionTrimestreNPT();
                 renderControlTrimestres();
                 renderTrimestresEstudiante();
+                nptClassroomGuardarVinculoInsumo();
+                const classroomNuevos = activos.filter(ins => !classroomInsumosPrevios[ins.id]?.habilitado);
+                if (classroomNuevos.length) nptClassroomEncolar(cursoActual, paraleloActual, trimestre, classroomNuevos);
                 alert('Configuración guardada: insumos, fechas máximas, rúbricas, examen, recuperación (examen e insumos) y habilitación individual.');
             } catch(e) {
                 console.error(e);
@@ -8087,11 +8119,11 @@ video {
         // ==================== SOLICITUD DE RECUPERACIÓN (representante legal) ====================
         // Si la nota ORIGINAL de un insumo o del examen es menor a 9, el estudiante (a través de su
         // representante legal) puede solicitar la recuperación desde su propia pantalla, dentro de
-        // los 8 días siguientes a la fecha de esa calificación. El docente aprueba o rechaza la
+        // hasta el cierre configurado del trimestre (insumos) o 7 días después de la fecha
+        // programada del examen. El docente aprueba o rechaza la
         // solicitud desde "📩 Solicitudes de Recuperación"; al aprobarla se habilita automáticamente
         // la recuperación para ESE estudiante en ESE insumo/examen (mismo mecanismo que ya usa el
         // docente para habilitarla manualmente).
-        const NPT_DIAS_LIMITE_SOLICITUD_RECUPERACION = 7;
         const NPT_DIAS_LIMITE_RECUPERACION_EXAMEN = 7;
         // ==================== FORMATO DE FECHA ESTÁNDAR DEL SISTEMA: dd/mm/aaaa ====================
         // Todas las fechas mostradas al usuario (reportes, pantallas, CSV) deben pasar por una de
@@ -8143,20 +8175,17 @@ video {
             }
             return nptInsumoInfo(curso, paralelo, numTrimestre, clave)?.activadaEn || null;
         }
-        // El plazo de recuperación comienza cuando VENCE la evaluación, no cuando se activa.
-        // Ejemplo: si la fecha máxima es 24/09/2026 22:59, la solicitud queda disponible
-        // desde ese vencimiento hasta 01/10/2026 22:59 (7 días después).
+        // Las fechas de referencia varían por tipo: cierre configurado del trimestre para insumos,
+        // y siete días tras la fecha programada del examen trimestral.
         function nptFechaMaximaEvaluacion(curso, paralelo, numTrimestre, clave) {
             return clave === 'examen'
                 ? nptExamenFechaMaxima(curso, paralelo, numTrimestre)
                 : nptInsumoFechaMaxima(curso, paralelo, numTrimestre, clave);
         }
         function nptFinSolicitudPorActivacion(curso, paralelo, numTrimestre, clave) {
-            const fechaMaxima = nptFechaMaximaEvaluacion(curso, paralelo, numTrimestre, clave);
-            if (!fechaMaxima) return null;
-            const f = nptParseFecha(fechaMaxima);
-            if (!f) return null;
-            return new Date(f.getTime() + NPT_DIAS_LIMITE_SOLICITUD_RECUPERACION * 86400000);
+            if (clave === 'examen') return nptFechaFinRecuperacionExamen(null, curso, paralelo, numTrimestre);
+            // Para insumos, tanto la solicitud como la rendición vencen al cierre oficial del trimestre.
+            return nptFechaFinTrimestre(numTrimestre);
         }
         function nptDiasDisponiblesSolicitud(fechaInicio, fechaFin) {
             if (!fechaInicio || !fechaFin) return null;
@@ -8165,7 +8194,6 @@ video {
             return Math.max(0, (b.getTime() - a.getTime()) / 86400000);
         }
         function nptSolicitudExpiradaInfo(curso, paralelo, numTrimestre, clave) {
-            if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, numTrimestre)) return null;
             const activacion = nptFechaActivacionEvaluacion(curso, paralelo, numTrimestre, clave);
             const fin = nptFinSolicitudPorActivacion(curso, paralelo, numTrimestre, clave);
             if (!activacion || !fin || Date.now() < fin.getTime()) return null;
@@ -8194,7 +8222,7 @@ video {
             if (!info.estuvoDisponible) {
                 return `<div class="bg-slate-100 border border-slate-300 rounded-xl p-3 mt-2 text-center text-xs text-slate-600">
                     <p class="font-bold">🔒 Solicitud de recuperación inhabilitada</p>
-                    <p class="text-[11px] mt-1">El plazo de 7 días posteriores al vencimiento de la evaluación terminó; no se realizó la solicitud dentro del período disponible.</p>
+                    <p class="text-[11px] mt-1">Terminó el plazo configurado para solicitar recuperación; no se realizó la solicitud dentro del período disponible.</p>
                     <p class="text-[10px] text-slate-400 mt-1">Constancia registrada: no se realizó solicitud dentro del plazo establecido.</p>
                 </div>`;
             }
@@ -8219,15 +8247,13 @@ video {
             }
             return nptNodoTrimestre(nptInsumoRecuperacionHabilitacionEstudiantes, curso, paralelo, numTrimestre)?.[clave]?.[cedula] === true;
         }
-        // Detecta evaluaciones que vencieron sin que el estudiante haya presentado la actividad.
-        // La solicitud solo puede abrirse desde el vencimiento de la evaluación hasta 7 días
-        // después de su activación. Una vez agotado ese plazo se registra constancia de que no
-        // fue solicitada.
+        // Detecta evaluaciones vencidas sin entrega y crea la oportunidad de solicitud hasta
+        // el cierre trimestral (insumos) o hasta 7 días después del examen programado.
         function nptEvaluacionesVencidasSinEntrega(cedula, curso, paralelo) {
             const pendientes = [];
             trimestresEfectivos().forEach(t => {
-                if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, t.num)) return;
                 nptInsumosActivosNPT(curso, paralelo, t.num).forEach(tp => {
+                    if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, t.num, tp.id, cedula)) return;
                     const fechaMaxima = nptInsumoFechaMaxima(curso, paralelo, t.num, tp.id);
                     const fechaActivacion = nptFechaActivacionEvaluacion(curso, paralelo, t.num, tp.id);
                     const finSolicitud = nptFinSolicitudPorActivacion(curso, paralelo, t.num, tp.id);
@@ -8251,7 +8277,7 @@ video {
                 const fechaExamen = nptExamenFechaMaxima(curso, paralelo, t.num);
                 const fechaActivacionExamen = nptFechaActivacionEvaluacion(curso, paralelo, t.num, 'examen');
                 const finSolicitudExamen = nptFinSolicitudPorActivacion(curso, paralelo, t.num, 'examen');
-                if (fechaExamen && fechaMaximaVencida(fechaExamen) && fechaActivacionExamen && finSolicitudExamen &&
+                if (nptRecuperacionPermitidaEnTrimestre(curso, paralelo, t.num, 'examen', cedula) && fechaExamen && fechaMaximaVencida(fechaExamen) && fechaActivacionExamen && finSolicitudExamen &&
                     Date.now() < finSolicitudExamen.getTime() &&
                     nptExamenHabilitado(curso, paralelo, t.num) &&
                     nptExamenEstudianteHabilitado(curso, paralelo, t.num, cedula) &&
@@ -8297,14 +8323,13 @@ video {
             }
         }
 
-        // Registra constancia cuando ya terminó el plazo de 7 días sin solicitud.
+        // Registra constancia cuando terminó el plazo aplicable y no se presentó solicitud.
         async function nptRegistrarExpiracionesSolicitud() {
             if (!estudianteActual) return;
             const { cedula, curso, paralelo } = estudianteActual;
             const ahora = Date.now();
             const items = [];
             trimestresEfectivos().forEach(t => {
-                if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, t.num)) return;
                 nptInsumosActivosNPT(curso, paralelo, t.num).forEach(tp => {
                     const fechaActivacion = nptFechaActivacionEvaluacion(curso, paralelo, t.num, tp.id);
                     const fin = nptFinSolicitudPorActivacion(curso, paralelo, t.num, tp.id);
@@ -8341,7 +8366,7 @@ video {
         }
 
         // Activa automáticamente la primera solicitud pendiente por evaluación vencida y no presentada.
-        // La ventana de solicitud está limitada a 7 días posteriores al vencimiento de la evaluación.
+        // La ventana vence al cierre trimestral para insumos y 7 días tras la fecha programada para el examen.
         function nptActivarSolicitudRecuperacionVencida() {
             if (!estudianteActual || nptSolicitudRecCtx) return;
             const modal = document.getElementById('npt-solicitud-rec-modal');
@@ -8413,13 +8438,13 @@ video {
             const esNoPresentada = notaVal === null && vencida;
             if (notaVal === null && !esNoPresentada) return '';
             if (notaVal !== null && notaVal >= 10) return '';
-            if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, numTrimestre)) {
-                return `<div class="bg-slate-100 border border-slate-300 rounded-xl p-2 mt-2 text-[11px] text-slate-600 font-semibold text-center">🔒 Recuperación no disponible: el ${escapeHtml(trimestresEfectivos().find(x => x.num === numTrimestre)?.label || 'trimestre')} está cerrado.</div>`;
+            if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, numTrimestre, clave, cedula)) {
+                const msgPlazo = clave === 'examen' ? 'Venció el plazo de 7 días posteriores a la fecha programada del examen.' : 'Venció el plazo al finalizar el trimestre según la fecha configurada.';
+                return `<div class="bg-slate-100 border border-slate-300 rounded-xl p-2 mt-2 text-[11px] text-slate-600 font-semibold text-center">🔒 ${msgPlazo}</div>`;
             }
             if (nptRecuperacionYaHabilitadaParaSolicitud(curso, paralelo, numTrimestre, clave, cedula)) return '';
             const fechaActivacion = nptFechaActivacionEvaluacion(curso, paralelo, numTrimestre, clave) || fechaNota;
-            const limite = nptFinSolicitudPorActivacion(curso, paralelo, numTrimestre, clave)
-                || (fechaMaxima ? new Date(nptParseFecha(fechaMaxima).getTime() + NPT_DIAS_LIMITE_SOLICITUD_RECUPERACION * 86400000) : null);
+            const limite = nptFinSolicitudPorActivacion(curso, paralelo, numTrimestre, clave);
             if (!limite) return '';
             const solicitud = nptSolicitudRecuperacionDe(cedula, numTrimestre, clave);
             if (solicitud?.estado === 'pendiente') {
@@ -8427,8 +8452,8 @@ video {
             }
             if (Date.now() >= limite.getTime()) {
                 return solicitud?.estado === 'rechazada'
-                    ? `<div class="bg-rose-50 border border-rose-200 rounded-xl p-2 mt-2 text-[11px] text-rose-700"><strong>Solicitud de recuperación rechazada:</strong> ${escapeHtml(solicitud.motivoRespuesta || 'Sin motivo indicado.')}<br>El plazo de ${NPT_DIAS_LIMITE_SOLICITUD_RECUPERACION} días posteriores al vencimiento de la evaluación ya venció.</div>`
-                    : `<div class="bg-slate-100 border border-slate-300 rounded-xl p-2 mt-2 text-[11px] text-slate-600 font-semibold text-center">🔒 El plazo de ${NPT_DIAS_LIMITE_SOLICITUD_RECUPERACION} días posteriores al vencimiento de la evaluación para solicitar recuperación ya venció. La solicitud no realizada queda registrada como proceso no efectuado.</div>`;
+                    ? `<div class="bg-rose-50 border border-rose-200 rounded-xl p-2 mt-2 text-[11px] text-rose-700"><strong>Solicitud de recuperación rechazada:</strong> ${escapeHtml(solicitud.motivoRespuesta || 'Sin motivo indicado.')}<br>El plazo correspondiente a esta evaluación ya venció.</div>`
+                    : `<div class="bg-slate-100 border border-slate-300 rounded-xl p-2 mt-2 text-[11px] text-slate-600 font-semibold text-center">🔒 El plazo configurado para solicitar recuperación ya venció. La solicitud no realizada queda registrada como proceso no efectuado.</div>`;
             }
             const rechazoHtml = solicitud?.estado === 'rechazada'
                 ? `<div class="bg-rose-50 border border-rose-200 rounded-xl p-2 mt-2 text-[11px] text-rose-700 mb-1"><strong>Tu solicitud anterior fue rechazada:</strong> ${escapeHtml(solicitud.motivoRespuesta || 'Sin motivo indicado.')}</div>`
@@ -10283,8 +10308,6 @@ video {
 
             cont.innerHTML = trimestresEfectivos().map(t => {
                 const habEstudiante = nptEstudianteHabilitado(curso, paralelo, t.num, cedula);
-                const trimestreCerrado = nptTrimestreCerrado(curso, paralelo, t.num);
-
                 const bloquesTipo = nptInsumosActivosNPT(curso, paralelo, t.num).map(tp => {
                     const etiquetaTipo = tp.label.replace(/^[^ ]+ /, '');
 
@@ -10315,9 +10338,9 @@ video {
                         } else if (vencidoTest) {
                             const solicitudVencidaTest = nptSolicitudRecuperacionDe(cedula, t.num, tp.id);
                             const finSolicitudTest = nptFinSolicitudPorActivacion(curso, paralelo, t.num, tp.id);
-                            const ventanaActivaTest = !trimestreCerrado && !!finSolicitudTest && Date.now() < finSolicitudTest.getTime();
+                            const ventanaActivaTest = nptRecuperacionPermitidaEnTrimestre(curso, paralelo, t.num, tp.id, cedula) && !!finSolicitudTest && Date.now() < finSolicitudTest.getTime();
                             const puedeSolicitarTest = !solicitudVencidaTest && ventanaActivaTest && !nptRecuperacionYaHabilitadaParaSolicitud(curso, paralelo, t.num, tp.id, cedula);
-                            estadoTestHtml = `<div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center text-xs text-rose-600">⏰ El plazo venció el ${escapeHtml(formatearFechaMaxima(fechaMaxTest))}.<br><span class="text-[11px]">${ventanaActivaTest ? 'Se activó el proceso de solicitud de recuperación por no presentarlo a tiempo.' : (trimestreCerrado ? 'La recuperación no está disponible porque el trimestre está cerrado.' : 'El plazo para solicitar recuperación ya venció.')}</span></div>
+                            estadoTestHtml = `<div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center text-xs text-rose-600">⏰ El plazo venció el ${escapeHtml(formatearFechaMaxima(fechaMaxTest))}.<br><span class="text-[11px]">${ventanaActivaTest ? 'Se activó el proceso de solicitud de recuperación por no presentarlo a tiempo.' : 'El plazo de solicitud de recuperación ya venció.'}</span></div>
                                 ${puedeSolicitarTest ? `<button type="button" onclick="abrirSolicitudRecuperacionNPT(${t.num},${escapeHtml(JSON.stringify(tp.id))},${escapeHtml(JSON.stringify(etiquetaTipo))},null,${escapeHtml(JSON.stringify(fechaMaxTest || ''))},true)" class="w-full mt-2 bg-amber-500 text-white text-xs font-bold py-2 rounded-xl hover:bg-amber-600">📩 Completar solicitud de recuperación</button>` : ''}`;
                         } else {
                             estadoTestHtml = `<div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center text-xs text-slate-500">No disponible por ahora.</div>`;
@@ -10432,11 +10455,10 @@ video {
                             estadoHtml += `<div class="text-xs text-slate-400 mb-2">📊 Pendiente de revisión por el docente.</div>`;
                         }
                     } else if (vencido && insumoHab && insumoHabEstudiante) {
-                        // La fecha máxima ya pasó: la solicitud solo permanece disponible hasta 7 días
-                        // después del vencimiento de la evaluación.
+                        // La solicitud para insumos permanece disponible hasta el cierre configurado del trimestre.
                         const solicitudVencida = nptSolicitudRecuperacionDe(cedula, t.num, tp.id);
                         const finSolicitud = nptFinSolicitudPorActivacion(curso, paralelo, t.num, tp.id);
-                        const ventanaActiva = !trimestreCerrado && !!finSolicitud && Date.now() < finSolicitud.getTime();
+                        const ventanaActiva = nptRecuperacionPermitidaEnTrimestre(curso, paralelo, t.num, tp.id, cedula) && !!finSolicitud && Date.now() < finSolicitud.getTime();
                         const puedeSolicitarAutomaticamente = !solicitudVencida && ventanaActiva && !nptRecuperacionYaHabilitadaParaSolicitud(curso, paralelo, t.num, tp.id, cedula);
                         estadoHtml = `<div class="bg-rose-50 border border-rose-200 rounded-xl p-3 mb-2 text-center text-xs text-rose-700">
                             ⏰ Fecha máxima de entrega vencida el ${escapeHtml(formatearFechaMaxima(fechaMax))}.<br>
@@ -10584,9 +10606,9 @@ video {
                 } else if (examenHabGeneral && examenHabEstudiante && examenVencido) {
                     const solicitudExamenVencida = nptSolicitudRecuperacionDe(cedula, t.num, 'examen');
                     const finSolicitudExamen = nptFinSolicitudPorActivacion(curso, paralelo, t.num, 'examen');
-                    const ventanaActivaExamen = !trimestreCerrado && !!finSolicitudExamen && Date.now() < finSolicitudExamen.getTime();
+                    const ventanaActivaExamen = nptRecuperacionPermitidaEnTrimestre(curso, paralelo, t.num, 'examen', cedula) && !!finSolicitudExamen && Date.now() < finSolicitudExamen.getTime();
                     const puedeSolicitarExamen = !solicitudExamenVencida && ventanaActivaExamen && !nptRecuperacionYaHabilitadaParaSolicitud(curso, paralelo, t.num, 'examen', cedula);
-                    examenHtml = `<div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center text-xs text-rose-600">⏰ El plazo para rendir el examen venció el ${escapeHtml(formatearFechaMaxima(examenFechaMax))}.<br><span class="text-[11px]">${ventanaActivaExamen ? 'Se activó el proceso de solicitud de recuperación por no presentarlo a tiempo.' : (trimestreCerrado ? 'La recuperación no está disponible porque el trimestre está cerrado.' : 'El plazo para solicitar recuperación ya venció.')}</span></div>
+                    examenHtml = `<div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center text-xs text-rose-600">⏰ El plazo para rendir el examen venció el ${escapeHtml(formatearFechaMaxima(examenFechaMax))}.<br><span class="text-[11px]">${ventanaActivaExamen ? 'Se activó el proceso de solicitud de recuperación por no presentarlo a tiempo.' : 'El plazo de 7 días desde la fecha programada del examen ya venció.'}</span></div>
                         ${puedeSolicitarExamen ? `<button type="button" onclick="abrirSolicitudRecuperacionNPT(${t.num},'examen','📝 Examen Trimestral',null,${escapeHtml(JSON.stringify(examenFechaMax || ''))},true)" class="w-full mt-2 bg-amber-500 text-white text-xs font-bold py-2 rounded-xl hover:bg-amber-600">📩 Completar solicitud de recuperación</button>` : ''}
                         ${!solicitudExamenVencida && !ventanaActivaExamen ? nptBloqueSolicitudExpiradaHtml(curso, paralelo, t.num, 'examen') : ''}`;
                 } else {
@@ -10608,7 +10630,7 @@ video {
                     </div>`;
                 } else if (examenRecHab) {
                     examenRecHtml = `<button onclick="comenzarExamenRecuperacionTrimestre(${t.num})" class="w-full bg-purple-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-purple-700 mt-2">🔁 Realizar examen de recuperación</button>
-                    <p class="text-[10px] text-purple-500 mt-1 text-center">${notaExamen ? 'Al calificarse, se promediará con tu nota del examen original.' : 'Aún no tienes nota del examen original: tu nota final será la de esta recuperación.'} Disponible hasta ${escapeHtml(formatearFechaMaxima(fechaFinExamenRecuperacion))} (7 días después de la rendición o del vencimiento programado).</p>`;
+                    <p class="text-[10px] text-purple-500 mt-1 text-center">${notaExamen ? 'Al calificarse, se promediará con tu nota del examen original.' : 'Aún no tienes nota del examen original: tu nota final será la de esta recuperación.'} Disponible hasta ${escapeHtml(formatearFechaMaxima(fechaFinExamenRecuperacion))} (7 días después de la fecha programada del primer examen).</p>`;
                 } else if (examenRecHabGeneral && examenRecHabEstudiante && nptRecuperacionExamenVencida(cedula, curso, paralelo, t.num)) {
                     examenRecHtml = `<div class="bg-slate-100 border border-slate-200 rounded-xl p-3 mt-2 text-center text-[11px] text-slate-600">🔒 El plazo para rendir la recuperación del examen terminó${fechaFinExamenRecuperacion ? ` el ${escapeHtml(formatearFechaMaxima(fechaFinExamenRecuperacion))}` : ' porque no existe una fecha verificable del examen original'}.</div>`;
                 }
@@ -11226,6 +11248,7 @@ video {
             header { page-break-after: avoid; break-after: avoid; }
         }
     </style>
+
 </head>
 <body>
     ${NPT_ENCABEZADO_REPORTE_HTML}
@@ -13362,7 +13385,8 @@ video {
                     table{width:100%;border-collapse:collapse;margin-top:20px}
                     td,th{border:1px solid #cbd5e1;padding:8px;text-align:left;font-size:13px}
                 </style>
-                </head><body>
+                
+</head><body>
                 ${NPT_ENCABEZADO_REPORTE_HTML}
                 <h1>Notas del Trimestre (NPT)</h1>
                 <table>
@@ -13515,9 +13539,62 @@ video {
         window.sgcFwAbrir = sgcFwAbrir;
         window.sgcFwCerrar = sgcFwCerrar;
         // Auditoría
-        window.registrarAuditoria = registrarAuditoria;
+        const NPT_CLASSROOM_SCOPES='https://www.googleapis.com/auth/classroom.announcements https://www.googleapis.com/auth/classroom.courses.readonly';
+        const NPT_CLASSROOM_CLIENT_KEY='nptClassroomOAuthClientId', NPT_CLASSROOM_MAP_KEY='nptClassroomCourseMap', NPT_CLASSROOM_QUEUE_KEY='nptClassroomPendingAnnouncements', NPT_CLASSROOM_SENT_KEY='nptClassroomSentAnnouncements', NPT_CLASSROOM_COURSES_KEY='nptClassroomCoursesCache';
+        let nptClassroomToken=null, nptClassroomTokenClient=null;
+        function nptClassroomEstado(msg,error=false){const e=document.getElementById('npt-classroom-status');if(e){e.textContent=msg;e.className='text-xs '+(error?'text-red-700':'text-slate-600');}}
+        function nptClassroomEstadoSelector(msg,error=false){const e=document.getElementById('npt-classroom-insumo-estado');if(e){e.textContent=msg;e.className='text-[11px] '+(error?'text-red-700':'text-slate-600');}nptClassroomEstado(msg,error);}
+        function nptClassroomLeer(key,fallback){try{return JSON.parse(localStorage.getItem(key)||'null')||fallback;}catch(_){return fallback;}}
+        function nptClassroomGuardarClientId(){const id=String(document.getElementById('npt-classroom-client-id')?.value||'').trim();if(!/^[A-Za-z0-9._-]+\.apps\.googleusercontent\.com$/.test(id)){nptClassroomEstado('Ingresa un OAuth Client ID web válido.',true);return;}localStorage.setItem(NPT_CLASSROOM_CLIENT_KEY,id);nptClassroomTokenClient=null;nptClassroomEstado('Client ID guardado en este navegador.');}
+        let nptClassroomGISPromise=null;
+        function nptClassroomCargarGIS(){
+            if(window.google?.accounts?.oauth2)return Promise.resolve(true);
+            if(nptClassroomGISPromise)return nptClassroomGISPromise;
+            nptClassroomGISPromise=new Promise(resolve=>{
+                let script=document.getElementById('npt-classroom-gis');
+                if(!script){script=document.createElement('script');script.id='npt-classroom-gis';script.src='https://accounts.google.com/gsi/client';script.async=true;script.defer=true;}
+                script.addEventListener('load',()=>resolve(!!window.google?.accounts?.oauth2),{once:true});
+                script.addEventListener('error',()=>{nptClassroomGISPromise=null;resolve(false);},{once:true});
+                if(!script.isConnected)document.head.appendChild(script);
+            });
+            return nptClassroomGISPromise;
+        }
+        function nptClassroomConectar(){
+            if(location.protocol==='file:'){nptClassroomEstadoSelector('Esta pestaña usa file://. Abre el sistema desde su dirección web o desde http://localhost para autorizar Google.',true);return;}
+            const id=localStorage.getItem(NPT_CLASSROOM_CLIENT_KEY)||String(document.getElementById('npt-classroom-client-id')?.value||'').trim();
+            if(!id){nptClassroomEstadoSelector('Falta el OAuth Client ID. Guarda el Client ID y vuelve a conectar.',true);return;}
+            if(!window.google?.accounts?.oauth2){
+                nptClassroomEstadoSelector('Cargando Google. Cuando aparezca “Google listo”, pulsa Conectar otra vez.');
+                nptClassroomCargarGIS().then(ok=>nptClassroomEstadoSelector(ok?'Google listo. Pulsa Conectar otra vez para abrir la autorización.':'No se pudo cargar Google Identity Services. Revisa la conexión e intenta de nuevo.',!ok));
+                return;
+            }
+            try{
+                nptClassroomEstadoSelector('Esperando autorización de Google…');
+                nptClassroomTokenClient=nptClassroomTokenClient||google.accounts.oauth2.initTokenClient({client_id:id,scope:NPT_CLASSROOM_SCOPES,error_callback:e=>nptClassroomEstadoSelector('Google no abrió la autorización: '+(e?.type||'permite ventanas emergentes y vuelve a intentar.'),true),callback:async r=>{
+                    if(r?.error||!r?.access_token){nptClassroomEstadoSelector('Google no autorizó: '+(r?.error_description||r?.error||'sin token'),true);return;}
+                    nptClassroomToken=r.access_token;nptClassroomEstadoSelector('Autorización correcta. Cargando cursos de la cuenta…');
+                    try{await nptClassroomListarCursos();await nptClassroomEnviarPendientes();}catch(e){nptClassroomEstadoSelector('No se pudieron cargar los cursos: '+e.message,true);}
+                }});
+                nptClassroomTokenClient.requestAccessToken({prompt:''});
+            }catch(e){nptClassroomEstadoSelector('No se pudo iniciar OAuth: '+e.message,true);}
+        }
+        async function nptClassroomFetch(url,options={}){if(!nptClassroomToken)throw Error('Conecta la cuenta docente primero.');const r=await fetch(url,{...options,headers:{...(options.headers||{}),Authorization:'Bearer '+nptClassroomToken,'Content-Type':'application/json'}});const b=await r.json().catch(()=>({}));if(!r.ok)throw Error(b.error?.message||'Classroom HTTP '+r.status);return b;}
+        async function nptClassroomListarCursos(){const cursos=[];let pageToken='';do{const u=new URL('https://classroom.googleapis.com/v1/courses');u.searchParams.set('courseStates','ACTIVE');u.searchParams.set('pageSize','100');if(pageToken)u.searchParams.set('pageToken',pageToken);const b=await nptClassroomFetch(u.toString());cursos.push(...(b.courses||[]));pageToken=b.nextPageToken||'';}while(pageToken);localStorage.setItem(NPT_CLASSROOM_COURSES_KEY,JSON.stringify(cursos));nptClassroomPrepararVinculoInsumo();nptClassroomEstadoSelector(cursos.length?cursos.length+' curso(s) activo(s) cargado(s). Ya puedes elegir el curso correspondiente.':'La cuenta autorizó, pero no tiene cursos activos disponibles. Confirma que sea la cuenta docente y que Classroom API esté habilitada.',!cursos.length);}
+        function nptClassroomClave(){return String(cursoActual||'').trim()+'::'+String(paraleloActual||'').trim();}
+        function nptClassroomUrlSistema(){try{const u=new URL(location.href);u.hash='';return u.href;}catch(_){return location.href;}}
+        function nptClassroomPrepararVinculoInsumo(){const s=document.getElementById('npt-classroom-insumo-course'),ctx=document.getElementById('npt-classroom-insumo-contexto'),st=document.getElementById('npt-classroom-insumo-estado');if(!s)return;const c=String(cursoActual||'').trim(),p=String(paraleloActual||'').trim(),m=nptClassroomLeer(NPT_CLASSROOM_MAP_KEY,{}),v=m[nptClassroomClave()],cache=nptClassroomLeer(NPT_CLASSROOM_COURSES_KEY,[]);if(ctx)ctx.textContent=c&&p?'Se aplicará a '+c+' / '+p+' · '+(trimestresEfectivos().find(x=>x.num===nptGestionCtx?.trimestre)?.label||'trimestre seleccionado')+'.':'Selecciona primero un curso y paralelo en el sistema.';s.innerHTML='';const ph=document.createElement('option');ph.value='';ph.textContent=v?'Conservar vínculo actual: '+(v.nombre||v.id):cache.length?'Selecciona el curso de Classroom':'Sin cursos cargados; usa Conectar / actualizar cursos';s.appendChild(ph);const cursos=Array.isArray(cache)?[...cache]:[];if(v&&!cursos.some(x=>String(x.id)===String(v.id)))cursos.unshift({id:v.id,name:v.nombre||v.id});for(const cur of cursos){const o=document.createElement('option');o.value=String(cur.id);o.textContent=(cur.name||'Curso')+(cur.section?' — '+cur.section:'');o.dataset.name=cur.name||o.textContent;s.appendChild(o);}const quitar=document.createElement('option');quitar.value='__none__';quitar.textContent='Quitar vínculo y dejar avisos sin curso';s.appendChild(quitar);if(v)s.value=String(v.id);if(st)st.textContent=v?'Vinculado: '+c+' / '+p+' → '+(v.nombre||v.id):cache.length?'El vínculo nuevo se guardará al pulsar Guardar cambios.':'Pulsa Conectar / actualizar cursos y autoriza la cuenta docente.';}
+        function nptClassroomGuardarVinculoInsumo(){const s=document.getElementById('npt-classroom-insumo-course'),st=document.getElementById('npt-classroom-insumo-estado'),c=String(cursoActual||'').trim(),p=String(paraleloActual||'').trim();if(!s||!c||!p||!s.value)return;const m=nptClassroomLeer(NPT_CLASSROOM_MAP_KEY,{}),key=nptClassroomClave();if(s.value==='__none__'){delete m[key];localStorage.setItem(NPT_CLASSROOM_MAP_KEY,JSON.stringify(m));if(st)st.textContent='Vínculo quitado para '+c+' / '+p+'.';return;}const o=s.options[s.selectedIndex];m[key]={id:s.value,nombre:o?.dataset?.name||o?.textContent||s.value};localStorage.setItem(NPT_CLASSROOM_MAP_KEY,JSON.stringify(m));if(st)st.textContent='Vinculado: '+c+' / '+p+' → '+m[key].nombre+' (guardado en este navegador).';}
+        function nptClassroomEncolar(c,p,t,items){if(!items.length)return;const q=nptClassroomLeer(NPT_CLASSROOM_QUEUE_KEY,[]);for(const i of items){const at=i.activadaEn||new Date().toISOString(),key=[c,p,t,i.id,at].join('_');if(!q.some(x=>x.key===key))q.push({key:key,curso:c,paralelo:p,trimestre:t,nombre:i.etiqueta||i.id,fechaMaxima:i.fechaMaxima||null,activadaEn:at});}localStorage.setItem(NPT_CLASSROOM_QUEUE_KEY,JSON.stringify(q));nptClassroomEstado(items.length+' aviso(s) nuevo(s) pendiente(s).');if(nptClassroomToken)void nptClassroomEnviarPendientes();}
+        async function nptClassroomEnviarPendientes(){if(!nptClassroomToken){nptClassroomEstado('Avisos en cola; conecta la cuenta docente para enviarlos.',true);return;}const q=nptClassroomLeer(NPT_CLASSROOM_QUEUE_KEY,[]),sent=nptClassroomLeer(NPT_CLASSROOM_SENT_KEY,{}),left=[];let count=0,err='';for(const i of q){if(sent[i.key])continue;const m=nptClassroomLeer(NPT_CLASSROOM_MAP_KEY,{})[String(i.curso).trim()+'::'+String(i.paralelo).trim()];if(!m?.id){left.push(i);err='Falta vincular '+i.curso+' / '+i.paralelo;continue;}const text='Nuevo insumo en el sistema: '+i.nombre+'\nCurso: '+i.curso+' / '+i.paralelo+' · Trimestre '+i.trimestre+(i.fechaMaxima?'\nFecha límite: '+i.fechaMaxima:'')+'\nAbrir el sistema: '+nptClassroomUrlSistema()+'\nIngresa al sistema para revisar instrucciones y realizar la actividad.';try{const b=await nptClassroomFetch('https://classroom.googleapis.com/v1/courses/'+encodeURIComponent(m.id)+'/announcements',{method:'POST',body:JSON.stringify({text:text,state:'PUBLISHED'})});sent[i.key]={id:b.id||null,url:b.alternateLink||null,fecha:new Date().toISOString()};localStorage.setItem(NPT_CLASSROOM_SENT_KEY,JSON.stringify(sent));count++;}catch(e){left.push(i);err=e.message;}}localStorage.setItem(NPT_CLASSROOM_QUEUE_KEY,JSON.stringify(left));nptClassroomEstado(err?count+' publicado(s); '+left.length+' pendiente(s): '+err:count+' anuncio(s) publicado(s) en Classroom.',!!err);}
+        function nptClassroomInit(){const e=document.getElementById('npt-classroom-client-id');if(e)e.value=localStorage.getItem(NPT_CLASSROOM_CLIENT_KEY)||'';}
+        window.nptClassroomGuardarClientId = nptClassroomGuardarClientId;
+        window.nptClassroomConectar = nptClassroomConectar;
+        window.nptClassroomEnviarPendientes = nptClassroomEnviarPendientes;        window.registrarAuditoria = registrarAuditoria;
 
         // Iniciar aplicación (al final, después de exponer todas las funciones)
+        document.getElementById('npt-classroom-btn-save')?.addEventListener('click', nptClassroomGuardarClientId);
+        document.addEventListener('click', event => { const button=event.target.closest?.('#npt-classroom-btn-connect, #npt-classroom-insumo-connect'); if(button){event.preventDefault();nptClassroomConectar();} });
+        document.getElementById('npt-classroom-btn-pending')?.addEventListener('click', nptClassroomEnviarPendientes);        document.addEventListener('DOMContentLoaded', nptClassroomInit);
         iniciarFirebase();
     </script>
 </body>
