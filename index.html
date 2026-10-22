@@ -3548,17 +3548,26 @@ video {
         }
 
         function mensajeErrorLoginFirebase(error) {
-            const codigo=String(error?.message||'').toUpperCase();
+            // Firebase usa variantes con guion (auth/invalid-credential) y
+            // errores REST con guion bajo; normalizar evita perder el mapeo.
+            const codigo=`${error?.code||''} ${error?.message||''}`.toUpperCase().replace(/-/g,'_');
             if(codigo.includes('MAX_ACCESOS_DIARIOS_NO_CONFIGURADO')) return 'El límite diario aún no está configurado en el sistema. Comunícalo al docente administrador.';
             if(codigo.includes('MAX_ACCESOS_DIARIOS')) return `Ya alcanzaste el máximo de ${nptMaxAccesosDiarios ?? 'ingresos'} permitidos hoy. Podrás volver a ingresar mañana.`;
             if(codigo.includes('CONTADOR_ACCESO_FALLIDO')) return 'No se pudo registrar tu ingreso en el sistema. Verifica la conexión e inténtalo nuevamente.';
-            if(['INVALID_LOGIN_CREDENTIALS','EMAIL_NOT_FOUND','INVALID_PASSWORD','USER_DISABLED'].some(x=>codigo.includes(x))) return 'Correo o contraseña incorrectos, o la cuenta está deshabilitada.';
+            if(['INVALID_LOGIN_CREDENTIALS','INVALID_CREDENTIAL','EMAIL_NOT_FOUND','INVALID_PASSWORD','WRONG_PASSWORD'].some(x=>codigo.includes(x))) return 'No se pudo validar el ingreso con esos datos. Revisa el correo institucional y la contraseña. Si es tu primer ingreso, pulsa “Crear cuenta y establecer contraseña” y confirma el correo recibido. Si ya tenías una cuenta y olvidaste la contraseña, pulsa “Olvidé mi contraseña” y sigue el enlace que llegará a tu correo. Revisa también Spam.';
+            if(codigo.includes('USER_DISABLED')) return 'La cuenta está deshabilitada. Comunícate con el docente administrador para que revise el acceso.';
             if(codigo.includes('CUENTA_SIN_ROL_DOCENTE')) return 'Esta cuenta no tiene asignado el rol de docente. Solicita al administrador que la habilite.';
             if(codigo.includes('CUENTA_DOCENTE_NO_AUTORIZADA')) return 'La cuenta autenticó correctamente, pero aún no está autorizada como docente en esta instalación.';
             if(codigo.includes('EMAIL_NOT_VERIFIED')) return 'Confirma tu correo institucional desde el enlace que Firebase envió antes de iniciar sesión.';
+            if(codigo.includes('ESTUDIANTE_CEDULA_NO_ENCONTRADA')) return 'La cédula no aparece en la nómina consultada. Verifica los 10 dígitos; si están correctos, pide al docente que revise el registro del estudiante.';
+            if(codigo.includes('ESTUDIANTE_CORREO_NO_CORRESPONDE')) return 'El correo con el que ingresaste no está asociado a esa cédula en la nómina. Verifica que uses el correo institucional registrado para ese estudiante; si no coincide, solicita al docente que revise la ficha.';
+            if(codigo.includes('ESTUDIANTE_REGISTRO_INCONSISTENTE')) return 'La ficha localizada no coincide con la cédula consultada. No se abrió el acceso. Solicita al docente que revise la nómina.';
+            if(codigo.includes('ESTUDIANTE_NOMINA_NO_VERIFICABLE')) return 'La cuenta se autenticó, pero no se pudo consultar la nómina por un problema de conexión o permisos. Vuelve a intentarlo; si persiste, avisa al docente administrador.';
+            if(['NETWORK_REQUEST_FAILED','NETWORK_ERROR','FAILED TO FETCH','TIMEOUT'].some(x=>codigo.includes(x))) return 'No se pudo conectar con Firebase. Comprueba tu conexión e inténtalo nuevamente.';
             if(codigo.includes('OPERATION_NOT_ALLOWED')) return 'El proveedor Correo/Contraseña no está habilitado en Firebase Authentication.';
             if(codigo.includes('TOO_MANY_ATTEMPTS')) return 'Se limitaron temporalmente los intentos. Espera e inténtalo más tarde.';
-            return 'No se pudo iniciar sesión con Firebase. Verifica la conexión y la configuración de Authentication.';
+            const codigoVisible=String(error?.code||'').trim();
+            return `No se pudo completar la verificación y no es posible determinar con certeza qué dato falló. Revisa el correo, la contraseña y la conexión; inténtalo nuevamente. Si el mensaje persiste, comunica al docente el momento del intento${codigoVisible?` y el código ${codigoVisible}`:''}, sin compartir tu contraseña.`;
         }
 
         async function iniciarSesionFirebase(email,password) {
@@ -3906,16 +3915,19 @@ video {
                     // Las rutas heredadas son alternativas independientes. Consultarlas
                     // juntas reduce latencia sin ampliar el alcance ni cambiar precedencia.
                     const lecturasNomina=await Promise.all(RUTAS_ESTUDIANTES.map(async (ruta,indice)=>{
-                        try { return {ruta,indice,valor:await leerValorRutaFirebase(ruta+'/'+ced)}; }
-                        catch(e) { console.warn('[AUTH] Sin permiso para consultar ruta heredada de nómina ('+indice+'):',e?.message||e); return {ruta,indice,valor:null}; }
+                        try { return {ruta,indice,valor:await leerValorRutaFirebase(ruta+'/'+ced),error:null}; }
+                        catch(e) { console.warn('[AUTH] No se pudo consultar una ruta de nómina ('+indice+').'); return {ruta,indice,valor:null,error:e}; }
                     }));
                     const registroElegido=lecturasNomina.find(x=>x.valor&&typeof x.valor==='object');
                     const registroEstudiante=registroElegido?.valor||null;
                     if(registroElegido) rutaEstudiantes=registroElegido.ruta;
-                    const estudiante=registroEstudiante?normalizarEstudiante({clave:ced,valor:registroEstudiante,ruta:[ced]}):null;
-                    if(!estudiante||estudiante.cedula!==ced||texto(estudiante.correo).trim().toLowerCase()!==_authIdentity.email.trim().toLowerCase()) {
-                        throw new Error('El correo autenticado no corresponde a la cédula registrada.');
+                    if(!registroEstudiante) {
+                        if(lecturasNomina.some(x=>x.error)) throw new Error('ESTUDIANTE_NOMINA_NO_VERIFICABLE');
+                        throw new Error('ESTUDIANTE_CEDULA_NO_ENCONTRADA');
                     }
+                    const estudiante=normalizarEstudiante({clave:ced,valor:registroEstudiante,ruta:[ced]});
+                    if(estudiante.cedula!==ced) throw new Error('ESTUDIANTE_REGISTRO_INCONSISTENTE');
+                    if(texto(estudiante.correo).trim().toLowerCase()!==_authIdentity.email.trim().toLowerCase()) throw new Error('ESTUDIANTE_CORREO_NO_CORRESPONDE');
                     const clavesCurso=Object.fromEntries(nptAliasCurso(estudiante.curso).map(k=>[k,true]));
                     const clavesParalelo=Object.fromEntries(nptAliasParalelo(estudiante.paralelo).map(k=>[k,true]));
                     await guardarValorFirebase(`usuariosEstudiantes/${_authIdentity.uid}`,{
@@ -4683,7 +4695,7 @@ video {
             const password=document.getElementById('input-clave-estudiante')?.value||'';
             if(!local){errorText.innerText='Digita tu correo institucional.';errorBox?.classList.remove('hidden');return;}
             if(!/^\d{10}$/.test(ced)){errorText.innerText='Digita una cédula válida de 10 dígitos.';errorBox?.classList.remove('hidden');return;}
-            if(!password){errorText.innerText='Digita tu contraseña del sistema. La cédula ya no funciona como contraseña.';errorBox?.classList.remove('hidden');return;}
+            if(!password){errorText.innerText='Escribe tu contraseña. Si es tu primer ingreso, pulsa “Crear cuenta y establecer contraseña” para crearla y confirmar el correo. Si ya tenías una contraseña y la olvidaste, pulsa “Olvidé mi contraseña” y revisa también Spam. La cédula no funciona como contraseña.';errorBox?.classList.remove('hidden');return;}
             document.getElementById('input-cedula').value=ced;
             const correoCompleto=local+DOMINIO_INSTITUCIONAL;
             const btn=document.querySelector('#screen-login button[onclick="verificarEstudiante()"]');
@@ -4701,7 +4713,7 @@ video {
                 await cargarDatosFirebase({precargarCalificaciones:false});
                 const msPerfil=Math.round(performance.now()-inicioPerfil);
                 const est=estudiantes.find(e=>texto(e.correo).trim().toLowerCase()===correoCompleto&&e.cedula===ced);
-                if(!est) throw new Error('El correo autenticado no corresponde a esa cédula o el estudiante no está en la nómina.');
+                if(!est) throw new Error('ESTUDIANTE_REGISTRO_INCONSISTENTE');
                 estudianteActual=est;
                 document.getElementById('login-error')?.classList.add('hidden');
                 document.getElementById('input-clave-estudiante').value='';
