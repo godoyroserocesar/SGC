@@ -2247,9 +2247,9 @@ video {
                     <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Correo institucional</label>
                     <div class="flex items-stretch">
                         <input type="text" id="input-email-local"
-                            oninput="this.value = this.value.replace(/@/g, ''); actualizarVistaPreviaCorreoNPT();"
+                            oninput="this.value = normalizarUsuarioCorreoInstitucional(this.value); actualizarVistaPreviaCorreoNPT(); ocultarAvisosLoginEstudiante();"
                             onkeypress="if(event.key==='@') event.preventDefault()"
-                            onpaste="setTimeout(() => { this.value = this.value.replace(/@/g, ''); actualizarVistaPreviaCorreoNPT(); }, 0)"
+                            onpaste="setTimeout(() => { this.value = normalizarUsuarioCorreoInstitucional(this.value); actualizarVistaPreviaCorreoNPT(); }, 0)"
                             placeholder="usuario"
                             class="flex-1 px-4 py-3 bg-slate-50 border rounded-l-xl text-sm focus:ring-2 focus:ring-brand-500 min-w-0">
                         <span class="px-3 py-3 bg-brand-600 border border-brand-600 rounded-r-xl text-xs text-white font-bold font-mono whitespace-nowrap flex items-center">@sagradocorazon.edu.ec</span>
@@ -2258,16 +2258,16 @@ video {
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Cédula</label>
-                    <input type="text" id="input-cedula" inputmode="numeric" autocomplete="off" maxlength="10"
+                    <input type="text" id="input-cedula" inputmode="numeric" autocomplete="off" maxlength="10" oninput="ocultarAvisosLoginEstudiante()"
                         class="w-full px-4 py-3 bg-slate-50 border rounded-xl text-lg font-mono tracking-wider focus:ring-2 focus:ring-brand-500">
                 </div>
                 <div>
                     <label for="input-clave-estudiante" class="block text-xs font-bold text-slate-600 uppercase mb-1">Contraseña del sistema</label>
-                    <input type="password" id="input-clave-estudiante" autocomplete="current-password"
+                    <input type="password" id="input-clave-estudiante" autocomplete="current-password" oninput="ocultarAvisosLoginEstudiante()"
                         class="w-full px-4 py-3 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500"
                         placeholder="Contraseña del sistema">
                 </div>
-                <div id="login-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 p-2 rounded-xl text-sm flex items-center gap-2"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/></svg><span id="login-error-text">Datos no registrados</span></div>
+                <div id="login-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl text-sm flex items-start gap-2" role="alert" aria-live="assertive"><svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/></svg><span id="login-error-text" class="min-w-0 leading-relaxed">Datos no registrados</span></div>
                 <div id="login-status" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-800 p-2 rounded-xl text-sm" role="status" aria-live="polite"></div>
                 <button onclick="verificarEstudiante()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl shadow-md transition-all">Validar y Continuar</button>
                 <div class="flex flex-wrap justify-center gap-4 text-xs">
@@ -3559,7 +3559,9 @@ video {
             if(codigo.includes('CUENTA_SIN_ROL_DOCENTE')) return 'Esta cuenta no tiene asignado el rol de docente. Solicita al administrador que la habilite.';
             if(codigo.includes('CUENTA_DOCENTE_NO_AUTORIZADA')) return 'La cuenta autenticó correctamente, pero aún no está autorizada como docente en esta instalación.';
             if(codigo.includes('EMAIL_NOT_VERIFIED')) return 'Confirma tu correo institucional desde el enlace que Firebase envió antes de iniciar sesión.';
-            if(codigo.includes('ESTUDIANTE_CEDULA_NO_ENCONTRADA')) return 'La cédula no aparece en la nómina consultada. Verifica los 10 dígitos; si están correctos, pide al docente que revise el registro del estudiante.';
+            if(codigo.includes('ESTUDIANTE_PERFIL_CEDULA_DESACTUALIZADO')) return 'Correo y contraseña verificados. El acceso se detuvo porque el perfil conserva una cédula anterior; la contraseña se borró del campo por seguridad. Solicita al docente que confirme la cédula vigente en la nómina y corrija el vínculo anterior. Después, vuelve a ingresar.';
+            if(codigo.includes('ESTUDIANTE_PERFIL_NO_ACTUALIZABLE')) return 'La contraseña y la ficha se validaron, pero Firebase no autorizó actualizar el vínculo del perfil de acceso. El docente administrador debe revisar el perfil del estudiante en Firebase y confirmar que sus permisos permitan crear o actualizar el vínculo solo cuando corresponda. No compartas tu contraseña.';
+            if(codigo.includes('ESTUDIANTE_CEDULA_NO_ENCONTRADA')) return 'La cédula ingresada no aparece en la nómina consultada. Verifica sus 10 dígitos; si está correcta, solicita al docente que confirme que la ficha no fue eliminada y que la cédula vigente esté registrada.';
             if(codigo.includes('ESTUDIANTE_CORREO_NO_CORRESPONDE')) return 'El correo con el que ingresaste no está asociado a esa cédula en la nómina. Verifica que uses el correo institucional registrado para ese estudiante; si no coincide, solicita al docente que revise la ficha.';
             if(codigo.includes('ESTUDIANTE_REGISTRO_INCONSISTENTE')) return 'La ficha localizada no coincide con la cédula consultada. No se abrió el acceso. Solicita al docente que revise la nómina.';
             if(codigo.includes('ESTUDIANTE_NOMINA_NO_VERIFICABLE')) return 'La cuenta se autenticó, pero no se pudo consultar la nómina por un problema de conexión o permisos. Vuelve a intentarlo; si persiste, avisa al docente administrador.';
@@ -3620,14 +3622,31 @@ video {
             return datos;
         }
         function correoEstudianteIngresado() {
-            const local=texto(document.getElementById('input-email-local')?.value).trim().toLowerCase();
+            const local=normalizarUsuarioCorreoInstitucional(document.getElementById('input-email-local')?.value);
             return local?local+DOMINIO_INSTITUCIONAL:'';
+        }
+        function mensajeErrorRecuperacionFirebase(error) {
+            const codigo=`${error?.code||''} ${error?.message||''}`.toUpperCase().replace(/-/g,'_');
+            if(['TOO_MANY_ATTEMPTS_TRY_LATER','TOO_MANY_REQUESTS','RESET_PASSWORD_EXCEED_LIMIT','QUOTA_EXCEEDED'].some(x=>codigo.includes(x))) {
+                return 'Firebase limitó temporalmente las solicitudes de recuperación. Espera antes de volver a intentarlo; si afecta a varios estudiantes, el administrador debe revisar el límite de envío de Authentication.';
+            }
+            if(codigo.includes('OPERATION_NOT_ALLOWED')) return 'Firebase Authentication no tiene habilitada la recuperación para cuentas con correo y contraseña. El administrador debe revisar el proveedor Correo/Contraseña.';
+            if(['INVALID_API_KEY','API_KEY_INVALID','API_KEY_SERVICE_BLOCKED','PROJECT_NOT_FOUND'].some(x=>codigo.includes(x))) return 'La solicitud llegó a Firebase, pero la configuración del proyecto o la clave de la aplicación la rechazó. Comunica este error al administrador.';
+            if(['INVALID_EMAIL','MISSING_EMAIL'].some(x=>codigo.includes(x))) return 'El correo institucional formado por el sistema no es válido. Revisa el usuario escrito antes del dominio institucional.';
+            if(['NETWORK_REQUEST_FAILED','NETWORK_ERROR','FAILED TO FETCH','TIMEOUT'].some(x=>codigo.includes(x))) return 'No se pudo conectar con Firebase para solicitar la recuperación. Comprueba la conexión e inténtalo más tarde.';
+            return 'Firebase no pudo aceptar la solicitud de recuperación. Inténtalo más tarde; si ocurre con varios estudiantes, el administrador debe revisar Authentication y el límite de correos. No compartas contraseñas ni códigos.';
         }
         function mostrarEstadoCuentaEstudiante(mensaje,esError=false) {
             const box=document.getElementById(esError?'login-error':'login-status');
             const other=document.getElementById(esError?'login-status':'login-error');
-            other?.classList.add('hidden');
-            if(box){if(esError){document.getElementById('login-error-text').innerText=mensaje;}else{box.textContent=mensaje;}box.classList.remove('hidden');}
+            if(other){other.classList.add('hidden');other.style.display='none';}
+            if(box){if(esError){document.getElementById('login-error-text').innerText=mensaje;}else{box.textContent=mensaje;}box.classList.remove('hidden');box.style.display=esError?'flex':'block';}
+        }
+        function ocultarAvisosLoginEstudiante() {
+            ['login-error','login-status'].forEach(id=>{
+                const box=document.getElementById(id);
+                if(box){box.classList.add('hidden');box.style.display='none';}
+            });
         }
         async function registrarCuentaEstudiante() {
             const email=correoEstudianteIngresado(),password=document.getElementById('input-clave-estudiante')?.value||'';
@@ -3652,11 +3671,13 @@ video {
         async function recuperarClaveEstudiante() {
             const email=correoEstudianteIngresado();
             if(!email) return mostrarEstadoCuentaEstudiante('Escribe primero tu correo institucional.',true);
+            if(!/^[^\s@]+@sagradocorazon\.edu\.ec$/.test(email)) return mostrarEstadoCuentaEstudiante('El correo institucional formado por el sistema no es válido. Revisa el usuario que escribiste.',true);
             try {
                 await enviarAccionCorreoFirebase({requestType:'PASSWORD_RESET',email});
-                mostrarEstadoCuentaEstudiante('Si el correo tiene una cuenta, Firebase enviará instrucciones para restablecer la contraseña. Revisa también el correo no deseado.');
+                mostrarEstadoCuentaEstudiante('Firebase recibió la solicitud, pero por seguridad no confirma si ese correo tiene una cuenta ni si el mensaje fue entregado. Si nunca creaste la cuenta con “Crear cuenta y establecer contraseña”, la recuperación no puede enviarte un enlace: usa esa opción primero. Tener correo y cédula en la nómina no crea la cuenta de acceso. Si ya tenías cuenta, revisa Spam y confirma que escribiste el usuario institucional correcto. Si no llega en unos minutos, comunica al docente el correo y la hora del intento; no compartas tu contraseña ni códigos.');
             } catch(e) {
-                mostrarEstadoCuentaEstudiante('No se pudo solicitar el restablecimiento. Verifica el correo institucional e inténtalo más tarde.',true);
+                console.warn('[AUTH] Firebase rechazó la solicitud de recuperación:',e?.message||e);
+                mostrarEstadoCuentaEstudiante(mensajeErrorRecuperacionFirebase(e),true);
             }
         }
 
@@ -3928,13 +3949,27 @@ video {
                     const estudiante=normalizarEstudiante({clave:ced,valor:registroEstudiante,ruta:[ced]});
                     if(estudiante.cedula!==ced) throw new Error('ESTUDIANTE_REGISTRO_INCONSISTENTE');
                     if(texto(estudiante.correo).trim().toLowerCase()!==_authIdentity.email.trim().toLowerCase()) throw new Error('ESTUDIANTE_CORREO_NO_CORRESPONDE');
+                    // Las reglas de RTDB impiden que el estudiante cambie por sí mismo
+                    // una cédula ya asociada a su UID. Detectar esa referencia heredada
+                    // antes de intentar escribir evita un fallo opaco de permiso.
+                    let perfilPrevio = null;
+                    try { perfilPrevio = await leerValorRutaFirebase(`usuariosEstudiantes/${_authIdentity.uid}`); }
+                    catch (errorPerfil) { console.warn('[AUTH] No fue posible consultar el perfil vinculado; se comprobará la escritura autorizada:', errorPerfil?.message || errorPerfil); }
+                    const cedulaPerfil = normalizarCedula(perfilPrevio?.cedula || '');
+                    if (cedulaPerfil && cedulaPerfil !== ced) throw new Error('ESTUDIANTE_PERFIL_CEDULA_DESACTUALIZADO');
                     const clavesCurso=Object.fromEntries(nptAliasCurso(estudiante.curso).map(k=>[k,true]));
                     const clavesParalelo=Object.fromEntries(nptAliasParalelo(estudiante.paralelo).map(k=>[k,true]));
-                    await guardarValorFirebase(`usuariosEstudiantes/${_authIdentity.uid}`,{
-                        cedula:ced,correo:_authIdentity.email.toLowerCase(),rutaEstudiantes,
-                        curso:estudiante.curso,paralelo:estudiante.paralelo,clavesCurso,clavesParalelo,
-                        actualizadoEn:new Date().toISOString()
-                    });
+                    try {
+                        await guardarValorFirebase(`usuariosEstudiantes/${_authIdentity.uid}`,{
+                            cedula:ced,correo:_authIdentity.email.toLowerCase(),rutaEstudiantes,
+                            curso:estudiante.curso,paralelo:estudiante.paralelo,clavesCurso,clavesParalelo,
+                            actualizadoEn:new Date().toISOString()
+                        });
+                    } catch (errorPerfil) {
+                        const codigoPerfil = `${errorPerfil?.code || ''} ${errorPerfil?.message || ''}`.toUpperCase();
+                        if (/PERMISSION_DENIED|PERMISSION DENIED/.test(codigoPerfil)) throw new Error('ESTUDIANTE_PERFIL_NO_ACTUALIZABLE');
+                        throw errorPerfil;
+                    }
                     estudiantes=[estudiante];
                     calificaciones=[];
                     if(opciones.precargarCalificaciones!==false) {
@@ -4195,16 +4230,50 @@ video {
             return true;
         }
 
+        // Evita dejar perfiles de acceso apuntando a cédulas borradas.
+        // Lee el índice una vez por operación (también en borrados masivos).
+        async function desvincularPerfilesEstudiantePorCedulas(cedulas) {
+            const objetivo = new Set(cedulas.map(normalizarCedula));
+            if ([...objetivo].some(ced => !/^\d{10}$/.test(ced))) throw new Error('CEDULA_INVALIDA_PARA_ELIMINACION');
+            if (!esSesionDocenteFirebase() || !(await ensureAuth())) throw new Error('DOCENTE_NO_AUTORIZADO_PARA_LIMPIAR_PERFILES');
+            const perfiles = await leerValorRutaFirebase('usuariosEstudiantes');
+            if (perfiles === null || perfiles === undefined) return 0;
+            if (typeof perfiles !== 'object' || Array.isArray(perfiles)) throw new Error('PERFILES_ESTUDIANTES_NO_VERIFICABLES');
+            const vinculados = Object.entries(perfiles).filter(([, perfil]) =>
+                perfil && typeof perfil === 'object' && objetivo.has(normalizarCedula(perfil.cedula))
+            );
+            // No borrar nóminas hasta completar la desvinculación de todos los perfiles.
+            await Promise.all(vinculados.map(([uid]) => borrarValorFirebase(`usuariosEstudiantes/${encodeURIComponent(uid)}`)));
+            return vinculados.length;
+        }
+        async function desvincularPerfilesEstudiantePorCedula(ced) {
+            return desvincularPerfilesEstudiantePorCedulas([ced]);
+        }
+
+        function mensajeErrorEliminacionEstudiante(error) {
+            const codigo = `${error?.code || ''} ${error?.message || error || ''}`.toUpperCase();
+            if (codigo.includes('DOCENTE_NO_AUTORIZADO')) return 'No se eliminó el registro: inicia sesión con la cuenta docente autorizada para actualizar también los vínculos de acceso.';
+            if (codigo.includes('PERMISSION_DENIED') || codigo.includes('PERMISSION DENIED')) return 'No se eliminó el registro porque Firebase no permitió revisar o actualizar los vínculos de acceso. El administrador debe corregir los permisos de usuariosEstudiantes.';
+            if (codigo.includes('PERFILES_ESTUDIANTES_NO_VERIFICABLES')) return 'No se eliminó el registro porque no se pudo verificar la estructura de los perfiles estudiantiles.';
+            return 'No se completó la eliminación ni se actualizaron los datos locales. Revisa la conexión y los permisos de Firebase; comunica al docente la hora del intento.';
+        }
+
         async function eliminarEstudianteFirebase(ced) {
             ced = normalizarCedula(ced);
-            const authOk = await ensureAuth();
-            if (authOk) {
-                try { await borrarValorFirebase(`${rutaEstudiantes}/${ced}`); } catch(e) { console.error(e); }
+            try {
+                if (!(await ensureAuth()) || !esSesionDocenteFirebase()) throw new Error('DOCENTE_NO_AUTORIZADO_PARA_LIMPIAR_PERFILES');
+                await desvincularPerfilesEstudiantePorCedula(ced);
+                await borrarValorFirebase(`${rutaEstudiantes}/${ced}`);
+                estudiantes = estudiantes.filter(e => e.cedula !== ced);
+                guardarBackup();
+                actualizarSelectores();
+                actualizarPaneles();
+                return true;
+            } catch (e) {
+                console.error('[NOMINA] Eliminación cancelada para mantener sincronizado el perfil:', e);
+                alert(mensajeErrorEliminacionEstudiante(e));
+                return false;
             }
-            estudiantes = estudiantes.filter(e => e.cedula !== ced);
-            guardarBackup();
-            actualizarSelectores();
-            actualizarPaneles();
         }
 
         async function guardarCalificacion(cal) {
@@ -4670,6 +4739,14 @@ video {
 
         // ==================== EVALUACIÓN ====================
         const DOMINIO_INSTITUCIONAL = '@sagradocorazon.edu.ec';
+        // Acepta la parte local o un correo institucional completo pegado en el campo.
+        // Solo elimina el dominio institucional exacto para evitar formar una dirección distinta.
+        function normalizarUsuarioCorreoInstitucional(valor) {
+            let usuario = texto(valor).trim().toLowerCase();
+            const dominio = DOMINIO_INSTITUCIONAL.toLowerCase();
+            if (usuario.endsWith(dominio)) usuario = usuario.slice(0, -dominio.length);
+            return usuario.trim();
+        }
         // Vista previa en vivo del correo institucional completo mientras el estudiante escribe:
         // resalta lo que realmente se está formando (usuario + dominio), en vez de dejar solo el
         // texto de ayuda gris estático que pasaba desapercibido.
@@ -4677,7 +4754,8 @@ video {
             const el = document.getElementById('email-vista-previa');
             const input = document.getElementById('input-email-local');
             if (!el || !input) return;
-            const local = input.value.trim();
+            const local = normalizarUsuarioCorreoInstitucional(input.value);
+            if (input.value !== local) input.value = local;
             if (local) {
                 el.textContent = `Tu correo será: ${local}${DOMINIO_INSTITUCIONAL}`;
                 el.className = 'text-xs font-bold text-brand-700 mt-1';
@@ -4687,15 +4765,13 @@ video {
             }
         }
         async function verificarEstudiante() {
-            const errorBox=document.getElementById('login-error');
-            const errorText=document.getElementById('login-error-text');
-            errorBox?.classList.add('hidden');
-            const local=texto(document.getElementById('input-email-local')?.value).trim().toLowerCase();
+            ocultarAvisosLoginEstudiante();
+            const local=normalizarUsuarioCorreoInstitucional(document.getElementById('input-email-local')?.value);
             const ced=normalizarCedula(document.getElementById('input-cedula')?.value);
             const password=document.getElementById('input-clave-estudiante')?.value||'';
-            if(!local){errorText.innerText='Digita tu correo institucional.';errorBox?.classList.remove('hidden');return;}
-            if(!/^\d{10}$/.test(ced)){errorText.innerText='Digita una cédula válida de 10 dígitos.';errorBox?.classList.remove('hidden');return;}
-            if(!password){errorText.innerText='Escribe tu contraseña. Si es tu primer ingreso, pulsa “Crear cuenta y establecer contraseña” para crearla y confirmar el correo. Si ya tenías una contraseña y la olvidaste, pulsa “Olvidé mi contraseña” y revisa también Spam. La cédula no funciona como contraseña.';errorBox?.classList.remove('hidden');return;}
+            if(!local){mostrarEstadoCuentaEstudiante('Digita tu correo institucional.',true);return;}
+            if(!/^\d{10}$/.test(ced)){mostrarEstadoCuentaEstudiante('Digita una cédula válida de 10 dígitos.',true);return;}
+            if(!password){mostrarEstadoCuentaEstudiante('Escribe tu contraseña. Si es tu primer ingreso, pulsa “Crear cuenta y establecer contraseña” para crearla y confirmar el correo. Si ya tenías una contraseña y la olvidaste, pulsa “Olvidé mi contraseña” y revisa también Spam. La cédula no funciona como contraseña.',true);return;}
             document.getElementById('input-cedula').value=ced;
             const correoCompleto=local+DOMINIO_INSTITUCIONAL;
             const btn=document.querySelector('#screen-login button[onclick="verificarEstudiante()"]');
@@ -4715,7 +4791,7 @@ video {
                 const est=estudiantes.find(e=>texto(e.correo).trim().toLowerCase()===correoCompleto&&e.cedula===ced);
                 if(!est) throw new Error('ESTUDIANTE_REGISTRO_INCONSISTENTE');
                 estudianteActual=est;
-                document.getElementById('login-error')?.classList.add('hidden');
+                ocultarAvisosLoginEstudiante();
                 document.getElementById('input-clave-estudiante').value='';
                 // La reserva diaria es el último requisito de autorización previo al aula.
                 const inicioControlDiario=performance.now();
@@ -4739,8 +4815,7 @@ video {
                 limpiarSesionFirebase();
                 estudianteActual=null;
                 document.getElementById('input-clave-estudiante').value='';
-                errorText.innerText=mensajeErrorLoginFirebase(e);
-                errorBox?.classList.remove('hidden');
+                mostrarEstadoCuentaEstudiante(mensajeErrorLoginFirebase(e),true);
             } finally {
                 if(btn){btn.disabled=false;btn.textContent=btn.dataset.labelOriginal||'Ingresar';delete btn.dataset.labelOriginal;}
             }
@@ -13478,27 +13553,35 @@ video {
                 ? `\n\n⚠️ ADVERTENCIA: se borrarán también ${huerfanas.archivos} entrega(s) de insumos, ${huerfanas.notas} calificación(es) NPT y ${huerfanas.evaluacionesIA} evaluación(es) IA asociadas a estos estudiantes.`
                 : '';
             if (!confirm(`⚠️ ¿Eliminar ${afectados.length} estudiante(s) de ${donde}?\nEsta acción es irreversible.${msgHuerfanas}\n\n¿Confirmas?`)) return;
-            const authOk = await ensureAuth();
-            let ok = 0;
+            const eliminados = [];
+            try {
+                await desvincularPerfilesEstudiantePorCedulas(afectados.map(est => est.cedula));
+            } catch (e) {
+                console.error('[NOMINA] No se inicia el borrado: no fue posible reconciliar los perfiles:', e);
+                alert(mensajeErrorEliminacionEstudiante(e));
+                return;
+            }
             for (const est of afectados) {
                 try {
-                    if (authOk) {
-                        await borrarValorFirebase(`${rutaEstudiantes}/${est.cedula}`);
-                        try { await borrarValorFirebase(`${rutaCalificaciones}/${est.cedula}`); } catch(_) {}
-                    }
-                    ok++;
-                } catch(e) { console.error('Error eliminando', est.cedula, e); }
+                    await borrarValorFirebase(`${rutaEstudiantes}/${est.cedula}`);
+                    try { await borrarValorFirebase(`${rutaCalificaciones}/${est.cedula}`); } catch(e) { console.warn('[NOMINA] No se pudo borrar la calificación asociada:', e?.message || e); }
+                    eliminados.push(est);
+                } catch(e) {
+                    console.error('[NOMINA] Eliminación cancelada para '+est.cedula+':', e);
+                }
             }
-            // Limpiar entregas NPT huérfanas
-            await limpiarNPTDeCedulas(cedulas);
-            estudiantes = estudiantes.filter(e => !((!c || e.curso === c) && (!p || e.paralelo === p)));
+            const ok = eliminados.length;
+            const cedulasEliminadas = eliminados.map(e => e.cedula);
+            const huerfanasEliminadas = contarEntregasNPTHuerfanas(cedulasEliminadas);
+            await limpiarNPTDeCedulas(cedulasEliminadas);
+            estudiantes = estudiantes.filter(e => !cedulasEliminadas.includes(e.cedula));
             guardarBackup();
             actualizarSelectores();
             actualizarPaneles();
             renderCfgNominaSelectores();
             renderCfgNomina();
-            await registrarAuditoria('eliminar_nomina', `Eliminados ${ok} estudiantes de ${donde}. Entregas NPT borradas: ${huerfanas.total}`);
-            alert(`✅ ${ok} de ${afectados.length} estudiante(s) eliminados de ${donde}.\n${huerfanas.total > 0 ? `Se borraron también ${huerfanas.total} registros NPT asociados.` : ''}`);
+            await registrarAuditoria('eliminar_nomina', `Eliminados ${ok} estudiantes de ${donde}. Entregas NPT borradas: ${huerfanasEliminadas.total}`);
+            alert(`${ok} de ${afectados.length} estudiante(s) eliminados de ${donde}. ${ok < afectados.length ? 'Los demás se conservaron porque no se pudieron verificar o limpiar sus perfiles de acceso; revisa permisos y conexión con el administrador.' : ''}\n${huerfanas.total > 0 ? `Se borraron también ${huerfanasEliminadas.total} registros NPT asociados.` : ''}`);
         }
         async function eliminarEstudiantesSeleccionados() {
             const checks = document.querySelectorAll('#cfg-nomina-body .cfg-nomina-check:checked');
@@ -13509,25 +13592,33 @@ video {
                 ? `\n\n⚠️ ADVERTENCIA: se borrarán también ${huerfanas.archivos} entrega(s) de insumos, ${huerfanas.notas} calificación(es) NPT y ${huerfanas.evaluacionesIA} evaluación(es) IA asociadas.`
                 : '';
             if (!confirm(`⚠️ ¿Eliminar ${cedulas.length} estudiante(s) seleccionado(s)?\nEsta acción es irreversible.${msgHuerfanas}\n\n¿Confirmas?`)) return;
-            const authOk = await ensureAuth();
-            let ok = 0;
+            const cedulasEliminadas = [];
+            try {
+                await desvincularPerfilesEstudiantePorCedulas(cedulas);
+            } catch (e) {
+                console.error('[NOMINA] No se inicia el borrado: no fue posible reconciliar los perfiles:', e);
+                alert(mensajeErrorEliminacionEstudiante(e));
+                return;
+            }
             for (const ced of cedulas) {
                 try {
-                    if (authOk) {
-                        await borrarValorFirebase(`${rutaEstudiantes}/${ced}`);
-                        try { await borrarValorFirebase(`${rutaCalificaciones}/${ced}`); } catch(_) {}
-                    }
-                    ok++;
-                } catch(e) { console.error(e); }
+                    await borrarValorFirebase(`${rutaEstudiantes}/${ced}`);
+                    try { await borrarValorFirebase(`${rutaCalificaciones}/${ced}`); } catch(e) { console.warn('[NOMINA] No se pudo borrar la calificación asociada:', e?.message || e); }
+                    cedulasEliminadas.push(ced);
+                } catch(e) {
+                    console.error('[NOMINA] Eliminación cancelada para '+ced+':', e);
+                }
             }
-            await limpiarNPTDeCedulas(cedulas);
-            estudiantes = estudiantes.filter(e => !cedulas.includes(e.cedula));
+            const ok = cedulasEliminadas.length;
+            const huerfanasEliminadas = contarEntregasNPTHuerfanas(cedulasEliminadas);
+            await limpiarNPTDeCedulas(cedulasEliminadas);
+            estudiantes = estudiantes.filter(e => !cedulasEliminadas.includes(e.cedula));
             guardarBackup();
             actualizarSelectores();
             actualizarPaneles();
             renderCfgNomina();
             await registrarAuditoria('eliminar_estudiantes', `Eliminados ${ok} estudiantes seleccionados. Cédulas: ${cedulas.join(', ')}. Entregas NPT borradas: ${huerfanas.total}`);
-            alert(`✅ ${ok} de ${cedulas.length} estudiante(s) eliminados.\n${huerfanas.total > 0 ? `Se borraron también ${huerfanas.total} registros NPT asociados.` : ''}`);
+            alert(`${ok} de ${cedulas.length} estudiante(s) eliminados. ${ok < cedulas.length ? 'Los demás se conservaron porque no se pudieron verificar o limpiar sus perfiles de acceso; revisa permisos y conexión con el administrador.' : ''}\n${huerfanas.total > 0 ? `Se borraron también ${huerfanasEliminadas.total} registros NPT asociados.` : ''}`);
         }
 
         // ---- Backup íntegro descargable ----
