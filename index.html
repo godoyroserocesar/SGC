@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 
-<!-- Código de instalación Cliengo para https://godoyroseroia.github.io/AGENTE/ -->
+<!-- Código de instalación Cliengo para https://godoyroserocesar.github.io/SGC/ -->
 <script type="text/javascript">
   (function () {
     var ldk = document.createElement('script');
@@ -974,6 +974,17 @@ video {
   50% {
     opacity: .5;
   }
+}
+
+.npt-limite-solicitudes-alerta {
+  color: #b91c1c !important;
+  background-color: #fff !important;
+  font-weight: 800 !important;
+  animation: npt-titilar-limite .65s steps(2, start) infinite;
+}
+
+@keyframes npt-titilar-limite {
+  to { opacity: .18; }
 }
 
 .animate-pulse {
@@ -2961,7 +2972,7 @@ video {
                     <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Asignatura</label>
                     <select id="npt-solicitud-rec-asignatura" onchange="cambiarAsignaturaSolicitudRecuperacionNPT()" required class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500"><option value="">Seleccione una asignatura registrada</option></select>
                 </div>
-                <p id="npt-solicitud-rec-cupo" class="text-xs text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-lg p-2"></p>
+                <p id="npt-solicitud-rec-cupo" role="status" aria-live="assertive" class="text-xs text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-lg p-2"></p>
                 <div>
                     <label id="npt-solicitud-rec-motivo-label" class="block text-xs font-bold text-slate-600 uppercase mb-1">Observación adicional (opcional)</label>
                     <textarea id="npt-solicitud-rec-motivo" rows="2" placeholder="Cualquier información adicional que considere pertinente..." class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500"></textarea>
@@ -6836,6 +6847,30 @@ video {
         // ---- Modal de Solicitud de Recuperación (representante legal) ----
         let nptSolicitudRecCtx = null; // { numTrimestre, clave, etiqueta, notaOriginal, fechaNotaOriginal, porVencimientoSinEntrega }
         const nptAutoSolicitudVencimientoMostrada = new Set();
+        const NPT_MOTIVO_FIJO_NO_PRESENTACION = 'La evaluación no fue presentada en la fecha prevista';
+        function protegerPrefijoMotivoSolicitudNPT(campo) {
+            if (!campo || campo.dataset.proteccionMotivoFijoInicializada === 'true') return;
+            campo.dataset.proteccionMotivoFijoInicializada = 'true';
+            const normalizar = () => {
+                const prefijo = campo.dataset.motivoFijoPrefijo || '';
+                if (!prefijo || campo.value.startsWith(prefijo)) return;
+                const textoIngresado = campo.value.slice(Math.min(campo.value.length, prefijo.length)).trimStart();
+                campo.value = `${prefijo}${textoIngresado ? `\n${textoIngresado}` : '\n'}`;
+            };
+            campo.addEventListener('beforeinput', evento => {
+                const prefijo = campo.dataset.motivoFijoPrefijo || '';
+                if (!prefijo) return;
+                const inicio = campo.selectionStart ?? 0;
+                const fin = campo.selectionEnd ?? inicio;
+                const editaPrefijo = inicio < prefijo.length && (fin > inicio || !evento.inputType?.startsWith('delete'));
+                const borraPrefijo = evento.inputType?.startsWith('delete') && inicio < prefijo.length;
+                if (editaPrefijo || borraPrefijo) {
+                    evento.preventDefault();
+                    campo.setSelectionRange(prefijo.length + 1, prefijo.length + 1);
+                }
+            });
+            campo.addEventListener('input', normalizar);
+        }
         function abrirSolicitudRecuperacionNPT(numTrimestre, clave, etiqueta, notaOriginal, fechaNotaOriginal, porVencimientoSinEntrega = false) {
             if (!estudianteActual) return;
             if (!nptRecuperacionPermitidaEnTrimestre(estudianteActual.curso, estudianteActual.paralelo, numTrimestre, clave, estudianteActual.cedula)) {
@@ -6885,17 +6920,24 @@ video {
                     ? `Selecciona una materia registrada. Máximo: ${cfgMaxSolicitudesRecuperacion} solicitudes aprobadas por materia en ${cfgPeriodoActivo?.nombre || 'el período lectivo activo'}.`
                     : `Límite alcanzado en todas las materias: ${asignaturas.map(a => `${a}: ${nptConteoSolicitudesAprobadas(estudianteActual.cedula, null, a)} aprobadas / máximo ${cfgMaxSolicitudesRecuperacion} · 0 cupos`).join(' | ')}`
                 : 'No hay asignaturas registradas para este curso y paralelo. Contacta al docente para actualizar el horario.';
+            const avisoCupo = document.getElementById('npt-solicitud-rec-cupo');
+            const sinCuposEnTodasLasMaterias = asignaturas.length > 0 && materiasConCupo.length === 0;
+            avisoCupo.classList.toggle('npt-limite-solicitudes-alerta', sinCuposEnTodasLasMaterias);
+            avisoCupo.dataset.alarmaMateria = sinCuposEnTodasLasMaterias ? '__todas__' : '';
+            if (sinCuposEnTodasLasMaterias) void sonarAlarmaMaxSolicitudesNPT();
             const motivoEl = document.getElementById('npt-solicitud-rec-motivo');
-            motivoEl.value = '';
+            protegerPrefijoMotivoSolicitudNPT(motivoEl);
+            motivoEl.dataset.motivoFijoPrefijo = porVencimientoSinEntrega ? NPT_MOTIVO_FIJO_NO_PRESENTACION : '';
+            motivoEl.value = porVencimientoSinEntrega ? `${NPT_MOTIVO_FIJO_NO_PRESENTACION}\n` : '';
             motivoEl.placeholder = porVencimientoSinEntrega
-                ? 'La evaluación no fue presentada en la fecha prevista, pero puede añadirse más detalle.'
+                ? 'La frase inicial está fija. Puede añadir más detalle en la línea siguiente.'
                 : 'Cualquier información adicional que considere pertinente...';
             const motivoLabel = document.getElementById('npt-solicitud-rec-motivo-label');
             if (motivoLabel) motivoLabel.textContent = porVencimientoSinEntrega ? 'MOTIVO POR EL CUAL NO PRESENTÓ LA EVALUACIÓN (OPCIONAL)' : 'Observación adicional (opcional)';
             const motivoHelp = document.getElementById('npt-solicitud-rec-motivo-help');
             if (motivoHelp) {
                 motivoHelp.textContent = porVencimientoSinEntrega
-                    ? 'Indique la causa real de la no entrega. El sistema no inventa ni presume el motivo.'
+                    ? 'La frase inicial se guardará en la solicitud y no se puede borrar. Si desea, añada más detalle debajo.'
                     : '';
                 motivoHelp.classList.toggle('hidden', !porVencimientoSinEntrega);
             }
@@ -6908,9 +6950,49 @@ video {
             const materia = select.value;
             const aprobadas = materia ? nptConteoSolicitudesAprobadas(estudianteActual?.cedula, null, materia) : 0;
             const restantes = Math.max(0, cfgMaxSolicitudesRecuperacion - aprobadas);
-            document.getElementById('npt-solicitud-rec-cupo').textContent = materia
+            const cupoEl = document.getElementById('npt-solicitud-rec-cupo');
+            const botonEnviar = document.getElementById('npt-solicitud-rec-btn');
+            const limiteAlcanzado = !!materia && aprobadas >= cfgMaxSolicitudesRecuperacion;
+            cupoEl.classList.toggle('npt-limite-solicitudes-alerta', limiteAlcanzado);
+            botonEnviar.disabled = !materia || limiteAlcanzado;
+            if (limiteAlcanzado && cupoEl.dataset.alarmaMateria !== materia && cupoEl.dataset.alarmaMateria !== '__todas__') {
+                cupoEl.dataset.alarmaMateria = materia;
+                void sonarAlarmaMaxSolicitudesNPT();
+            } else if (!limiteAlcanzado) {
+                cupoEl.dataset.alarmaMateria = '';
+            }
+            cupoEl.textContent = materia
                 ? `En ${materia}: ${aprobadas} solicitud${aprobadas === 1 ? '' : 'es'} aprobada${aprobadas === 1 ? '' : 's'} de un máximo de ${cfgMaxSolicitudesRecuperacion}; ${restantes} cupo${restantes === 1 ? '' : 's'} disponible${restantes === 1 ? '' : 's'}. Las rechazadas no cuentan.`
                 : `Selecciona una materia registrada para consultar cuántas solicitudes están aprobadas y cuántos cupos quedan.`;
+        }
+        async function sonarAlarmaMaxSolicitudesNPT() {
+            const AudioContextDisponible = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextDisponible) return;
+            let contexto;
+            try {
+                contexto = new AudioContextDisponible();
+                await contexto.resume();
+                const inicio = contexto.currentTime;
+                [880, 620, 880, 620, 880, 620].forEach((frecuencia, indice) => {
+                    const tiempo = inicio + indice * 0.24;
+                    const oscilador = contexto.createOscillator();
+                    const volumen = contexto.createGain();
+                    oscilador.type = 'square';
+                    oscilador.frequency.setValueAtTime(frecuencia, tiempo);
+                    volumen.gain.setValueAtTime(0.001, tiempo);
+                    volumen.gain.linearRampToValueAtTime(0.72, tiempo + 0.02);
+                    volumen.gain.setValueAtTime(0.72, tiempo + 0.17);
+                    volumen.gain.exponentialRampToValueAtTime(0.001, tiempo + 0.21);
+                    oscilador.connect(volumen);
+                    volumen.connect(contexto.destination);
+                    oscilador.start(tiempo);
+                    oscilador.stop(tiempo + 0.22);
+                });
+                window.setTimeout(() => contexto.close().catch(() => {}), 1800);
+            } catch (error) {
+                if (contexto) contexto.close().catch(() => {});
+                console.warn('No se pudo reproducir la alarma del límite de solicitudes:', error);
+            }
         }
         function cerrarSolicitudRecuperacionNPT() {
             document.getElementById('npt-solicitud-rec-modal').classList.add('hidden');
@@ -6955,7 +7037,12 @@ video {
             const repEmail = texto(estudianteActual.repEmail || document.getElementById('npt-solicitud-rec-email').value).trim();
             const repCelular = texto(estudianteActual.repCelular || document.getElementById('npt-solicitud-rec-celular').value).trim();
             const estudianteEmail = texto(estudianteActual.correo).trim();
-            const motivo = texto(document.getElementById('npt-solicitud-rec-motivo').value).trim();
+            const motivoEl = document.getElementById('npt-solicitud-rec-motivo');
+            const prefijoMotivo = porVencimientoSinEntrega ? NPT_MOTIVO_FIJO_NO_PRESENTACION : '';
+            if (prefijoMotivo && !motivoEl.value.startsWith(prefijoMotivo)) {
+                motivoEl.value = `${prefijoMotivo}\n`;
+            }
+            const motivo = texto(motivoEl.value).trim();
             const confirmo = document.getElementById('npt-solicitud-rec-confirmo').checked;
             if (!repNombre || !repCedula || !repCelular || !estudianteEmail) {
                 errEl.textContent = 'La ficha debe tener el nombre, cédula y celular del representante y el correo del estudiante. Completa los datos permitidos o solicita al docente que corrija la ficha.';
