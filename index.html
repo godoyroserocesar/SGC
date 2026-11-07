@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 
-<!-- Código de instalación Cliengo para https://godoyroserocesar.github.io/SGC/ -->
+<!-- Código de instalación Cliengo para https://godoyroseroia.github.io/AGENTE/ -->
 <script type="text/javascript">
   (function () {
     var ldk = document.createElement('script');
@@ -3584,7 +3584,10 @@ video {
             const codigo=`${error?.code||''} ${error?.message||''}`.toUpperCase().replace(/-/g,'_');
             if(codigo.includes('MAX_ACCESOS_DIARIOS_NO_CONFIGURADO')) return 'El límite diario aún no está configurado en el sistema. Comunícalo al docente administrador.';
             if(codigo.includes('MAX_ACCESOS_DIARIOS')) return `Ya alcanzaste el máximo de ${nptMaxAccesosDiarios ?? 'ingresos'} permitidos hoy. Podrás volver a ingresar mañana.`;
-            if(codigo.includes('CONTADOR_ACCESO_FALLIDO')) return 'No se pudo registrar tu ingreso en el sistema. Verifica la conexión e inténtalo nuevamente.';
+            if(codigo.includes('CONTADOR_ACCESO_FALLIDO')) {
+                const detalle=String(error?.message||'').replace(/^CONTADOR_ACCESO_FALLIDO\s*:?\s*/i,'').trim().slice(0,180);
+                return `No se pudo registrar tu ingreso en el sistema.${detalle?` Diagnóstico: ${detalle}.`:''} Verifica los permisos del contador diario y la conexión.`;
+            }
             if(['INVALID_LOGIN_CREDENTIALS','INVALID_CREDENTIAL','EMAIL_NOT_FOUND','INVALID_PASSWORD','WRONG_PASSWORD'].some(x=>codigo.includes(x))) return 'No se pudo validar el ingreso con esos datos. Revisa el correo institucional y la contraseña. Si es tu primer ingreso, pulsa “Crear cuenta y establecer contraseña” y confirma el correo recibido. Si ya tenías una cuenta y olvidaste la contraseña, pulsa “Olvidé mi contraseña” y sigue el enlace que llegará a tu correo. Revisa también Spam.';
             if(codigo.includes('USER_DISABLED')) return 'La cuenta está deshabilitada. Comunícate con el docente administrador para que revise el acceso.';
             if(codigo.includes('CUENTA_SIN_ROL_DOCENTE')) return 'Esta cuenta no tiene asignado el rol de docente. Solicita al administrador que la habilite.';
@@ -12784,7 +12787,13 @@ video {
         // Firebase Rules debe validar también ese nodo para que el cliente no pueda eludirlo.
         async function incrementarContadorRESTCondicional(ruta, maximo = null) {
             const urlBase = rtdbRestUrl(ruta);
-            for (let intento = 0; intento < 8; intento++) {
+            const MAX_INTENTOS_CAS = 16;
+            const esperarConJitter = intento => new Promise(resolve => {
+                const baseMs = Math.min(25 * (2 ** Math.min(intento, 5)), 800);
+                const jitterMs = Math.floor(Math.random() * 100);
+                setTimeout(resolve, baseMs + jitterMs);
+            });
+            for (let intento = 0; intento < MAX_INTENTOS_CAS; intento++) {
                 let token = await exigirSesionFirebase();
                 let url = `${urlBase}?auth=${encodeURIComponent(token)}`;
                 let lectura = await fetch(url, { cache: 'no-store', headers: { 'X-Firebase-ETag': 'true' } });
@@ -12806,9 +12815,16 @@ video {
                     headers: { 'Content-Type': 'application/json', 'if-match': etag },
                     body: JSON.stringify(actual + 1)
                 });
-                if (escritura.status === 412) continue;
+                if (escritura.status === 412) {
+                    // Otro acceso cambió el contador después de leer el ETag.
+                    // Esperar con jitter evita que todas las pestañas repitan
+                    // el conflicto al mismo tiempo.
+                    await esperarConJitter(intento);
+                    continue;
+                }
                 if (escritura.status === 401) {
                     await obtenerAuthToken(true);
+                    await esperarConJitter(intento);
                     continue;
                 }
                 if (!escritura.ok) {
@@ -12829,7 +12845,7 @@ video {
                 }
                 return actual + 1;
             }
-            throw new Error('CONTADOR_ACCESO_FALLIDO: demasiados cambios simultáneos');
+            throw new Error(`CONTADOR_ACCESO_FALLIDO: el contador siguió cambiando después de ${MAX_INTENTOS_CAS} reintentos`);
         }
 
         async function guardarMaxAccesosDiarios() {
