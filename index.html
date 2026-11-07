@@ -9040,7 +9040,7 @@ video {
             return Number.isInteger(cfgMaxSolicitudesRecuperacion) && cfgMaxSolicitudesRecuperacion >= 0 && cfgMaxSolicitudesRecuperacion <= 100;
         }
         function nptMensajeMaxSolicitudesRecuperacionNoDisponible() {
-            if (cfgMaxSolicitudesRecuperacionError) return 'No se pudo leer un máximo válido desde la base de datos. El docente debe verificar la conexión o ingresar el límite en Configuración antes de habilitar solicitudes.';
+            if (cfgMaxSolicitudesRecuperacionError) return 'No se pudo consultar el máximo en la base de datos. El docente debe abrir Configuración para sincronizar el límite guardado o verificar los permisos de lectura; las solicitudes permanecerán bloqueadas hasta confirmar el valor.';
             if (!cfgPeriodoActivo?.nombre) return 'El docente debe configurar el período lectivo activo y guardar su máximo de solicitudes antes de habilitar solicitudes.';
             return 'El docente debe ingresar y guardar el máximo de solicitudes de recuperación para el período lectivo activo antes de habilitar solicitudes.';
         }
@@ -12644,25 +12644,77 @@ video {
         }
 
         // ---- Carga de configuración del sistema ----
+        function nptNormalizarMaximoSolicitudesRecuperacion(valor) {
+            if (valor && typeof valor === 'object') {
+                valor = valor.maximo ?? valor.limite ?? valor.valor ?? valor.cantidad;
+            }
+            if (valor === null || valor === undefined || valor === '') return null;
+            const maximo = Number(valor);
+            return Number.isInteger(maximo) && maximo >= 0 && maximo <= 100 ? maximo : null;
+        }
         async function cargarMaxSolicitudesRecuperacionPeriodoActivo() {
             cfgMaxSolicitudesRecuperacion = null;
             cfgMaxSolicitudesRecuperacionError = false;
             if (!cfgPeriodoActivo?.nombre) return;
+            const maximoEnPeriodoActivo = nptNormalizarMaximoSolicitudesRecuperacion(cfgPeriodoActivo.maxSolicitudesRecuperacionAnuales);
+            if (maximoEnPeriodoActivo !== null && !esSesionDocenteFirebase()) {
+                cfgMaxSolicitudesRecuperacion = maximoEnPeriodoActivo;
+                return;
+            }
             try {
-                const valorGuardado = await leerValorRutaFirebase(`configuracion/maxSolicitudesRecuperacionAnuales/${sanitizarClave(cfgPeriodoActivo.nombre)}`);
-                if (valorGuardado === null || valorGuardado === undefined || valorGuardado === '') return;
-                const maxGuardado = Number(valorGuardado);
-                if (Number.isInteger(maxGuardado) && maxGuardado >= 0 && maxGuardado <= 100) cfgMaxSolicitudesRecuperacion = maxGuardado;
+                const clavePeriodo = sanitizarClave(cfgPeriodoActivo.nombre);
+                let valorGuardado = null;
+                let lecturaCorrecta = false;
+                try {
+                    valorGuardado = await leerValorRutaFirebase(`configuracion/maxSolicitudesRecuperacionAnuales/${clavePeriodo}`);
+                    lecturaCorrecta = true;
+                } catch (e) {
+                    console.warn('No se pudo leer el máximo por la ruta del período; se consultará el nodo de configuración:', e.message);
+                }
+                if (valorGuardado === null || valorGuardado === undefined || valorGuardado === '') {
+                    try {
+                        const maximosGuardados = await leerValorRutaFirebase('configuracion/maxSolicitudesRecuperacionAnuales');
+                        lecturaCorrecta = true;
+                        const contieneLimiteGlobal = maximosGuardados && typeof maximosGuardados === 'object' &&
+                            ['maximo', 'limite', 'valor', 'cantidad'].some(campo => Object.prototype.hasOwnProperty.call(maximosGuardados, campo));
+                        valorGuardado = maximosGuardados && typeof maximosGuardados === 'object' && !contieneLimiteGlobal
+                            ? (maximosGuardados[clavePeriodo] ?? maximosGuardados[cfgPeriodoActivo.nombre] ?? Object.entries(maximosGuardados).find(([clave]) => sanitizarClave(clave) === clavePeriodo)?.[1])
+                            : maximosGuardados;
+                    } catch (e) {
+                        if (!lecturaCorrecta) throw e;
+                    }
+                }
+                if (valorGuardado === null || valorGuardado === undefined || valorGuardado === '') {
+                    if (maximoEnPeriodoActivo !== null) cfgMaxSolicitudesRecuperacion = maximoEnPeriodoActivo;
+                    return;
+                }
+                const maxGuardado = nptNormalizarMaximoSolicitudesRecuperacion(valorGuardado);
+                if (maxGuardado !== null) cfgMaxSolicitudesRecuperacion = maxGuardado;
                 else cfgMaxSolicitudesRecuperacionError = true;
             } catch (e) {
+                if (maximoEnPeriodoActivo !== null) {
+                    cfgMaxSolicitudesRecuperacion = maximoEnPeriodoActivo;
+                    return;
+                }
                 cfgMaxSolicitudesRecuperacionError = true;
-                console.warn('No se pudo leer el máximo de solicitudes de recuperación desde Firebase:', e.message);
+                console.warn('No se pudo leer el máximo de solicitudes de recuperación del período activo desde Firebase:', e.message);
+            }
+        }
+        async function sincronizarMaximoPeriodoActivoParaLecturaEstudiante() {
+            if (!esSesionDocenteFirebase() || !cfgPeriodoActivo?.nombre || !nptMaxSolicitudesRecuperacionConfigurado()) return;
+            if (Number(cfgPeriodoActivo.maxSolicitudesRecuperacionAnuales) === cfgMaxSolicitudesRecuperacion) return;
+            try {
+                await guardarValorFirebase('configuracion/periodoActivo/maxSolicitudesRecuperacionAnuales', cfgMaxSolicitudesRecuperacion);
+                cfgPeriodoActivo.maxSolicitudesRecuperacionAnuales = cfgMaxSolicitudesRecuperacion;
+            } catch (e) {
+                console.warn('No se pudo sincronizar el máximo en el período activo para lectura estudiantil:', e.message);
             }
         }
 
         async function cargarConfigSistema(opciones = {}) {
             cfgMaxSolicitudesRecuperacion = null;
             cfgMaxSolicitudesRecuperacionError = false;
+            cfgPeriodoActivo = null;
             try {
                 // Leer solo las ramas que usa esta función y en paralelo evita descargar
                 // de una sola vez configuración extensa (por ejemplo, el historial curricular).
@@ -12673,6 +12725,7 @@ video {
                 const cfg = Object.fromEntries(pares);
                 cfgPeriodoActivo = (cfg && cfg.periodoActivo) || null;
                 await cargarMaxSolicitudesRecuperacionPeriodoActivo();
+                await sincronizarMaximoPeriodoActivoParaLecturaEstudiante();
                 cfgTrimestres = (cfg && cfg.trimestres) || null;
                 cfgFormulaPromedio = (cfg && cfg.formulaPromedio) || null;
                 if (!opciones.soloEsencialEstudiante || esSesionDocenteFirebase()) {
@@ -12689,8 +12742,15 @@ video {
                     horarioDocente = Array.isArray(cfg && cfg.horarioDocente) ? cfg.horarioDocente.map(x => ({...x, dia: normalizarDiaHorario(x.dia), bloque: Number(x.bloque || HORARIO_BLOQUES.find(b => b.hora === x.hora)?.id || 0), asignatura: String(x.asignatura || '').trim()})).filter(x => HORARIO_DIAS.includes(x.dia) && x.hora && x.curso && x.paralelo) : [];
                 }
             } catch(e) {
-                cfgMaxSolicitudesRecuperacionError = true;
                 console.warn('No se pudo cargar configuración del sistema:', e);
+                try {
+                    cfgPeriodoActivo = (await leerValorRutaFirebase('configuracion/periodoActivo')) || null;
+                    await cargarMaxSolicitudesRecuperacionPeriodoActivo();
+                } catch (errorMaximo) {
+                    cfgMaxSolicitudesRecuperacion = null;
+                    cfgMaxSolicitudesRecuperacionError = true;
+                    console.warn('No se pudo recuperar el máximo de solicitudes del período activo:', errorMaximo);
+                }
             }
             if (opciones.soloEsencialEstudiante && !esSesionDocenteFirebase()) {
                 actualizarVistasContadores();
@@ -13286,13 +13346,16 @@ video {
                 estado.textContent = 'Configura primero el período lectivo activo para poder guardar el máximo.';
             } else if (cfgMaxSolicitudesRecuperacionError) {
                 estado.className = 'text-[11px] mt-1 text-rose-700 font-bold';
-                estado.textContent = 'No se pudo verificar un máximo válido en Firebase. Comprueba la conexión e ingresa el valor en este campo.';
+                estado.textContent = 'No se pudo consultar el máximo en Firebase. Verifica la conexión o los permisos de lectura. Si confirmas que falta el valor, ingrésalo aquí y guárdalo.';
             } else if (!nptMaxSolicitudesRecuperacionConfigurado()) {
                 estado.className = 'text-[11px] mt-1 text-rose-700 font-bold';
                 estado.textContent = 'No hay máximo guardado para este período. Ingresa un entero entre 0 y 100 y pulsa «Guardar máximo». No se habilitarán solicitudes hasta guardarlo.';
+            } else if (nptNormalizarMaximoSolicitudesRecuperacion(cfgPeriodoActivo.maxSolicitudesRecuperacionAnuales) !== cfgMaxSolicitudesRecuperacion) {
+                estado.className = 'text-[11px] mt-1 text-amber-700 font-bold';
+                estado.textContent = `El máximo ${cfgMaxSolicitudesRecuperacion} fue leído, pero aún no está sincronizado para el módulo estudiante. Pulsa «Guardar máximo» para publicarlo en el período activo.`;
             } else {
                 estado.className = 'text-[11px] mt-1 text-emerald-700 font-semibold';
-                estado.textContent = `Máximo guardado para ${cfgPeriodoActivo.nombre}: ${cfgMaxSolicitudesRecuperacion} solicitudes aprobadas por asignatura.`;
+                estado.textContent = `Máximo guardado y sincronizado para ${cfgPeriodoActivo.nombre}: ${cfgMaxSolicitudesRecuperacion} solicitudes aprobadas por asignatura.`;
             }
         }
 
@@ -13719,7 +13782,14 @@ video {
         async function guardarPeriodoActivo() {
             const nombre = document.getElementById('cfg-periodo-nombre').value.trim();
             if (!nombre) { alert('Escribe el nombre del período (ej. 2025-2026).'); return; }
-            const registro = { nombre, activadoEn: new Date().toISOString() };
+            const maximoDelMismoPeriodo = cfgPeriodoActivo?.nombre === nombre
+                ? nptNormalizarMaximoSolicitudesRecuperacion(cfgPeriodoActivo.maxSolicitudesRecuperacionAnuales)
+                : null;
+            const registro = {
+                nombre,
+                activadoEn: new Date().toISOString(),
+                ...(maximoDelMismoPeriodo !== null ? { maxSolicitudesRecuperacionAnuales: maximoDelMismoPeriodo } : {})
+            };
             cfgPeriodoActivo = registro;
             const authOk = await ensureAuth();
             if (authOk) {
@@ -13727,6 +13797,7 @@ video {
                 catch(e) { console.error(e); alert('Error al guardar el período.'); return; }
             }
             await cargarMaxSolicitudesRecuperacionPeriodoActivo();
+            if (authOk) await sincronizarMaximoPeriodoActivoParaLecturaEstudiante();
             renderTabConfiguracion();
             alert('✅ Período académico activo guardado: ' + nombre);
         }
@@ -13740,9 +13811,13 @@ video {
             if (!await ensureAuth()) return alert('No se pudo autenticar al docente.');
             const ruta = `configuracion/maxSolicitudesRecuperacionAnuales/${sanitizarClave(cfgPeriodoActivo.nombre)}`;
             try {
-                await guardarValorFirebase(ruta, maximo);
+                await guardarActualizacionMultipleFirebase({
+                    [ruta]: maximo,
+                    'configuracion/periodoActivo/maxSolicitudesRecuperacionAnuales': maximo
+                });
                 cfgMaxSolicitudesRecuperacion = maximo;
                 cfgMaxSolicitudesRecuperacionError = false;
+                cfgPeriodoActivo.maxSolicitudesRecuperacionAnuales = maximo;
                 actualizarEstadoConfiguracionMaxSolicitudesRecuperacion();
                 await registrarAuditoria('max_solicitudes_recuperacion', `Máximo anual del período ${cfgPeriodoActivo.nombre}: ${maximo}`);
                 alert(`✅ Máximo anual de solicitudes guardado para ${cfgPeriodoActivo.nombre}: ${maximo}.`);
