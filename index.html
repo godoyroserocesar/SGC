@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 
-<!-- Código de instalación Cliengo para https://godoyroserocesar.github.io/SGC/ -->
+<!-- Código de instalación Cliengo para https://godoyroseroia.github.io/AGENTE/ -->
 <script type="text/javascript">
   (function () {
     var ldk = document.createElement('script');
@@ -981,6 +981,12 @@ video {
   background-color: #fff !important;
   font-weight: 800 !important;
   animation: npt-titilar-limite .65s steps(2, start) infinite;
+}
+
+#npt-solicitud-rec-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  filter: grayscale(.35);
 }
 
 @keyframes npt-titilar-limite {
@@ -2549,10 +2555,11 @@ video {
                         <hr class="border-slate-200 my-3">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end mb-4">
                             <label class="text-xs font-bold text-slate-600">Máximo anual de solicitudes de recuperación
-                                <input type="number" id="cfg-max-solicitudes-recuperacion" min="0" max="100" step="1" value="2" class="block w-full mt-1 px-3 py-2 bg-white border rounded-lg text-sm">
+                                <input type="number" id="cfg-max-solicitudes-recuperacion" min="0" max="100" step="1" required placeholder="Ingrese el máximo" class="block w-full mt-1 px-3 py-2 bg-white border rounded-lg text-sm">
                             </label>
                             <div><button type="button" onclick="guardarMaxSolicitudesRecuperacion()" class="bg-brand-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-brand-700">Guardar máximo</button>
-                            <p class="text-[11px] text-slate-400 mt-1">Por período lectivo. Cuenta solicitudes pendientes y aprobadas; una rechazada libera el cupo.</p></div>
+                            <p class="text-[11px] text-slate-400 mt-1">Por período lectivo y asignatura. El límite debe guardarse aquí; sin este dato no se habilitan solicitudes.</p>
+                            <p id="cfg-max-solicitudes-recuperacion-estado" class="text-[11px] mt-1" aria-live="polite"></p></div>
                         </div>
                         <h5 class="font-bold text-xs text-slate-600 uppercase mb-2">Trimestres del período</h5>
                         <div id="cfg-trimestres-lista" class="space-y-2"></div>
@@ -2984,7 +2991,9 @@ video {
                 </label>
                 <div id="npt-solicitud-rec-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 p-2 rounded-xl text-xs"></div>
             </div>
-            <button id="npt-solicitud-rec-btn" onclick="enviarSolicitudRecuperacionNPT()" class="w-full mt-4 bg-amber-500 text-white py-2 rounded-xl text-sm font-bold hover:bg-amber-600">Enviar solicitud</button>
+            <div id="npt-solicitud-rec-btn-tooltip" class="mt-4" title="Selecciona una materia para continuar.">
+                <button id="npt-solicitud-rec-btn" title="Selecciona una materia para continuar." onclick="enviarSolicitudRecuperacionNPT()" class="w-full bg-amber-500 text-white py-2 rounded-xl text-sm font-bold hover:bg-amber-600">Enviar solicitud</button>
+            </div>
         </div>
     </div>
 
@@ -6198,7 +6207,8 @@ video {
         //   configuracion/trimestres                     → { 1: {label, meses, desde, hasta}, 2: {...}, 3: {...} }
         //   configuracion/formulaPromedio                → { cuaderno: 25, libro: 25, tarea: 20, talleres: 30 }  (porcentajes)
         let cfgPeriodoActivo = null;
-        let cfgMaxSolicitudesRecuperacion = 2;
+        let cfgMaxSolicitudesRecuperacion = null;
+        let cfgMaxSolicitudesRecuperacionError = false;
         let calendarioAcademico = {};
         let horarioDocente = [];
         let asistenciaRegistros = {};
@@ -6846,6 +6856,7 @@ video {
 
         // ---- Modal de Solicitud de Recuperación (representante legal) ----
         let nptSolicitudRecCtx = null; // { numTrimestre, clave, etiqueta, notaOriginal, fechaNotaOriginal, porVencimientoSinEntrega }
+        let nptAlarmaMaxSolicitudesAudio = null;
         const nptAutoSolicitudVencimientoMostrada = new Set();
         const NPT_MOTIVO_FIJO_NO_PRESENTACION = 'La evaluación no fue presentada en la fecha prevista';
         function protegerPrefijoMotivoSolicitudNPT(campo) {
@@ -6873,6 +6884,7 @@ video {
         }
         function abrirSolicitudRecuperacionNPT(numTrimestre, clave, etiqueta, notaOriginal, fechaNotaOriginal, porVencimientoSinEntrega = false) {
             if (!estudianteActual) return;
+            detenerAlarmaMaxSolicitudesNPT();
             if (!nptRecuperacionPermitidaEnTrimestre(estudianteActual.curso, estudianteActual.paralelo, numTrimestre, clave, estudianteActual.cedula)) {
                 alert(clave === 'examen' ? 'Venció el plazo de recuperación del examen: son 7 días desde la fecha programada para rendirlo.' : 'Venció el plazo de recuperación de insumos al finalizar el trimestre configurado.');
                 return;
@@ -6906,22 +6918,33 @@ video {
             const selectAsignatura = document.getElementById('npt-solicitud-rec-asignatura');
             const asignaturas = [...new Set((horarioDocente || []).filter(x => x.curso === estudianteActual.curso && x.paralelo === estudianteActual.paralelo).map(x => texto(x.asignatura).trim()).filter(Boolean))]
                 .sort((a,b) => a.localeCompare(b,'es'));
-            const materiasConCupo = asignaturas.filter(a => nptConteoSolicitudesAprobadas(estudianteActual.cedula, null, a) < cfgMaxSolicitudesRecuperacion);
+            const maximoConfigurado = nptMaxSolicitudesRecuperacionConfigurado();
+            const materiasConCupo = maximoConfigurado
+                ? asignaturas.filter(a => nptConteoSolicitudesAprobadas(estudianteActual.cedula, null, a) < cfgMaxSolicitudesRecuperacion)
+                : [];
             selectAsignatura.innerHTML = '<option value="">Seleccione una asignatura registrada</option>' + asignaturas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
             selectAsignatura.value = '';
-            if (!asignaturas.length) {
+            selectAsignatura.disabled = !maximoConfigurado;
+            if (!maximoConfigurado) {
+                document.getElementById('npt-solicitud-rec-cupo').textContent = nptMensajeMaxSolicitudesRecuperacionNoDisponible();
+                actualizarEstadoBotonSolicitudRecuperacionNPT(true, 'No hay un máximo válido configurado en la base de datos.');
+            } else if (!asignaturas.length) {
                 document.getElementById('npt-solicitud-rec-cupo').textContent = 'No hay asignaturas registradas para este curso y paralelo. No se puede ingresar una materia nueva desde esta solicitud; contacta al docente para actualizar el horario.';
-                document.getElementById('npt-solicitud-rec-btn').disabled = true;
+                actualizarEstadoBotonSolicitudRecuperacionNPT(true, 'No hay asignaturas registradas para este curso y paralelo.');
             } else {
-                document.getElementById('npt-solicitud-rec-btn').disabled = materiasConCupo.length === 0;
+                actualizarEstadoBotonSolicitudRecuperacionNPT(true, materiasConCupo.length === 0
+                    ? `Todas las materias alcanzaron el máximo de ${cfgMaxSolicitudesRecuperacion} solicitudes aprobadas.`
+                    : 'Selecciona una materia para continuar.');
             }
-            document.getElementById('npt-solicitud-rec-cupo').textContent = asignaturas.length
+            document.getElementById('npt-solicitud-rec-cupo').textContent = !maximoConfigurado
+                ? nptMensajeMaxSolicitudesRecuperacionNoDisponible()
+                : asignaturas.length
                 ? materiasConCupo.length
                     ? `Selecciona una materia registrada. Máximo: ${cfgMaxSolicitudesRecuperacion} solicitudes aprobadas por materia en ${cfgPeriodoActivo?.nombre || 'el período lectivo activo'}.`
                     : `Límite alcanzado en todas las materias: ${asignaturas.map(a => `${a}: ${nptConteoSolicitudesAprobadas(estudianteActual.cedula, null, a)} aprobadas / máximo ${cfgMaxSolicitudesRecuperacion} · 0 cupos`).join(' | ')}`
                 : 'No hay asignaturas registradas para este curso y paralelo. Contacta al docente para actualizar el horario.';
             const avisoCupo = document.getElementById('npt-solicitud-rec-cupo');
-            const sinCuposEnTodasLasMaterias = asignaturas.length > 0 && materiasConCupo.length === 0;
+            const sinCuposEnTodasLasMaterias = maximoConfigurado && asignaturas.length > 0 && materiasConCupo.length === 0;
             avisoCupo.classList.toggle('npt-limite-solicitudes-alerta', sinCuposEnTodasLasMaterias);
             avisoCupo.dataset.alarmaMateria = sinCuposEnTodasLasMaterias ? '__todas__' : '';
             if (sinCuposEnTodasLasMaterias) void sonarAlarmaMaxSolicitudesNPT();
@@ -6948,53 +6971,87 @@ video {
         function cambiarAsignaturaSolicitudRecuperacionNPT() {
             const select = document.getElementById('npt-solicitud-rec-asignatura');
             const materia = select.value;
+            if (!nptMaxSolicitudesRecuperacionConfigurado()) {
+                const cupoEl = document.getElementById('npt-solicitud-rec-cupo');
+                cupoEl.classList.remove('npt-limite-solicitudes-alerta');
+                cupoEl.textContent = nptMensajeMaxSolicitudesRecuperacionNoDisponible();
+                detenerAlarmaMaxSolicitudesNPT();
+                actualizarEstadoBotonSolicitudRecuperacionNPT(true, 'No hay un máximo válido configurado en la base de datos.');
+                return;
+            }
             const aprobadas = materia ? nptConteoSolicitudesAprobadas(estudianteActual?.cedula, null, materia) : 0;
             const restantes = Math.max(0, cfgMaxSolicitudesRecuperacion - aprobadas);
             const cupoEl = document.getElementById('npt-solicitud-rec-cupo');
-            const botonEnviar = document.getElementById('npt-solicitud-rec-btn');
             const limiteAlcanzado = !!materia && aprobadas >= cfgMaxSolicitudesRecuperacion;
             cupoEl.classList.toggle('npt-limite-solicitudes-alerta', limiteAlcanzado);
-            botonEnviar.disabled = !materia || limiteAlcanzado;
+            actualizarEstadoBotonSolicitudRecuperacionNPT(!materia || limiteAlcanzado, !materia
+                ? 'Selecciona una materia para continuar.'
+                : limiteAlcanzado
+                    ? `En ${materia} ya se aprobó el máximo de ${cfgMaxSolicitudesRecuperacion} solicitudes de recuperación.`
+                    : '');
             if (limiteAlcanzado && cupoEl.dataset.alarmaMateria !== materia && cupoEl.dataset.alarmaMateria !== '__todas__') {
                 cupoEl.dataset.alarmaMateria = materia;
                 void sonarAlarmaMaxSolicitudesNPT();
             } else if (!limiteAlcanzado) {
                 cupoEl.dataset.alarmaMateria = '';
+                detenerAlarmaMaxSolicitudesNPT();
             }
             cupoEl.textContent = materia
                 ? `En ${materia}: ${aprobadas} solicitud${aprobadas === 1 ? '' : 'es'} aprobada${aprobadas === 1 ? '' : 's'} de un máximo de ${cfgMaxSolicitudesRecuperacion}; ${restantes} cupo${restantes === 1 ? '' : 's'} disponible${restantes === 1 ? '' : 's'}. Las rechazadas no cuentan.`
                 : `Selecciona una materia registrada para consultar cuántas solicitudes están aprobadas y cuántos cupos quedan.`;
         }
+        function actualizarEstadoBotonSolicitudRecuperacionNPT(deshabilitado, motivo = '') {
+            const boton = document.getElementById('npt-solicitud-rec-btn');
+            const contenedor = document.getElementById('npt-solicitud-rec-btn-tooltip');
+            if (!boton) return;
+            boton.disabled = !!deshabilitado;
+            boton.title = motivo;
+            if (contenedor) contenedor.title = motivo;
+        }
         async function sonarAlarmaMaxSolicitudesNPT() {
+            if (nptAlarmaMaxSolicitudesAudio) return;
             const AudioContextDisponible = window.AudioContext || window.webkitAudioContext;
             if (!AudioContextDisponible) return;
             let contexto;
             try {
                 contexto = new AudioContextDisponible();
+                const sirena = contexto.createOscillator();
+                const modulador = contexto.createOscillator();
+                const profundidad = contexto.createGain();
+                const volumen = contexto.createGain();
+                sirena.type = 'sawtooth';
+                sirena.frequency.setValueAtTime(820, contexto.currentTime);
+                modulador.type = 'sine';
+                modulador.frequency.setValueAtTime(0.8, contexto.currentTime);
+                profundidad.gain.setValueAtTime(270, contexto.currentTime);
+                volumen.gain.setValueAtTime(0.78, contexto.currentTime);
+                modulador.connect(profundidad);
+                profundidad.connect(sirena.frequency);
+                sirena.connect(volumen);
+                volumen.connect(contexto.destination);
+                nptAlarmaMaxSolicitudesAudio = { contexto, sirena, modulador, profundidad, volumen };
+                sirena.start();
+                modulador.start();
                 await contexto.resume();
-                const inicio = contexto.currentTime;
-                [880, 620, 880, 620, 880, 620].forEach((frecuencia, indice) => {
-                    const tiempo = inicio + indice * 0.24;
-                    const oscilador = contexto.createOscillator();
-                    const volumen = contexto.createGain();
-                    oscilador.type = 'square';
-                    oscilador.frequency.setValueAtTime(frecuencia, tiempo);
-                    volumen.gain.setValueAtTime(0.001, tiempo);
-                    volumen.gain.linearRampToValueAtTime(0.72, tiempo + 0.02);
-                    volumen.gain.setValueAtTime(0.72, tiempo + 0.17);
-                    volumen.gain.exponentialRampToValueAtTime(0.001, tiempo + 0.21);
-                    oscilador.connect(volumen);
-                    volumen.connect(contexto.destination);
-                    oscilador.start(tiempo);
-                    oscilador.stop(tiempo + 0.22);
-                });
-                window.setTimeout(() => contexto.close().catch(() => {}), 1800);
             } catch (error) {
-                if (contexto) contexto.close().catch(() => {});
+                detenerAlarmaMaxSolicitudesNPT();
                 console.warn('No se pudo reproducir la alarma del límite de solicitudes:', error);
             }
         }
+        function detenerAlarmaMaxSolicitudesNPT() {
+            const alarma = nptAlarmaMaxSolicitudesAudio;
+            if (!alarma) return;
+            nptAlarmaMaxSolicitudesAudio = null;
+            try { alarma.sirena.stop(); } catch (_) {}
+            try { alarma.modulador.stop(); } catch (_) {}
+            try { alarma.sirena.disconnect(); } catch (_) {}
+            try { alarma.modulador.disconnect(); } catch (_) {}
+            try { alarma.profundidad.disconnect(); } catch (_) {}
+            try { alarma.volumen.disconnect(); } catch (_) {}
+            alarma.contexto.close().catch(() => {});
+        }
         function cerrarSolicitudRecuperacionNPT() {
+            detenerAlarmaMaxSolicitudesNPT();
             document.getElementById('npt-solicitud-rec-modal').classList.add('hidden');
             nptSolicitudRecCtx = null;
         }
@@ -7002,10 +7059,15 @@ video {
             if (!estudianteActual || !nptSolicitudRecCtx) return;
             const { numTrimestre, clave, etiqueta, notaOriginal, fechaNotaOriginal, porVencimientoSinEntrega } = nptSolicitudRecCtx;
             const { cedula, nombre, curso, paralelo } = estudianteActual;
+            const errEl = document.getElementById('npt-solicitud-rec-error');
+            if (!nptMaxSolicitudesRecuperacionConfigurado()) {
+                errEl.textContent = nptMensajeMaxSolicitudesRecuperacionNoDisponible();
+                errEl.classList.remove('hidden');
+                return;
+            }
             const asignatura = texto(document.getElementById('npt-solicitud-rec-asignatura').value).trim();
             const asignaturasRegistradas = [...new Set((horarioDocente || []).filter(x => x.curso === curso && x.paralelo === paralelo).map(x => texto(x.asignatura).trim()).filter(Boolean))];
             if (!asignaturasRegistradas.includes(asignatura)) {
-                const errEl = document.getElementById('npt-solicitud-rec-error');
                 errEl.textContent = 'Selecciona una asignatura que ya esté registrada en el horario del curso.';
                 errEl.classList.remove('hidden');
                 return;
@@ -7013,7 +7075,6 @@ video {
             const solicitudExistente = nptSolicitudRecuperacionDe(cedula, numTrimestre, clave);
             const totalSolicitudes = nptConteoSolicitudesRecuperacion(cedula, asignatura);
             const esReintento = solicitudExistente?.estado === 'rechazada';
-            const errEl = document.getElementById('npt-solicitud-rec-error');
             if (solicitudExistente && !esReintento) {
                 errEl.textContent = solicitudExistente.estado === 'aprobada'
                     ? 'Esta solicitud ya fue aprobada.'
@@ -7065,7 +7126,8 @@ video {
                 return;
             }
             const btn = document.getElementById('npt-solicitud-rec-btn');
-            btn.disabled = true; btn.textContent = 'Enviando...';
+            actualizarEstadoBotonSolicitudRecuperacionNPT(true, 'La solicitud se está enviando.');
+            btn.textContent = 'Enviando...';
             try {
                 const registro = {
                     estado: 'pendiente',
@@ -7108,7 +7170,15 @@ video {
                 errEl.textContent = 'Error al enviar la solicitud. Revisa la conexión e intenta de nuevo.';
                 errEl.classList.remove('hidden');
             } finally {
-                btn.disabled = false; btn.textContent = 'Enviar solicitud';
+                const materiaActual = document.getElementById('npt-solicitud-rec-asignatura').value;
+                const aprobadasActuales = materiaActual ? nptConteoSolicitudesAprobadas(cedula, null, materiaActual) : 0;
+                const limiteActualAlcanzado = !!materiaActual && aprobadasActuales >= cfgMaxSolicitudesRecuperacion;
+                actualizarEstadoBotonSolicitudRecuperacionNPT(!materiaActual || limiteActualAlcanzado, !materiaActual
+                    ? 'Selecciona una materia para continuar.'
+                    : limiteActualAlcanzado
+                        ? `En ${materiaActual} ya se aprobó el máximo de ${cfgMaxSolicitudesRecuperacion} solicitudes de recuperación.`
+                        : '');
+                btn.textContent = 'Enviar solicitud';
             }
         }
         function nptFechaLargaEs(fechaStr) {
@@ -8966,6 +9036,14 @@ video {
                 return total + Object.values(evaluaciones || {}).filter(s => s?.estado === 'aprobada' && (!s.periodoAcademico || s.periodoAcademico === cfgPeriodoActivo?.nombre) && (!materia || nptNormalizarAsignaturaSolicitud(s.asignatura) === materia)).length;
             }, 0);
         }
+        function nptMaxSolicitudesRecuperacionConfigurado() {
+            return Number.isInteger(cfgMaxSolicitudesRecuperacion) && cfgMaxSolicitudesRecuperacion >= 0 && cfgMaxSolicitudesRecuperacion <= 100;
+        }
+        function nptMensajeMaxSolicitudesRecuperacionNoDisponible() {
+            if (cfgMaxSolicitudesRecuperacionError) return 'No se pudo leer un máximo válido desde la base de datos. El docente debe verificar la conexión o ingresar el límite en Configuración antes de habilitar solicitudes.';
+            if (!cfgPeriodoActivo?.nombre) return 'El docente debe configurar el período lectivo activo y guardar su máximo de solicitudes antes de habilitar solicitudes.';
+            return 'El docente debe ingresar y guardar el máximo de solicitudes de recuperación para el período lectivo activo antes de habilitar solicitudes.';
+        }
         function nptFechaActivacionEvaluacion(curso, paralelo, numTrimestre, clave) {
             if (clave === 'examen') {
                 return nptNodoTrimestre(nptConfig, curso, paralelo, numTrimestre)?.examenActivadoEn || null;
@@ -9234,6 +9312,10 @@ video {
             const solicitudAprobada = nptSolicitudRecuperacionDe(cedula, numTrimestre, clave);
             if (solicitudAprobada?.estado === 'aprobada') {
                 return `<button type="button" onclick="imprimirSolicitudRecuperacionFormalNPT('${escapeHtml(cedula)}',${numTrimestre},'${escapeHtml(clave)}')" class="w-full mt-2 bg-emerald-600 text-white text-xs font-bold py-2 rounded-xl hover:bg-emerald-700">🖨️ Imprimir solicitud aprobada</button>`;
+            }
+            if (!nptMaxSolicitudesRecuperacionConfigurado()) {
+                const mensaje = nptMensajeMaxSolicitudesRecuperacionNoDisponible();
+                return `<div class="bg-amber-50 border border-amber-200 rounded-xl p-2 mt-2 text-[11px] text-amber-800 font-semibold text-center">⚠️ ${escapeHtml(mensaje)}</div>`;
             }
             const vencida = !!fechaMaxima && fechaMaximaVencida(fechaMaxima);
             const esNoPresentada = notaVal === null && vencida;
@@ -11468,6 +11550,18 @@ video {
             nptRegistrarExpiracionesSolicitud().finally(() => nptActivarSolicitudRecuperacionVencida());
         }
 
+        function nptFechaRangoTrimestre(valor, finDelDia = false) {
+            if (!valor) return null;
+            const fechaTexto = String(valor).trim();
+            const iso = fechaTexto.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            const soloFecha = !!iso || /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(fechaTexto);
+            const fecha = iso
+                ? new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]))
+                : nptParseFecha(fechaTexto);
+            if (!fecha) return null;
+            if (soloFecha) fecha.setHours(finDelDia ? 23 : 0, finDelDia ? 59 : 0, finDelDia ? 59 : 0, finDelDia ? 999 : 0);
+            return fecha;
+        }
         function prepararFiltrosEvaluacionEstudiante() {
             const selTrim = document.getElementById('npt-estudiante-filtro-trimestre');
             const selTipo = document.getElementById('npt-estudiante-filtro-tipo');
@@ -11475,7 +11569,7 @@ video {
             const lista = trimestresEfectivos();
             const ahora = new Date();
             let sugerido = lista.find(t => {
-                const desde = nptParseFecha(t.desde), hasta = nptParseFecha(t.hasta);
+                const desde = nptFechaRangoTrimestre(t.desde), hasta = nptFechaRangoTrimestre(t.hasta, true);
                 return desde && hasta && ahora >= desde && ahora <= hasta;
             })?.num;
             if (!sugerido) sugerido = lista[0]?.num || 1;
@@ -12550,7 +12644,25 @@ video {
         }
 
         // ---- Carga de configuración del sistema ----
+        async function cargarMaxSolicitudesRecuperacionPeriodoActivo() {
+            cfgMaxSolicitudesRecuperacion = null;
+            cfgMaxSolicitudesRecuperacionError = false;
+            if (!cfgPeriodoActivo?.nombre) return;
+            try {
+                const valorGuardado = await leerValorRutaFirebase(`configuracion/maxSolicitudesRecuperacionAnuales/${sanitizarClave(cfgPeriodoActivo.nombre)}`);
+                if (valorGuardado === null || valorGuardado === undefined || valorGuardado === '') return;
+                const maxGuardado = Number(valorGuardado);
+                if (Number.isInteger(maxGuardado) && maxGuardado >= 0 && maxGuardado <= 100) cfgMaxSolicitudesRecuperacion = maxGuardado;
+                else cfgMaxSolicitudesRecuperacionError = true;
+            } catch (e) {
+                cfgMaxSolicitudesRecuperacionError = true;
+                console.warn('No se pudo leer el máximo de solicitudes de recuperación desde Firebase:', e.message);
+            }
+        }
+
         async function cargarConfigSistema(opciones = {}) {
+            cfgMaxSolicitudesRecuperacion = null;
+            cfgMaxSolicitudesRecuperacionError = false;
             try {
                 // Leer solo las ramas que usa esta función y en paralelo evita descargar
                 // de una sola vez configuración extensa (por ejemplo, el historial curricular).
@@ -12560,13 +12672,7 @@ video {
                 const pares = await Promise.all(campos.map(async campo => [campo, await leerValorRutaFirebase(`configuracion/${campo}`)]));
                 const cfg = Object.fromEntries(pares);
                 cfgPeriodoActivo = (cfg && cfg.periodoActivo) || null;
-                cfgMaxSolicitudesRecuperacion = 2;
-                if (cfgPeriodoActivo?.nombre) {
-                    try {
-                        const maxGuardado = Number(await leerValorRutaFirebase(`configuracion/maxSolicitudesRecuperacionAnuales/${sanitizarClave(cfgPeriodoActivo.nombre)}`));
-                        if (Number.isInteger(maxGuardado) && maxGuardado >= 0 && maxGuardado <= 100) cfgMaxSolicitudesRecuperacion = maxGuardado;
-                    } catch (e) { console.warn('Se usará el máximo predeterminado de solicitudes de recuperación:', e.message); }
-                }
+                await cargarMaxSolicitudesRecuperacionPeriodoActivo();
                 cfgTrimestres = (cfg && cfg.trimestres) || null;
                 cfgFormulaPromedio = (cfg && cfg.formulaPromedio) || null;
                 if (!opciones.soloEsencialEstudiante || esSesionDocenteFirebase()) {
@@ -12583,6 +12689,7 @@ video {
                     horarioDocente = Array.isArray(cfg && cfg.horarioDocente) ? cfg.horarioDocente.map(x => ({...x, dia: normalizarDiaHorario(x.dia), bloque: Number(x.bloque || HORARIO_BLOQUES.find(b => b.hora === x.hora)?.id || 0), asignatura: String(x.asignatura || '').trim()})).filter(x => HORARIO_DIAS.includes(x.dia) && x.hora && x.curso && x.paralelo) : [];
                 }
             } catch(e) {
+                cfgMaxSolicitudesRecuperacionError = true;
                 console.warn('No se pudo cargar configuración del sistema:', e);
             }
             if (opciones.soloEsencialEstudiante && !esSesionDocenteFirebase()) {
@@ -13119,8 +13226,7 @@ video {
             const inputP = document.getElementById('cfg-periodo-nombre');
             const estadoP = document.getElementById('cfg-periodo-estado');
             if (inputP) inputP.value = cfgPeriodoActivo?.nombre || '';
-            const inputMaxRecuperaciones = document.getElementById('cfg-max-solicitudes-recuperacion');
-            if (inputMaxRecuperaciones) inputMaxRecuperaciones.value = String(cfgMaxSolicitudesRecuperacion);
+            actualizarEstadoConfiguracionMaxSolicitudesRecuperacion();
             if (estadoP) estadoP.innerHTML = cfgPeriodoActivo?.nombre
                 ? `<span class="text-emerald-600 font-bold">🟢 ${escapeHtml(cfgPeriodoActivo.nombre)}</span><br><span class="text-[11px] text-slate-400">Activado: ${escapeHtml(nptFormatoFechaHora(cfgPeriodoActivo.activadoEn))}</span>`
                 : '<span class="text-slate-400">No hay período activo configurado</span>';
@@ -13165,6 +13271,29 @@ video {
             renderCalendarioConfiguracion();
             renderHorarioMatriz();
             organizarConfiguracionProfesional();
+        }
+
+        function actualizarEstadoConfiguracionMaxSolicitudesRecuperacion() {
+            const input = document.getElementById('cfg-max-solicitudes-recuperacion');
+            const estado = document.getElementById('cfg-max-solicitudes-recuperacion-estado');
+            if (input) {
+                input.value = nptMaxSolicitudesRecuperacionConfigurado() ? String(cfgMaxSolicitudesRecuperacion) : '';
+                input.disabled = !cfgPeriodoActivo?.nombre;
+            }
+            if (!estado) return;
+            if (!cfgPeriodoActivo?.nombre) {
+                estado.className = 'text-[11px] mt-1 text-rose-700 font-bold';
+                estado.textContent = 'Configura primero el período lectivo activo para poder guardar el máximo.';
+            } else if (cfgMaxSolicitudesRecuperacionError) {
+                estado.className = 'text-[11px] mt-1 text-rose-700 font-bold';
+                estado.textContent = 'No se pudo verificar un máximo válido en Firebase. Comprueba la conexión e ingresa el valor en este campo.';
+            } else if (!nptMaxSolicitudesRecuperacionConfigurado()) {
+                estado.className = 'text-[11px] mt-1 text-rose-700 font-bold';
+                estado.textContent = 'No hay máximo guardado para este período. Ingresa un entero entre 0 y 100 y pulsa «Guardar máximo». No se habilitarán solicitudes hasta guardarlo.';
+            } else {
+                estado.className = 'text-[11px] mt-1 text-emerald-700 font-semibold';
+                estado.textContent = `Máximo guardado para ${cfgPeriodoActivo.nombre}: ${cfgMaxSolicitudesRecuperacion} solicitudes aprobadas por asignatura.`;
+            }
         }
 
 
@@ -13597,6 +13726,7 @@ video {
                 try { await guardarValorFirebase('configuracion/periodoActivo', registro); await registrarAuditoria('periodo_activo', `Período activo: ${nombre}`); }
                 catch(e) { console.error(e); alert('Error al guardar el período.'); return; }
             }
+            await cargarMaxSolicitudesRecuperacionPeriodoActivo();
             renderTabConfiguracion();
             alert('✅ Período académico activo guardado: ' + nombre);
         }
@@ -13604,6 +13734,7 @@ video {
         async function guardarMaxSolicitudesRecuperacion() {
             if (!cfgPeriodoActivo?.nombre) return alert('Configura primero el período académico activo.');
             const input = document.getElementById('cfg-max-solicitudes-recuperacion');
+            if (!input || input.value.trim() === '') return alert('Ingresa el máximo de solicitudes de recuperación para el período activo.');
             const maximo = Number(input?.value);
             if (!Number.isInteger(maximo) || maximo < 0 || maximo > 100) return alert('Ingresa un número entero entre 0 y 100.');
             if (!await ensureAuth()) return alert('No se pudo autenticar al docente.');
@@ -13611,6 +13742,8 @@ video {
             try {
                 await guardarValorFirebase(ruta, maximo);
                 cfgMaxSolicitudesRecuperacion = maximo;
+                cfgMaxSolicitudesRecuperacionError = false;
+                actualizarEstadoConfiguracionMaxSolicitudesRecuperacion();
                 await registrarAuditoria('max_solicitudes_recuperacion', `Máximo anual del período ${cfgPeriodoActivo.nombre}: ${maximo}`);
                 alert(`✅ Máximo anual de solicitudes guardado para ${cfgPeriodoActivo.nombre}: ${maximo}.`);
             } catch (e) {
