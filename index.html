@@ -2536,6 +2536,13 @@ video {
                             </div>
                         </div>
                         <hr class="border-slate-200 my-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end mb-4">
+                            <label class="text-xs font-bold text-slate-600">Máximo anual de solicitudes de recuperación
+                                <input type="number" id="cfg-max-solicitudes-recuperacion" min="0" max="100" step="1" value="2" class="block w-full mt-1 px-3 py-2 bg-white border rounded-lg text-sm">
+                            </label>
+                            <div><button type="button" onclick="guardarMaxSolicitudesRecuperacion()" class="bg-brand-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-brand-700">Guardar máximo</button>
+                            <p class="text-[11px] text-slate-400 mt-1">Por período lectivo. Cuenta solicitudes pendientes y aprobadas; una rechazada libera el cupo.</p></div>
+                        </div>
                         <h5 class="font-bold text-xs text-slate-600 uppercase mb-2">Trimestres del período</h5>
                         <div id="cfg-trimestres-lista" class="space-y-2"></div>
                         <p class="text-[11px] text-slate-400 mt-2">Cada trimestre debe tener un nombre y un rango de fechas. Los cambios se guardan al pulsar "Guardar trimestres".</p>
@@ -2926,32 +2933,35 @@ video {
             <div class="space-y-3">
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nombre del representante</label>
-                        <input type="text" id="npt-solicitud-rec-nombre" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500">
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nombre del representante · registrado</label>
+                        <input type="text" id="npt-solicitud-rec-nombre" readonly class="w-full px-3 py-2 bg-slate-100 border rounded-xl text-sm text-slate-600 cursor-not-allowed">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Cédula del representante</label>
-                        <input type="text" id="npt-solicitud-rec-cedula" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500">
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Cédula del representante · registrada</label>
+                        <input type="text" id="npt-solicitud-rec-cedula" readonly class="w-full px-3 py-2 bg-slate-100 border rounded-xl text-sm text-slate-600 cursor-not-allowed">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-xs font-bold text-slate-600 uppercase mb-1">E-mail del representante</label>
                         <input type="email" id="npt-solicitud-rec-email" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500">
+                        <p id="npt-solicitud-rec-email-ayuda" class="text-[10px] text-slate-500 mt-1"></p>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Celular del representante</label>
-                        <input type="text" id="npt-solicitud-rec-celular" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500">
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Celular del representante · registrado</label>
+                        <input type="text" id="npt-solicitud-rec-celular" readonly class="w-full px-3 py-2 bg-slate-100 border rounded-xl text-sm text-slate-600 cursor-not-allowed" maxlength="30" autocomplete="tel">
+                        <p id="npt-solicitud-rec-celular-ayuda" class="text-[10px] text-slate-500 mt-1"></p>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">E-mail del estudiante</label>
-                    <input type="email" id="npt-solicitud-rec-email-est" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500">
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">E-mail del estudiante · registrado</label>
+                    <input type="email" id="npt-solicitud-rec-email-est" readonly class="w-full px-3 py-2 bg-slate-100 border rounded-xl text-sm text-slate-600 cursor-not-allowed">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Asignatura</label>
-                    <input type="text" id="npt-solicitud-rec-asignatura" placeholder="Nombre de la asignatura" class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500">
+                    <select id="npt-solicitud-rec-asignatura" onchange="cambiarAsignaturaSolicitudRecuperacionNPT()" required class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500"><option value="">Seleccione una asignatura registrada</option></select>
                 </div>
+                <p id="npt-solicitud-rec-cupo" class="text-xs text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-lg p-2"></p>
                 <div>
                     <label id="npt-solicitud-rec-motivo-label" class="block text-xs font-bold text-slate-600 uppercase mb-1">Observación adicional (opcional)</label>
                     <textarea id="npt-solicitud-rec-motivo" rows="2" placeholder="Cualquier información adicional que considere pertinente..." class="w-full px-3 py-2 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500"></textarea>
@@ -3439,6 +3449,7 @@ video {
                 repNombre: texto(v.repNombre ?? v.representante ?? v.NombreRepresentante ?? v['Nombre Representante']).toUpperCase(),
                 repCedula: normalizarCedula(v.repCedula ?? v.cedulaRepresentante ?? v['Cédula R'] ?? v['Cedula R']),
                 repCelular: texto(v.repCelular ?? v.celularRepresentante ?? v['Cel.Representante']),
+                repEmail: texto(v.repEmail ?? v.emailRepresentante ?? v['Email Representante'] ?? v['E-mail Representante']),
                 observaciones: texto(v.observaciones ?? v.Observaciones),
                 periodoId: texto(v.periodoId ?? v.periodo ?? '')
             };
@@ -6176,6 +6187,7 @@ video {
         //   configuracion/trimestres                     → { 1: {label, meses, desde, hasta}, 2: {...}, 3: {...} }
         //   configuracion/formulaPromedio                → { cuaderno: 25, libro: 25, tarea: 20, talleres: 30 }  (porcentajes)
         let cfgPeriodoActivo = null;
+        let cfgMaxSolicitudesRecuperacion = 2;
         let calendarioAcademico = {};
         let horarioDocente = [];
         let asistenciaRegistros = {};
@@ -6276,8 +6288,50 @@ video {
             catch(e) { nptExamenesRecuperacion = {}; }
         }
         async function cargarSolicitudesRecuperacionNPT() {
-            try { nptSolicitudesRecuperacion = (await leerValorRutaFirebase('nptSolicitudesRecuperacion')) || {}; }
-            catch(e) { nptSolicitudesRecuperacion = {}; }
+            try {
+                nptSolicitudesRecuperacion = (await leerValorRutaFirebase('nptSolicitudesRecuperacion')) || {};
+            } catch(e) {
+                nptSolicitudesRecuperacion = {};
+                console.warn('No se cargaron solicitudes de recuperación:', e.message);
+                return;
+            }
+            if (esSesionDocenteFirebase()) {
+                try { await migrarAsignaturasSolicitudesAprobadasHasta20261107(); }
+                catch(e) { console.error('[MIGRACIÓN] No se actualizaron las asignaturas históricas; se reintentará al volver a cargar con sesión docente:', e.message); }
+            }
+        }
+        async function migrarAsignaturasSolicitudesAprobadasHasta20261107() {
+            if (!esSesionDocenteFirebase()) return;
+            const rutaMarca = 'configuracion/migraciones/asignaturaSolicitudesRecuperacion20261107';
+            if (await leerValorRutaFirebase(rutaMarca)) return;
+            const corte = Date.parse('2026-11-08T05:00:00.000Z'); // Fin del 07/11/2026 en America/Guayaquil.
+            const rutas = [];
+            Object.entries(nptSolicitudesRecuperacion || {}).forEach(([cedula, porTrimestre]) => {
+                Object.entries(porTrimestre || {}).forEach(([trimestre, porClave]) => {
+                    Object.entries(porClave || {}).forEach(([clave, solicitud]) => {
+                        if (!solicitud || solicitud.estado !== 'aprobada') return;
+                        const fecha = Date.parse(solicitud.fechaRespuesta || solicitud.fecha || '');
+                        if (!Number.isFinite(fecha) || fecha > corte) return;
+                        rutas.push(`nptSolicitudesRecuperacion/${cedula}/${trimestre}/${clave}/asignatura`);
+                    });
+                });
+            });
+            for (let i = 0; i < rutas.length; i += 200) {
+                const actualizaciones = Object.fromEntries(rutas.slice(i, i + 200).map(ruta => [ruta, 'Informática Aplicada']));
+                await guardarActualizacionMultipleFirebase(actualizaciones);
+            }
+            await guardarValorFirebase(rutaMarca, { fecha: new Date().toISOString(), solicitudesActualizadas: rutas.length, asignatura: 'Informática Aplicada', corte: '2026-11-07' });
+            Object.values(nptSolicitudesRecuperacion || {}).forEach(porTrimestre => {
+                Object.values(porTrimestre || {}).forEach(porClave => {
+                    Object.values(porClave || {}).forEach(solicitud => {
+                        if (!solicitud || solicitud.estado !== 'aprobada') return;
+                        const fecha = Date.parse(solicitud.fechaRespuesta || solicitud.fecha || '');
+                        if (Number.isFinite(fecha) && fecha <= corte) solicitud.asignatura = 'Informática Aplicada';
+                    });
+                });
+            });
+            await registrarAuditoria('migracion_asignatura_solicitudes_recuperacion', `Asignatura actualizada a Informática Aplicada en ${rutas.length} solicitudes aprobadas hasta el 07/11/2026.`);
+            console.info(`[MIGRACIÓN] ${rutas.length} solicitudes aprobadas actualizadas a Informática Aplicada.`);
         }
         async function cargarInsumoPreguntasNPT() {
             try { nptInsumoPreguntas = (await leerValorRutaFirebase('nptInsumoPreguntas')) || {}; }
@@ -6798,19 +6852,46 @@ video {
             document.getElementById('npt-solicitud-rec-sub').textContent = `${trimestresEfectivos().find(x => x.num === numTrimestre)?.label || ''} · ${etiqueta}`;
             document.getElementById('npt-solicitud-rec-nombre').value = estudianteActual.repNombre || '';
             document.getElementById('npt-solicitud-rec-cedula').value = estudianteActual.repCedula || '';
-            document.getElementById('npt-solicitud-rec-email').value = '';
-            document.getElementById('npt-solicitud-rec-celular').value = estudianteActual.repCelular || '';
+            const emailRep = document.getElementById('npt-solicitud-rec-email');
+            const emailRepAyuda = document.getElementById('npt-solicitud-rec-email-ayuda');
+            emailRep.value = estudianteActual.repEmail || '';
+            emailRep.readOnly = !!estudianteActual.repEmail;
+            emailRep.classList.toggle('bg-slate-100', !!estudianteActual.repEmail);
+            emailRep.classList.toggle('cursor-not-allowed', !!estudianteActual.repEmail);
+            emailRepAyuda.textContent = estudianteActual.repEmail ? 'Correo registrado; solo lectura.' : 'No hay un correo registrado. Ingresa uno para guardarlo en la ficha del estudiante.';
+            const celularRep = document.getElementById('npt-solicitud-rec-celular');
+            const celularRepAyuda = document.getElementById('npt-solicitud-rec-celular-ayuda');
+            celularRep.value = estudianteActual.repCelular || '';
+            celularRep.readOnly = !!estudianteActual.repCelular;
+            celularRep.classList.toggle('bg-slate-100', !!estudianteActual.repCelular);
+            celularRep.classList.toggle('bg-slate-50', !estudianteActual.repCelular);
+            celularRep.classList.toggle('cursor-not-allowed', !!estudianteActual.repCelular);
+            celularRepAyuda.textContent = estudianteActual.repCelular ? 'Celular registrado; solo lectura.' : 'No hay un celular registrado. Ingresa uno para guardarlo en la ficha.';
             document.getElementById('npt-solicitud-rec-email-est').value = estudianteActual.correo || '';
-            document.getElementById('npt-solicitud-rec-asignatura').value = '';
+            const selectAsignatura = document.getElementById('npt-solicitud-rec-asignatura');
+            const asignaturas = [...new Set((horarioDocente || []).filter(x => x.curso === estudianteActual.curso && x.paralelo === estudianteActual.paralelo).map(x => texto(x.asignatura).trim()).filter(Boolean))]
+                .sort((a,b) => a.localeCompare(b,'es'));
+            const materiasConCupo = asignaturas.filter(a => nptConteoSolicitudesAprobadas(estudianteActual.cedula, null, a) < cfgMaxSolicitudesRecuperacion);
+            selectAsignatura.innerHTML = '<option value="">Seleccione una asignatura registrada</option>' + asignaturas.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+            selectAsignatura.value = '';
+            if (!asignaturas.length) {
+                document.getElementById('npt-solicitud-rec-cupo').textContent = 'No hay asignaturas registradas para este curso y paralelo. No se puede ingresar una materia nueva desde esta solicitud; contacta al docente para actualizar el horario.';
+                document.getElementById('npt-solicitud-rec-btn').disabled = true;
+            } else {
+                document.getElementById('npt-solicitud-rec-btn').disabled = materiasConCupo.length === 0;
+            }
+            document.getElementById('npt-solicitud-rec-cupo').textContent = asignaturas.length
+                ? materiasConCupo.length
+                    ? `Selecciona una materia registrada. Máximo: ${cfgMaxSolicitudesRecuperacion} solicitudes aprobadas por materia en ${cfgPeriodoActivo?.nombre || 'el período lectivo activo'}.`
+                    : `Límite alcanzado en todas las materias: ${asignaturas.map(a => `${a}: ${nptConteoSolicitudesAprobadas(estudianteActual.cedula, null, a)} aprobadas / máximo ${cfgMaxSolicitudesRecuperacion} · 0 cupos`).join(' | ')}`
+                : 'No hay asignaturas registradas para este curso y paralelo. Contacta al docente para actualizar el horario.';
             const motivoEl = document.getElementById('npt-solicitud-rec-motivo');
-            motivoEl.value = porVencimientoSinEntrega
-                ? 'La evaluación no fue presentada dentro del plazo establecido. Motivo de la no entrega: '
-                : '';
+            motivoEl.value = '';
             motivoEl.placeholder = porVencimientoSinEntrega
-                ? 'Explique el motivo por el cual la evaluación no fue presentada dentro del plazo. Este campo es obligatorio.'
+                ? 'La evaluación no fue presentada en la fecha prevista, pero puede añadirse más detalle.'
                 : 'Cualquier información adicional que considere pertinente...';
             const motivoLabel = document.getElementById('npt-solicitud-rec-motivo-label');
-            if (motivoLabel) motivoLabel.textContent = porVencimientoSinEntrega ? 'Motivo por el cual no se presentó a tiempo' : 'Observación adicional (opcional)';
+            if (motivoLabel) motivoLabel.textContent = porVencimientoSinEntrega ? 'MOTIVO POR EL CUAL NO PRESENTÓ LA EVALUACIÓN (OPCIONAL)' : 'Observación adicional (opcional)';
             const motivoHelp = document.getElementById('npt-solicitud-rec-motivo-help');
             if (motivoHelp) {
                 motivoHelp.textContent = porVencimientoSinEntrega
@@ -6822,6 +6903,15 @@ video {
             document.getElementById('npt-solicitud-rec-error').classList.add('hidden');
             document.getElementById('npt-solicitud-rec-modal').classList.remove('hidden');
         }
+        function cambiarAsignaturaSolicitudRecuperacionNPT() {
+            const select = document.getElementById('npt-solicitud-rec-asignatura');
+            const materia = select.value;
+            const aprobadas = materia ? nptConteoSolicitudesAprobadas(estudianteActual?.cedula, null, materia) : 0;
+            const restantes = Math.max(0, cfgMaxSolicitudesRecuperacion - aprobadas);
+            document.getElementById('npt-solicitud-rec-cupo').textContent = materia
+                ? `En ${materia}: ${aprobadas} solicitud${aprobadas === 1 ? '' : 'es'} aprobada${aprobadas === 1 ? '' : 's'} de un máximo de ${cfgMaxSolicitudesRecuperacion}; ${restantes} cupo${restantes === 1 ? '' : 's'} disponible${restantes === 1 ? '' : 's'}. Las rechazadas no cuentan.`
+                : `Selecciona una materia registrada para consultar cuántas solicitudes están aprobadas y cuántos cupos quedan.`;
+        }
         function cerrarSolicitudRecuperacionNPT() {
             document.getElementById('npt-solicitud-rec-modal').classList.add('hidden');
             nptSolicitudRecCtx = null;
@@ -6830,33 +6920,55 @@ video {
             if (!estudianteActual || !nptSolicitudRecCtx) return;
             const { numTrimestre, clave, etiqueta, notaOriginal, fechaNotaOriginal, porVencimientoSinEntrega } = nptSolicitudRecCtx;
             const { cedula, nombre, curso, paralelo } = estudianteActual;
+            const asignatura = texto(document.getElementById('npt-solicitud-rec-asignatura').value).trim();
+            const asignaturasRegistradas = [...new Set((horarioDocente || []).filter(x => x.curso === curso && x.paralelo === paralelo).map(x => texto(x.asignatura).trim()).filter(Boolean))];
+            if (!asignaturasRegistradas.includes(asignatura)) {
+                const errEl = document.getElementById('npt-solicitud-rec-error');
+                errEl.textContent = 'Selecciona una asignatura que ya esté registrada en el horario del curso.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+            const solicitudExistente = nptSolicitudRecuperacionDe(cedula, numTrimestre, clave);
+            const totalSolicitudes = nptConteoSolicitudesRecuperacion(cedula, asignatura);
+            const esReintento = solicitudExistente?.estado === 'rechazada';
             const errEl = document.getElementById('npt-solicitud-rec-error');
+            if (solicitudExistente && !esReintento) {
+                errEl.textContent = solicitudExistente.estado === 'aprobada'
+                    ? 'Esta solicitud ya fue aprobada.'
+                    : 'Esta solicitud ya está pendiente de revisión.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+            if (totalSolicitudes >= cfgMaxSolicitudesRecuperacion) {
+                errEl.textContent = `No se puede enviar esta solicitud: ya alcanzaste el máximo de ${cfgMaxSolicitudesRecuperacion} solicitudes de recuperación permitido para el período académico (${totalSolicitudes}/${cfgMaxSolicitudesRecuperacion}).`;
+                errEl.classList.remove('hidden');
+                return;
+            }
             if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, numTrimestre, clave, cedula)) {
                 errEl.textContent = clave === 'examen' ? 'No se puede enviar la solicitud: venció el plazo de 7 días posteriores a la fecha programada del examen.' : 'No se puede enviar la solicitud: el trimestre ya terminó según la fecha de configuración.';
                 errEl.classList.remove('hidden');
                 return;
             }
             errEl.classList.add('hidden');
-            const repNombre = texto(document.getElementById('npt-solicitud-rec-nombre').value).trim();
-            const repCedula = texto(document.getElementById('npt-solicitud-rec-cedula').value).trim();
-            const repEmail = texto(document.getElementById('npt-solicitud-rec-email').value).trim();
-            const repCelular = texto(document.getElementById('npt-solicitud-rec-celular').value).trim();
-            const estudianteEmail = texto(document.getElementById('npt-solicitud-rec-email-est').value).trim();
-            const asignatura = texto(document.getElementById('npt-solicitud-rec-asignatura').value).trim();
+            const repNombre = texto(estudianteActual.repNombre).trim();
+            const repCedula = texto(estudianteActual.repCedula).trim();
+            const repEmail = texto(estudianteActual.repEmail || document.getElementById('npt-solicitud-rec-email').value).trim();
+            const repCelular = texto(estudianteActual.repCelular || document.getElementById('npt-solicitud-rec-celular').value).trim();
+            const estudianteEmail = texto(estudianteActual.correo).trim();
             const motivo = texto(document.getElementById('npt-solicitud-rec-motivo').value).trim();
             const confirmo = document.getElementById('npt-solicitud-rec-confirmo').checked;
-            if (!repNombre || !repCedula) {
-                errEl.textContent = 'El nombre y la cédula del representante son obligatorios.';
+            if (!repNombre || !repCedula || !repCelular || !estudianteEmail) {
+                errEl.textContent = 'La ficha debe tener el nombre, cédula y celular del representante y el correo del estudiante. Completa los datos permitidos o solicita al docente que corrija la ficha.';
                 errEl.classList.remove('hidden');
                 return;
             }
             if (!asignatura) {
-                errEl.textContent = 'Debes indicar la asignatura.';
+                errEl.textContent = 'Debes seleccionar una asignatura registrada.';
                 errEl.classList.remove('hidden');
                 return;
             }
-            if (porVencimientoSinEntrega && !motivo) {
-                errEl.textContent = 'Debes indicar el motivo por el cual la evaluación no fue presentada dentro del plazo.';
+            if (!repEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(repEmail)) {
+                errEl.textContent = 'Ingresa un correo válido del representante.';
                 errEl.classList.remove('hidden');
                 return;
             }
@@ -6870,6 +6982,9 @@ video {
             try {
                 const registro = {
                     estado: 'pendiente',
+                    intentos: Math.max(1, Number(solicitudExistente?.intentos) || 0) + (esReintento ? 1 : 0),
+                    numeroSolicitud: esReintento ? (solicitudExistente.numeroSolicitud || 1) : totalSolicitudes + 1,
+                    periodoAcademico: cfgPeriodoActivo?.nombre || '',
                     cedula, nombre, curso, paralelo, clave, etiqueta,
                     numTrimestre,
                     notaOriginal: notaOriginal ?? null, fechaNotaOriginal: fechaNotaOriginal || null,
@@ -6880,6 +6995,18 @@ video {
                     repNombre, repCedula, repEmail, repCelular, estudianteEmail, asignatura, motivo,
                     fecha: new Date().toISOString()
                 };
+                if ((!estudianteActual.repEmail && repEmail) || (!estudianteActual.repCelular && repCelular)) {
+                    const actualizado = {
+                        ...estudianteActual,
+                        ...(!estudianteActual.repEmail && repEmail ? { repEmail } : {}),
+                        ...(!estudianteActual.repCelular && repCelular ? { repCelular } : {})
+                    };
+                    await guardarValorFirebase(`${rutaEstudiantes}/${cedula}`, actualizado);
+                    Object.assign(estudianteActual, actualizado);
+                    const indiceEst = estudiantes.findIndex(e => e.cedula === cedula);
+                    if (indiceEst >= 0) Object.assign(estudiantes[indiceEst], actualizado);
+                    guardarBackup();
+                }
                 await guardarValorFirebase(`nptSolicitudesRecuperacion/${cedula}/trimestre${numTrimestre}/${clave}`, registro);
                 if (!nptSolicitudesRecuperacion[cedula]) nptSolicitudesRecuperacion[cedula] = {};
                 if (!nptSolicitudesRecuperacion[cedula][`trimestre${numTrimestre}`]) nptSolicitudesRecuperacion[cedula][`trimestre${numTrimestre}`] = {};
@@ -8735,6 +8862,23 @@ video {
         function nptSolicitudRecuperacionDe(cedula, numTrimestre, clave) {
             return nptSolicitudesRecuperacion[cedula]?.[`trimestre${numTrimestre}`]?.[clave] || null;
         }
+        // Cuenta envíos acumulados del período activo (incluye reintentos por solicitud).
+        function nptNormalizarAsignaturaSolicitud(valor) {
+            return normalizarTextoPlan(texto(valor).trim());
+        }
+        function nptConteoSolicitudesRecuperacion(cedula, asignatura = '') {
+            const porTrimestre = nptSolicitudesRecuperacion[cedula] || {};
+            const materia = nptNormalizarAsignaturaSolicitud(asignatura);
+            return Object.values(porTrimestre).reduce((total, evaluaciones) => total + Object.values(evaluaciones || {}).filter(s => s && (s.estado === 'pendiente' || s.estado === 'aprobada') && (!s.periodoAcademico || s.periodoAcademico === cfgPeriodoActivo?.nombre) && (!materia || nptNormalizarAsignaturaSolicitud(s.asignatura) === materia)).length, 0);
+        }
+        function nptConteoSolicitudesAprobadas(cedula, numTrimestre = null, asignatura = '') {
+            const porTrimestre = nptSolicitudesRecuperacion[cedula] || {};
+            return Object.entries(porTrimestre).reduce((total, [tk, evaluaciones]) => {
+                if (numTrimestre !== null && tk !== `trimestre${numTrimestre}`) return total;
+                const materia = nptNormalizarAsignaturaSolicitud(asignatura);
+                return total + Object.values(evaluaciones || {}).filter(s => s?.estado === 'aprobada' && (!s.periodoAcademico || s.periodoAcademico === cfgPeriodoActivo?.nombre) && (!materia || nptNormalizarAsignaturaSolicitud(s.asignatura) === materia)).length;
+            }, 0);
+        }
         function nptFechaActivacionEvaluacion(curso, paralelo, numTrimestre, clave) {
             if (clave === 'examen') {
                 return nptNodoTrimestre(nptConfig, curso, paralelo, numTrimestre)?.examenActivadoEn || null;
@@ -9000,10 +9144,20 @@ video {
         // insumos tipo Texto, insumos tipo Test y el examen trimestral.
         function nptBloqueSolicitudRecuperacionHtml(cedula, curso, paralelo, numTrimestre, clave, notaVal, fechaNota, etiqueta) {
             const fechaMaxima = nptFechaMaximaEvaluacion(curso, paralelo, numTrimestre, clave) || fechaNota || null;
+            const solicitudAprobada = nptSolicitudRecuperacionDe(cedula, numTrimestre, clave);
+            if (solicitudAprobada?.estado === 'aprobada') {
+                return `<button type="button" onclick="imprimirSolicitudRecuperacionFormalNPT('${escapeHtml(cedula)}',${numTrimestre},'${escapeHtml(clave)}')" class="w-full mt-2 bg-emerald-600 text-white text-xs font-bold py-2 rounded-xl hover:bg-emerald-700">🖨️ Imprimir solicitud aprobada</button>`;
+            }
             const vencida = !!fechaMaxima && fechaMaximaVencida(fechaMaxima);
             const esNoPresentada = notaVal === null && vencida;
             if (notaVal === null && !esNoPresentada) return '';
             if (notaVal !== null && notaVal >= 10) return '';
+            const materiasCurso = [...new Set((horarioDocente || []).filter(x => x.curso === curso && x.paralelo === paralelo).map(x => texto(x.asignatura).trim()).filter(Boolean))];
+            const materiasDisponibles = materiasCurso.filter(m => nptConteoSolicitudesAprobadas(cedula, null, m) < cfgMaxSolicitudesRecuperacion);
+            if (materiasCurso.length && !materiasDisponibles.length) {
+                const estadoMaterias = materiasCurso.map(m => `${escapeHtml(m)}: ${nptConteoSolicitudesAprobadas(cedula, null, m)} aprobadas / máximo ${cfgMaxSolicitudesRecuperacion} · 0 cupos`).join('<br>');
+                return `<div class="bg-slate-100 border border-slate-300 rounded-xl p-2 mt-2 text-[11px] text-slate-600 font-semibold text-center">🔒 Límite alcanzado en todas las materias registradas:<br>${estadoMaterias}</div>`;
+            }
             if (!nptRecuperacionPermitidaEnTrimestre(curso, paralelo, numTrimestre, clave, cedula)) {
                 const msgPlazo = clave === 'examen' ? 'Venció el plazo de 7 días posteriores a la fecha programada del examen.' : 'Venció el plazo al finalizar el trimestre según la fecha configurada.';
                 return `<div class="bg-slate-100 border border-slate-300 rounded-xl p-2 mt-2 text-[11px] text-slate-600 font-semibold text-center">🔒 ${msgPlazo}</div>`;
@@ -12009,7 +12163,7 @@ video {
             const t = trimestresEfectivos().find(x => x.num === numTrim);
             if (!t) { alert('No se encontró el trimestre seleccionado.'); return; }
             const periodo = cfgPeriodoActivo?.nombre || 'Período no configurado';
-            let html = `<div class="filtro"><strong>Período académico:</strong> ${escapeHtml(periodo)}<br><strong>Trimestre:</strong> ${escapeHtml(t.label)}${t.meses ? ' ('+escapeHtml(t.meses)+')' : ''}<br><strong>Estudiantes incluidos:</strong> ${alumnos.length}</div>
+            let html = `<div class="filtro"><strong>Período académico:</strong> ${escapeHtml(periodo)}<br><strong>Trimestre:</strong> ${escapeHtml(t.label)}${t.meses ? ' ('+escapeHtml(t.meses)+')' : ''}<br><strong>Estudiantes incluidos:</strong> ${alumnos.length}<br><strong>Solicitudes de recuperación aprobadas en el trimestre:</strong> ${alumnos.reduce((total, e) => total + nptConteoSolicitudesAprobadas(e.cedula, t.num), 0)}</div>
                 <style>
                     .reporte-notas-curso{table-layout:auto}
                     .reporte-notas-curso th,.reporte-notas-curso td{text-align:center;vertical-align:middle}
@@ -12278,7 +12432,7 @@ video {
                 const efectiva = rec === null ? original : (original === null ? rec : (original > rec ? original : (original + rec) / 2));
                 celdaExamen = `<td>${efectiva === null ? '<span class="reporte-notas-pendiente">Pendiente</span>' : `${formatearNota(efectiva)}${rec !== null ? ' ↻' : ''}`}</td>`;
             }
-            const html = `<div class="filtro"><strong>Estudiante:</strong> ${escapeHtml(est.nombre)}<br><strong>Curso:</strong> ${escapeHtml(est.curso || '-')} · <strong>Paralelo:</strong> ${escapeHtml(est.paralelo || '-')}<br><strong>Materia:</strong> ${escapeHtml(asignaturasReporteCurso(est.curso, est.paralelo))}<br><strong>Período:</strong> ${escapeHtml(cfgPeriodoActivo?.nombre || 'No configurado')} · <strong>Trimestre:</strong> ${escapeHtml(t.label)}${t.meses ? ' ('+escapeHtml(t.meses)+')' : ''}</div>
+            const html = `<div class="filtro"><strong>Estudiante:</strong> ${escapeHtml(est.nombre)}<br><strong>Curso:</strong> ${escapeHtml(est.curso || '-')} · <strong>Paralelo:</strong> ${escapeHtml(est.paralelo || '-')}<br><strong>Materia:</strong> ${escapeHtml(asignaturasReporteCurso(est.curso, est.paralelo))}<br><strong>Período:</strong> ${escapeHtml(cfgPeriodoActivo?.nombre || 'No configurado')} · <strong>Trimestre:</strong> ${escapeHtml(t.label)}${t.meses ? ' ('+escapeHtml(t.meses)+')' : ''}<br><strong>Solicitudes de recuperación aprobadas:</strong> ${nptConteoSolicitudesAprobadas(est.cedula, t.num)}</div>
                 <style>.reporte-notas-curso{table-layout:auto}.reporte-notas-curso th,.reporte-notas-curso td{text-align:center;vertical-align:middle}.reporte-notas-curso th:nth-child(2),.reporte-notas-curso td:nth-child(2){text-align:left;min-width:180px}.reporte-notas-pendiente{color:#64748b;font-style:italic;font-size:10px}</style>
                 <table class="reporte-notas-curso"><thead><tr><th>#</th><th>Estudiante</th>${columnas}${examenActivo ? '<th>Nota de examen</th>' : ''}</tr></thead><tbody><tr><td>1</td><td>${escapeHtml(est.nombre)}</td>${celdas}${celdaExamen}</tr></tbody></table>
                 <p class="meta">Las notas de insumos se muestran cuando están verificadas por el docente. «Pendiente» indica que aún no hay una calificación docente confirmada. ↻ señala que se aplicó una recuperación.</p>`;
@@ -12314,11 +12468,18 @@ video {
                 // Leer solo las ramas que usa esta función y en paralelo evita descargar
                 // de una sola vez configuración extensa (por ejemplo, el historial curricular).
                 const campos = opciones.soloEsencialEstudiante && !esSesionDocenteFirebase()
-                    ? ['periodoActivo','trimestres','formulaPromedio','firmaDocente']
+                    ? ['periodoActivo','trimestres','formulaPromedio','firmaDocente','horarioDocente']
                     : ['periodoActivo','trimestres','formulaPromedio','firmaDocente','planificacionesCurriculares','calendarioAcademico','horarioDocente','contadores'];
                 const pares = await Promise.all(campos.map(async campo => [campo, await leerValorRutaFirebase(`configuracion/${campo}`)]));
                 const cfg = Object.fromEntries(pares);
                 cfgPeriodoActivo = (cfg && cfg.periodoActivo) || null;
+                cfgMaxSolicitudesRecuperacion = 2;
+                if (cfgPeriodoActivo?.nombre) {
+                    try {
+                        const maxGuardado = Number(await leerValorRutaFirebase(`configuracion/maxSolicitudesRecuperacionAnuales/${sanitizarClave(cfgPeriodoActivo.nombre)}`));
+                        if (Number.isInteger(maxGuardado) && maxGuardado >= 0 && maxGuardado <= 100) cfgMaxSolicitudesRecuperacion = maxGuardado;
+                    } catch (e) { console.warn('Se usará el máximo predeterminado de solicitudes de recuperación:', e.message); }
+                }
                 cfgTrimestres = (cfg && cfg.trimestres) || null;
                 cfgFormulaPromedio = (cfg && cfg.formulaPromedio) || null;
                 if (!opciones.soloEsencialEstudiante || esSesionDocenteFirebase()) {
@@ -12330,6 +12491,9 @@ video {
                     cntAccesosDocente = (cfg && cfg.contadores && cfg.contadores.accesosDocente) || 0;
                 } else {
                     cfgFirmaDocente = (cfg && cfg.firmaDocente) || null;
+                }
+                if (opciones.soloEsencialEstudiante && !esSesionDocenteFirebase()) {
+                    horarioDocente = Array.isArray(cfg && cfg.horarioDocente) ? cfg.horarioDocente.map(x => ({...x, dia: normalizarDiaHorario(x.dia), bloque: Number(x.bloque || HORARIO_BLOQUES.find(b => b.hora === x.hora)?.id || 0), asignatura: String(x.asignatura || '').trim()})).filter(x => HORARIO_DIAS.includes(x.dia) && x.hora && x.curso && x.paralelo) : [];
                 }
             } catch(e) {
                 console.warn('No se pudo cargar configuración del sistema:', e);
@@ -12868,6 +13032,8 @@ video {
             const inputP = document.getElementById('cfg-periodo-nombre');
             const estadoP = document.getElementById('cfg-periodo-estado');
             if (inputP) inputP.value = cfgPeriodoActivo?.nombre || '';
+            const inputMaxRecuperaciones = document.getElementById('cfg-max-solicitudes-recuperacion');
+            if (inputMaxRecuperaciones) inputMaxRecuperaciones.value = String(cfgMaxSolicitudesRecuperacion);
             if (estadoP) estadoP.innerHTML = cfgPeriodoActivo?.nombre
                 ? `<span class="text-emerald-600 font-bold">🟢 ${escapeHtml(cfgPeriodoActivo.nombre)}</span><br><span class="text-[11px] text-slate-400">Activado: ${escapeHtml(nptFormatoFechaHora(cfgPeriodoActivo.activadoEn))}</span>`
                 : '<span class="text-slate-400">No hay período activo configurado</span>';
@@ -13346,6 +13512,24 @@ video {
             }
             renderTabConfiguracion();
             alert('✅ Período académico activo guardado: ' + nombre);
+        }
+
+        async function guardarMaxSolicitudesRecuperacion() {
+            if (!cfgPeriodoActivo?.nombre) return alert('Configura primero el período académico activo.');
+            const input = document.getElementById('cfg-max-solicitudes-recuperacion');
+            const maximo = Number(input?.value);
+            if (!Number.isInteger(maximo) || maximo < 0 || maximo > 100) return alert('Ingresa un número entero entre 0 y 100.');
+            if (!await ensureAuth()) return alert('No se pudo autenticar al docente.');
+            const ruta = `configuracion/maxSolicitudesRecuperacionAnuales/${sanitizarClave(cfgPeriodoActivo.nombre)}`;
+            try {
+                await guardarValorFirebase(ruta, maximo);
+                cfgMaxSolicitudesRecuperacion = maximo;
+                await registrarAuditoria('max_solicitudes_recuperacion', `Máximo anual del período ${cfgPeriodoActivo.nombre}: ${maximo}`);
+                alert(`✅ Máximo anual de solicitudes guardado para ${cfgPeriodoActivo.nombre}: ${maximo}.`);
+            } catch (e) {
+                console.error(e);
+                alert('No se pudo guardar el máximo anual de solicitudes de recuperación.');
+            }
         }
 
         // ---- Trimestres configurables ----
