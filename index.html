@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 
-<!-- Código de instalación Cliengo para https://godoyroseroia.github.io/AGENTE/ -->
+<!-- Código de instalación Cliengo para https://godoyroserocesar.github.io/SGC/ -->
 <script type="text/javascript">
   (function () {
     var ldk = document.createElement('script');
@@ -7145,12 +7145,18 @@ video {
                     fecha: new Date().toISOString()
                 };
                 if ((!estudianteActual.repEmail && repEmail) || (!estudianteActual.repCelular && repCelular)) {
+                    // El perfil completo solo puede editarlo el docente. El estudiante
+                    // únicamente puede completar los datos de contacto que faltan.
+                    if (!estudianteActual.repEmail && repEmail) {
+                        await guardarValorFirebase(`${rutaEstudiantes}/${cedula}/repEmail`, repEmail);
+                    }
+                    if (!estudianteActual.repCelular && repCelular) {
+                        await guardarValorFirebase(`${rutaEstudiantes}/${cedula}/repCelular`, repCelular);
+                    }
                     const actualizado = {
-                        ...estudianteActual,
                         ...(!estudianteActual.repEmail && repEmail ? { repEmail } : {}),
                         ...(!estudianteActual.repCelular && repCelular ? { repCelular } : {})
                     };
-                    await guardarValorFirebase(`${rutaEstudiantes}/${cedula}`, actualizado);
                     Object.assign(estudianteActual, actualizado);
                     const indiceEst = estudiantes.findIndex(e => e.cedula === cedula);
                     if (indiceEst >= 0) Object.assign(estudiantes[indiceEst], actualizado);
@@ -7167,7 +7173,9 @@ video {
                 alert('✅ Solicitud enviada. Se generó el documento formal para tu registro — el docente la revisará y te notificará su decisión aquí mismo.');
             } catch(e) {
                 console.error(e);
-                errEl.textContent = 'Error al enviar la solicitud. Revisa la conexión e intenta de nuevo.';
+                errEl.textContent = /permission|denied|401|403/i.test(String(e?.message || e))
+                    ? 'Firebase rechazó el guardado por permisos. Verifica que las reglas estén publicadas y que la cédula vinculada a esta cuenta coincida con la del estudiante.'
+                    : 'No se pudo guardar la solicitud. Revisa la conexión e intenta de nuevo.';
                 errEl.classList.remove('hidden');
             } finally {
                 const materiaActual = document.getElementById('npt-solicitud-rec-asignatura').value;
