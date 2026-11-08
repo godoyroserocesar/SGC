@@ -7173,7 +7173,7 @@ video {
                 renderTrimestresEstudiante();
                 actualizarBadgeSolicitudesRecuperacionNPT();
                 imprimirSolicitudRecuperacionFormalNPT(cedula, numTrimestre, clave);
-                alert('✅ Solicitud enviada. Se generó el documento formal para tu registro — el docente la revisará y te notificará su decisión aquí mismo.');
+                alert('✅ Solicitud enviada y pendiente de aprobación. Imprime el documento generado y preséntalo al docente para su revisión y aprobación.');
             } catch(e) {
                 console.error(e);
                 errEl.textContent = /permission|denied|401|403/i.test(String(e?.message || e))
@@ -7227,6 +7227,7 @@ video {
                     área del conocimiento, podrá rendir una nueva evaluación para mejorar dicha calificación, de manera libre y voluntaria.
                 </p>
                 <p style="margin-top:14px;">Por la atención que se sirva dar a la presente, reitero mi agradecimiento.</p>
+                ${s.estado === 'pendiente' ? `<p style="margin-top:18px; padding:12px; border:1px solid #f59e0b; background:#fffbeb; color:#92400e; line-height:1.5;"><strong>Observación:</strong> Esta solicitud está pendiente de aprobación. El representante deberá imprimir este documento y presentarlo al docente para su revisión y aprobación.</p>` : ''}
                 <p style="margin-top:14px;">Atentamente,</p>
                 <table style="border:none; width:100%; margin-top:60px;">
                     <tr>
@@ -7247,7 +7248,7 @@ video {
                     </tr>
                 </table>
                 ${s.motivo ? `<p style="margin-top:24px; font-size:11px; color:#64748b;"><strong>Observación adicional del representante:</strong> ${escapeHtml(s.motivo)}</p>` : ''}
-                <p style="margin-top:18px; font-size:10px; color:#94a3b8;">Estado de la solicitud: ${s.estado === 'pendiente' ? 'Pendiente de respuesta' : s.estado === 'aprobada' ? `Aprobada (${escapeHtml(s.fechaRespuesta ? nptFormatoFechaHora(s.fechaRespuesta) : '')})` : `Rechazada — ${escapeHtml(s.motivoRespuesta || '')}`}</p>
+                <p style="margin-top:18px; font-size:10px; color:#64748b;">Estado de la solicitud: ${s.estado === 'pendiente' ? 'Pendiente de aprobación por el docente' : s.estado === 'aprobada' ? `Aprobada (${escapeHtml(s.fechaRespuesta ? nptFormatoFechaHora(s.fechaRespuesta) : '')})` : `Rechazada — ${escapeHtml(s.motivoRespuesta || '')}`}</p>
             `;
             abrirODescargarReporte(
                 `SOLICITUD DEL REPRESENTANTE PARA MEJORA DE CALIFICACIÓN FORMATIVA DEL AÑO LECTIVO ${periodo}`,
@@ -9348,7 +9349,7 @@ video {
             if (!limite) return '';
             const solicitud = nptSolicitudRecuperacionDe(cedula, numTrimestre, clave);
             if (solicitud?.estado === 'pendiente') {
-                return `<div class="bg-amber-50 border border-amber-200 rounded-xl p-2 mt-2 text-[11px] text-amber-700 font-semibold text-center">⏳ Solicitud de recuperación enviada — esperando respuesta del docente.</div>`;
+                return `<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 mt-2 text-[11px] text-amber-800 text-center"><p class="font-bold">⏳ Solicitud pendiente de aprobación</p><p class="mt-1">Imprime el documento y preséntalo al docente para su revisión y aprobación.</p><button type="button" onclick="imprimirSolicitudRecuperacionFormalNPT('${escapeHtml(cedula)}',${numTrimestre},'${escapeHtml(clave)}')" class="mt-2 bg-amber-600 text-white font-bold px-3 py-2 rounded-lg hover:bg-amber-700">🖨️ Imprimir solicitud para presentar</button></div>`;
             }
             if (Date.now() >= limite.getTime()) {
                 return solicitud?.estado === 'rechazada'
@@ -12844,6 +12845,33 @@ video {
                     throw new Error(`CONTADOR_ACCESO_FALLIDO: RTDB ${escritura.status} ${detalle}`);
                 }
                 return actual + 1;
+            }
+            // Los cambios concurrentes también pueden coincidir con el último
+            // cupo. Antes de informar contención, consulta el estado confirmado
+            // para conservar el mensaje funcional de límite alcanzado.
+            if (ruta.startsWith('contadoresEstudiantesDiario/')) {
+                try {
+                    const tokenFinal = await exigirSesionFirebase();
+                    const authQuery = `?auth=${encodeURIComponent(tokenFinal)}`;
+                    const [respContadorFinal, respLimiteFinal] = await Promise.all([
+                        fetch(`${urlBase}${authQuery}`, { cache: 'no-store' }),
+                        fetch(`${rtdbRestUrl('configuracion/contadores/maxAccesosDiarios')}${authQuery}`, { cache: 'no-store' })
+                    ]);
+                    if (respContadorFinal.ok && respLimiteFinal.ok) {
+                        const [contadorRaw, limiteRaw] = await Promise.all([
+                            respContadorFinal.json().catch(() => null),
+                            respLimiteFinal.json().catch(() => null)
+                        ]);
+                        const contadorFinal = contadorRaw == null ? 0 : Number(contadorRaw);
+                        const limiteFinal = Number(limiteRaw);
+                        if (Number.isSafeInteger(contadorFinal) && Number.isSafeInteger(limiteFinal) && limiteFinal >= 1 && contadorFinal >= limiteFinal) {
+                            throw new Error('MAX_ACCESOS_DIARIOS');
+                        }
+                    }
+                } catch (e) {
+                    if (e?.message === 'MAX_ACCESOS_DIARIOS') throw e;
+                    console.warn('No se pudo comprobar el límite al finalizar los reintentos:', e?.message || e);
+                }
             }
             throw new Error(`CONTADOR_ACCESO_FALLIDO: el contador siguió cambiando después de ${MAX_INTENTOS_CAS} reintentos`);
         }
