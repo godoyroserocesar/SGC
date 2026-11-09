@@ -2717,7 +2717,7 @@ video {
                         <h4 class="font-bold text-sm mb-3">🔤 Diagnóstico de texto dañado (Ñ / tildes)</h4>
                         <p class="text-[11px] text-slate-500 mb-3">
                             Busca estudiantes cuyo nombre, curso, paralelo, representante u observaciones contengan
-                            el carácter "�" (dato dañado). Esto ocurría al importar un CSV de Excel que no estaba
+                            el carácter " " (dato dañado). Esto ocurría al importar un CSV de Excel que no estaba
                             guardado como "CSV UTF-8" (la Ñ se pierde de forma irreversible al leerlo). <strong>Ya se
                             corrigió la importación</strong> para que esto no vuelva a pasar; esta herramienta solo
                             ayuda a corregir a mano los registros que quedaron dañados antes de la corrección.
@@ -4630,9 +4630,9 @@ video {
         // al hacer "Guardar como > CSV (delimitado por comas)", genera el archivo en
         // Windows-1252/ANSI por defecto (NO en UTF-8). En ese formato la Ñ ocupa un
         // solo byte (0xD1) que NO es una secuencia válida en UTF-8, así que al forzar
-        // la lectura como UTF-8 el navegador lo reemplaza por el carácter "�"
+        // la lectura como UTF-8 el navegador lo reemplaza por el carácter " "
         // (U+FFFD) de forma IRREVERSIBLE — el dato original ya no se puede recuperar
-        // después de eso. Esto es lo que producía nombres como "A�APA PROA�O" en
+        // después de eso. Esto es lo que producía nombres como "A APA PROA O" en
         // listados y reportes.
         // La solución: leer el archivo como bytes crudos e intentar decodificarlo
         // como UTF-8 en modo estricto (fatal:true). Si el archivo SÍ es UTF-8 válido
@@ -8662,6 +8662,10 @@ video {
                             <button onclick="abrirModalNotaNPT('${escapeHtml(est.cedula)}','${escapeHtml(est.nombre).replace(/'/g,"\\'")}',${t.num},'${claveInsumo}',true)"
                                 class="block w-full bg-amber-600 text-white text-xs px-2 py-1 rounded-lg hover:bg-amber-700">
                                 ${nota ? '✏️ Editar' : '📝 Calificar'}</button>
+                            ${nota && nota.origen === 'otros_medios' ? `
+                                <button onclick="eliminarCalificacionOtrosMediosNPT('${escapeHtml(est.cedula)}','${escapeHtml(est.nombre).replace(/'/g,"\\'")}',${t.num},'${claveInsumo}')"
+                                    class="block w-full bg-rose-100 text-rose-700 text-xs px-2 py-1 rounded-lg hover:bg-rose-200 font-bold">
+                                    🗑️ Eliminar calificación</button>` : ''}
                         </td>`;
                     tbody.appendChild(tr);
                 });
@@ -10100,6 +10104,81 @@ video {
         // ---- Eliminar entrega de un insumo (para que el estudiante lo suba de nuevo) ----
         // Requisito #8: el docente elimina la entrega y deja una observación que verá el estudiante.
         // Nodo de observaciones de devolución: nptObservacionesDevolucion/{cedula}/trimestre{N}/{tipo}
+        // Elimina exclusivamente una calificación registrada desde "Entregas recibidas otros medios".
+        // No utiliza eliminarEntregaNPT porque esa función devuelve/borrar una entrega del sistema.
+        async function eliminarCalificacionOtrosMediosNPT(cedula, nombre, trimestre, tipo) {
+            const trimKey = `trimestre${trimestre}`;
+            const nota = nptNotas[cedula]?.[trimKey]?.[tipo] || null;
+            const arch = nptArchivos[cedula]?.[trimKey]?.[tipo] || null;
+            const meta = nptArchivosMeta[cedula]?.[trimKey]?.[tipo] || null;
+
+            if (!nota || nota.origen !== 'otros_medios') {
+                alert('No se encontró una calificación válida registrada por otros medios. No se realizó ningún cambio.');
+                return;
+            }
+
+            const t = trimestresEfectivos().find(x => x.num === Number(trimestre));
+            const estRef = estudiantes.find(e => e.cedula === cedula);
+            const tp = tipo === 'examen'
+                ? { label: 'Examen' }
+                : (estRef ? nptInsumoObjeto(estRef.curso, estRef.paralelo, Number(trimestre), tipo) : null);
+            const etiqueta = tp?.label || tipo;
+            const confirmacion = confirm(
+                `¿Eliminar la calificación registrada por otros medios?\n\n` +
+                `Estudiante: ${nombre}\n` +
+                `Período: ${t?.label || `Trimestre ${trimestre}`}\n` +
+                `Actividad: ${etiqueta}\n` +
+                `Nota: ${formatearNota(nota.nota)}\n\n` +
+                `Se eliminará la calificación y, si corresponde, la evidencia asociada registrada como otros medios. Esta acción no elimina entregas realizadas en el sistema.`
+            );
+            if (!confirmacion) return;
+
+            try {
+                const authOk = await ensureAuth();
+                if (!authOk) {
+                    alert('No se pudo validar la sesión docente. No se eliminó ningún registro.');
+                    return;
+                }
+
+                // El registro de nota siempre pertenece a otros medios (validado arriba).
+                await borrarValorFirebase(`nptNotas/${cedula}/${trimKey}/${tipo}`);
+
+                // La evidencia solo se elimina cuando su origen confirma que también fue creada
+                // desde otros medios. Nunca se toca un archivo de una entrega del sistema.
+                if (arch?.origen === 'otros_medios') {
+                    await borrarValorFirebase(`nptArchivos/${cedula}/${trimKey}/${tipo}`);
+                }
+                if (meta?.origen === 'otros_medios') {
+                    await borrarValorFirebase(`nptArchivosMeta/${cedula}/${trimKey}/${tipo}`);
+                }
+
+                // Sincronizar las cachés locales después de confirmar los borrados en Firebase.
+                if (nptNotas[cedula]?.[trimKey]) {
+                    delete nptNotas[cedula][trimKey][tipo];
+                    if (Object.keys(nptNotas[cedula][trimKey]).length === 0) delete nptNotas[cedula][trimKey];
+                }
+                if (arch?.origen === 'otros_medios' && nptArchivos[cedula]?.[trimKey]) {
+                    delete nptArchivos[cedula][trimKey][tipo];
+                    if (Object.keys(nptArchivos[cedula][trimKey]).length === 0) delete nptArchivos[cedula][trimKey];
+                }
+                if (meta?.origen === 'otros_medios' && nptArchivosMeta[cedula]?.[trimKey]) {
+                    delete nptArchivosMeta[cedula][trimKey][tipo];
+                    if (Object.keys(nptArchivosMeta[cedula][trimKey]).length === 0) delete nptArchivosMeta[cedula][trimKey];
+                }
+
+                renderNPTDocente();
+                if (typeof renderCuadroGeneral === 'function') renderCuadroGeneral();
+                await registrarAuditoria(
+                    'eliminar_calificacion_otros_medios',
+                    `Calificación eliminada por otros medios: ${nombre} (${cedula}) — T${trimestre}/${tipo}. Nota anterior: ${formatearNota(nota.nota)}.`
+                );
+                alert('✅ Calificación eliminada correctamente. El estudiante vuelve a quedar pendiente en «Entregas recibidas otros medios» y podrás calificarlo nuevamente.');
+            } catch (e) {
+                console.error('Error al eliminar calificación de otros medios:', e);
+                alert('No se pudo completar la eliminación. Verifica la conexión y vuelve a intentarlo. Si hubo un fallo de conexión, revisa el registro antes de repetir la operación.');
+            }
+        }
+
         async function eliminarEntregaNPT(cedula, nombre, trimestre, tipo) {
             const t = trimestresEfectivos().find(x => x.num === trimestre);
             const esRec = nptEsClaveRecuperacionInsumo(tipo);
@@ -14245,7 +14324,7 @@ video {
 
         // ==================== DIAGNÓSTICO/CORRECCIÓN DE TEXTO DAÑADO (Ñ, tildes) ====================
         // Campos de "estudiantes" donde puede haberse guardado texto dañado por la
-        // importación antigua (CSV no-UTF-8). El carácter U+FFFD ("�") aparece cuando
+        // importación antigua (CSV no-UTF-8). El carácter U+FFFD (" ") aparece cuando
         // un byte no se pudo decodificar como UTF-8; es una pérdida de información
         // IRREVERSIBLE a nivel de programa: no se puede reconstruir la Ñ original por
         // código, así que esta herramienta solo ayuda a UBICAR los registros afectados
@@ -14272,7 +14351,7 @@ video {
             cont.classList.remove('hidden');
             if (hallazgos.length === 0) {
                 cont.className = 'mt-3 text-xs p-3 rounded-lg bg-emerald-50 text-emerald-700';
-                cont.textContent = '✅ No se encontró texto dañado (�) en los estudiantes registrados.';
+                cont.textContent = '✅ No se encontró texto dañado ( ) en los estudiantes registrados.';
                 return;
             }
             cont.className = 'mt-3 text-xs';
@@ -14303,7 +14382,7 @@ video {
             const input = document.getElementById(inputId);
             const nuevoValor = texto(input?.value);
             if (!nuevoValor) { alert('Escribe el valor correcto antes de guardar.'); return; }
-            if (nuevoValor.includes('\uFFFD')) { alert('El valor sigue conteniendo el carácter dañado "�". Vuelve a escribirlo manualmente.'); return; }
+            if (nuevoValor.includes('\uFFFD')) { alert('El valor sigue conteniendo el carácter dañado " ". Vuelve a escribirlo manualmente.'); return; }
             const valorAnterior = est[campo];
             est[campo] = (campo === 'nombre' || campo === 'repNombre') ? nuevoValor.toUpperCase() : nuevoValor;
             try {
@@ -14648,6 +14727,7 @@ video {
         window.renderNPTDocente = renderNPTDocente;
         window.cambiarModoEntregasNPT = cambiarModoEntregasNPT;
         window.abrirModalNotaNPT = abrirModalNotaNPT;
+        window.eliminarCalificacionOtrosMediosNPT = eliminarCalificacionOtrosMediosNPT;
         window.cerrarModalNotaNPT = cerrarModalNotaNPT;
         window.guardarNotaNPT = guardarNotaNPT;
         window.exportarNPTCSV = exportarNPTCSV;
