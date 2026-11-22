@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<!-- Rendimiento: abre las conexiones a los servicios externos antes de que se necesiten -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://sgc-docentes-default-rtdb.firebaseio.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
 
-<!-- Código de instalación Cliengo para https://godoyroserocesar.github.io/SGC/ -->
+<!-- Código de instalación Cliengo para https://godoyroseroia.github.io/AGENTE/ -->
 <script type="text/javascript">
   (function () {
     var ldk = document.createElement('script');
@@ -2244,10 +2249,10 @@ video {
     <header class="bg-white/90 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-10 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white font-black text-lg">SC</div>
-                <div><h1 class="text-xs font-bold text-brand-800 uppercase">Unidad Educativa Fiscomisional</h1><h2 class="text-base md:text-lg font-black">SAGRADO CORAZÓN</h2><p class="text-[9px] text-slate-500">Esmeraldas</p></div>
+                <div id="siglas-institucion" class="min-w-[2.5rem] h-10 px-2 bg-brand-600 rounded-xl flex items-center justify-center text-white font-black text-sm tracking-wide" title="Siglas de la institución">—</div>
+                <div><h1 class="text-xs font-bold text-brand-800 uppercase">Institución educativa</h1><h2 id="nombre-institucion-membrete" class="text-base md:text-lg font-black">Institución no configurada</h2><p class="text-[9px] text-slate-500">Esmeraldas</p></div>
             </div>
-            <div class="text-right"><span class="inline-block px-3 py-1 rounded-full text-[10px] font-bold bg-brand-100 text-brand-700">Período 2026-2027</span><p class="text-[10px] text-slate-400">Código AMIE: 08H00145</p></div>
+            <div class="text-right"><span id="badge-periodo-cabecera" class="inline-block px-3 py-1 rounded-full text-[10px] font-bold bg-brand-100 text-brand-700">Período …</span><p id="ubicacion-geo" class="text-[10px] text-slate-400" title="Ubicación aproximada según la conexión de red">📍 Ubicando…</p></div>
         </div>
     </header>
 
@@ -2269,7 +2274,7 @@ video {
                             onpaste="setTimeout(() => { this.value = normalizarUsuarioCorreoInstitucional(this.value); actualizarVistaPreviaCorreoNPT(); }, 0)"
                             placeholder="usuario"
                             class="flex-1 px-4 py-3 bg-slate-50 border rounded-l-xl text-sm focus:ring-2 focus:ring-brand-500 min-w-0">
-                        <span class="px-3 py-3 bg-brand-600 border border-brand-600 rounded-r-xl text-xs text-white font-bold font-mono whitespace-nowrap flex items-center">@sagradocorazon.edu.ec</span>
+                        <span id="dominio-correo-estudiante" class="px-3 py-3 bg-brand-600 border border-brand-600 rounded-r-xl text-xs text-white font-bold font-mono whitespace-nowrap flex items-center">@dominio-no-configurado</span>
                     </div>
                     <p id="email-vista-previa" class="text-[11px] text-slate-400 mt-1">Solo escribe la parte antes del @, el dominio ya está incluido.</p>
                 </div>
@@ -2280,10 +2285,17 @@ video {
                 </div>
                 <div>
                     <label for="input-clave-estudiante" class="block text-xs font-bold text-slate-600 uppercase mb-1">Contraseña del sistema</label>
-                    <input type="password" id="input-clave-estudiante" autocomplete="current-password" oninput="ocultarAvisosLoginEstudiante()"
-                        class="w-full px-4 py-3 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500"
-                        placeholder="Contraseña del sistema">
+                    <div class="relative">
+                        <input type="password" id="input-clave-estudiante" autocomplete="current-password" oninput="ocultarAvisosLoginEstudiante()"
+                            class="w-full pl-4 pr-12 py-3 bg-slate-50 border rounded-xl text-sm focus:ring-2 focus:ring-brand-500"
+                            placeholder="Contraseña del sistema">
+                        <button type="button" onclick="alternarVisibilidadClave('input-clave-estudiante', this)" aria-label="Mostrar contraseña" aria-pressed="false" title="Mostrar contraseña"
+                            class="btn-ver-clave absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-brand-600 focus:outline-none focus:text-brand-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
                 </div>
+                <div id="aviso-perfil-no-configurado" class="hidden bg-amber-50 border border-amber-300 text-amber-800 p-3 rounded-xl text-sm" role="alert" aria-live="polite"></div>
                 <div id="login-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl text-sm flex items-start gap-2" role="alert" aria-live="assertive"><svg class="w-5 h-5 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/></svg><span id="login-error-text" class="min-w-0 leading-relaxed">Datos no registrados</span></div>
                 <div id="login-status" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-800 p-2 rounded-xl text-sm" role="status" aria-live="polite"></div>
                 <button onclick="verificarEstudiante()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl shadow-md transition-all">Validar y Continuar</button>
@@ -2293,7 +2305,7 @@ video {
                 </div>
             </div>
             <div class="border-t mt-6 pt-5 flex flex-wrap justify-between items-center gap-3 text-xs text-slate-400">
-                <p>Docente: <strong class="text-slate-600">Ing. César Godoy Rosero, Mgt.</strong></p>
+                <p>Docente: <strong id="nombre-docente-inicial" class="text-slate-600">Docente no configurado</strong></p>
                 <div class="flex items-center gap-3">
                     <span class="inline-flex items-center gap-1 text-slate-500" title="Total de ingresos de estudiantes al sistema"><span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">👥 <span id="cnt-accesos-estudiantes-general">0</span></span> accesos de estudiantes</span>
                     <button onclick="mostrarAccesoDocente()" class="text-brand-600 font-semibold">🔐 Acceso Docente</button>
@@ -2305,7 +2317,7 @@ video {
         <!-- Acceso docente -->
         <div id="screen-docente-login" class="hidden w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-6">
             <div class="text-center mb-5"><span class="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">Administración</span><h3 class="text-xl font-bold mt-2">Autenticación Docente</h3></div>
-            <label for="input-email-docente" class="block text-xs font-semibold text-slate-600 mb-1">Correo de Firebase</label><input type="email" id="input-email-docente" autocomplete="username" placeholder="docente@institucion.edu" class="w-full p-3 bg-slate-50 border rounded-xl mb-3"><label for="input-clave-docente" class="block text-xs font-semibold text-slate-600 mb-1">Contraseña del sistema</label><input type="password" id="input-clave-docente" autocomplete="current-password" placeholder="Contraseña del sistema" class="w-full p-3 bg-slate-50 border rounded-xl mb-3">
+            <label for="input-email-docente" class="block text-xs font-semibold text-slate-600 mb-1">Correo de Firebase</label><input type="email" id="input-email-docente" autocomplete="username" placeholder="docente@institucion.edu" class="w-full p-3 bg-slate-50 border rounded-xl mb-3"><label for="input-clave-docente" class="block text-xs font-semibold text-slate-600 mb-1">Contraseña del sistema</label><div class="relative mb-3"><input type="password" id="input-clave-docente" autocomplete="current-password" placeholder="Contraseña del sistema" class="w-full p-3 pr-12 bg-slate-50 border rounded-xl"><button type="button" onclick="alternarVisibilidadClave('input-clave-docente', this)" aria-label="Mostrar contraseña" aria-pressed="false" title="Mostrar contraseña" class="btn-ver-clave absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-brand-600 focus:outline-none focus:text-brand-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
             <div id="docente-login-error" class="hidden bg-rose-50 text-rose-700 p-2 rounded-xl text-xs text-center mb-3">Ingresa tu cuenta de Firebase autorizada.</div>
             <div class="grid grid-cols-2 gap-3 mb-3"><button onclick="volverAlInicio()" class="bg-slate-100 py-2 rounded-xl">Cancelar</button><button onclick="validarAccesoDocente()" class="bg-brand-600 text-white py-2 rounded-xl">Iniciar sesión</button></div>
             <div class="text-center text-xs text-slate-400 border-t pt-3">
@@ -2518,23 +2530,9 @@ video {
                 <!-- TAB CONFIGURACIÓN -->
                 <div id="tab-configuracion" class="hidden p-5 space-y-6">
 
-                    <section class="bg-slate-50 rounded-xl p-4"><h4 class="font-bold text-sm mb-3">👥 Nómina de estudiantes</h4><p class="text-[11px] text-slate-500 mb-3">Importa, agrega y consulta estudiantes desde Configuración.</p>
-                <div id="tab-estudiantes" class="p-5">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                        <div class="bg-slate-50 p-4 rounded-xl col-span-2"><h4 class="font-bold mb-2">📂 Importar estudiantes</h4><div class="border-2 border-dashed rounded-lg p-3 text-center relative mb-2 bg-white"><input type="file" id="file-import" accept=".csv,.txt" onchange="prepararImportacionArchivo(event)" class="absolute inset-0 opacity-0 cursor-pointer"><svg class="w-8 h-8 text-slate-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg><p class="text-xs">Selecciona archivo CSV</p><button onclick="descargarPlantilla()" class="mt-1 text-brand-600 text-xs font-bold">📥 Descargar plantilla</button></div><details><summary class="text-xs font-bold cursor-pointer">✏️ Pegar datos manualmente</summary><textarea id="textarea-importar" rows="3" placeholder="Ord,Nómina,Cédula,Fecha Nac,Correo,Nombre Representante,Cédula R,Cel.Representante,Observaciones" class="w-full p-2 border rounded-lg text-xs mt-2"></textarea><button onclick="prepararImportacionPegado()" class="mt-2 bg-brand-600 text-white text-xs py-1.5 px-3 rounded-lg">Procesar</button></details></div>
-                        <div class="bg-slate-50 p-4 rounded-xl"><h4 class="font-bold mb-2">➕ Agregar individual</h4><div class="space-y-2"><input type="text" id="add-nombre" placeholder="Nombre completo" class="w-full p-2 border rounded-lg text-xs"><div class="grid grid-cols-2 gap-2"><select id="add-curso"><option>1°</option><option>2°</option><option>3°</option></select><select id="add-paralelo"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>H</option><option>I</option></select></div><input type="text" id="add-cedula" placeholder="Cédula" class="w-full p-2 border rounded-lg text-xs"><input type="date" id="add-fecha" class="w-full p-2 border rounded-lg text-xs"><input type="email" id="add-correo" placeholder="Correo" class="w-full p-2 border rounded-lg text-xs"><input type="text" id="add-rep-nombre" placeholder="Representante" class="w-full p-2 border rounded-lg text-xs"><div class="grid grid-cols-2 gap-2"><input type="text" id="add-rep-cedula" placeholder="Cédula R."><input type="text" id="add-rep-celular" placeholder="Celular"></div><textarea id="add-observaciones" placeholder="Observaciones" class="w-full p-2 border rounded-lg text-xs"></textarea><button onclick="agregarEstudiante()" class="w-full bg-slate-800 text-white py-2 rounded-lg text-sm font-bold">Guardar</button></div></div>
-                    </div>
-                    <div class="overflow-x-auto"><table class="min-w-full text-xs"><thead class="bg-slate-50"><tr><th>#</th><th>Nómina</th><th>Curso</th><th>Paralelo</th><th>Cédula</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tabla-estudiantes-body"></tbody></table><div id="no-estudiantes-alert" class="hidden text-center py-6 text-slate-400">👥 No hay estudiantes en este curso/paralelo.</div></div>
-                </div>
-                    </section>
-
-                    <section class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                        <div class="flex flex-wrap items-center justify-between gap-3"><div><h4 class="font-bold text-sm text-blue-900">Avisos automáticos en Google Classroom (prueba)</h4><p class="text-[11px] text-blue-800 mt-1">Conecta la cuenta y carga tus cursos aquí. La relación entre curso/paralelo del sistema y Classroom se elige al configurar los insumos.</p></div><span id="npt-classroom-status" class="text-xs text-slate-600">Requiere configuración Google</span></div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3"><input id="npt-classroom-client-id" type="text" placeholder="OAuth Client ID de Aplicación web" class="px-3 py-2 bg-white border rounded-lg text-xs"><button type="button" id="npt-classroom-btn-save" class="bg-white border border-blue-300 text-blue-800 px-3 py-2 rounded-lg text-xs font-bold">Guardar Client ID en este navegador</button></div>
-                        <div class="flex flex-wrap gap-2 mt-2"><button type="button" id="npt-classroom-btn-connect" class="bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold" style="background-color:#1d4ed8;color:#fff;opacity:1">Conectar / actualizar cursos</button><button type="button" id="npt-classroom-btn-pending" class="bg-amber-500 text-white px-3 py-2 rounded-lg text-xs font-bold">Enviar avisos pendientes</button></div>
-                        <p class="text-[11px] text-slate-600 mt-2">Client ID, lista de cursos y vínculos se guardan solo en este navegador. Al guardar una nueva vinculación, los avisos pendientes no se envían automáticamente.</p>
-                    </section>
-                    <!-- (A) Período académico activo + trimestres -->
+                    <div class="sgc-config-category space-y-3" data-config-title="Período y planificación académica" data-config-icon="🗓️" data-config-meta="Período vigente, trimestres, calendario, horario y planificación.">
+                        <h3 class="flex items-center gap-2 border-b border-slate-200 pb-2 text-sm font-bold text-slate-800"><span aria-hidden="true">🗓️</span>Período y planificación académica</h3>
+<!-- (A) Período académico activo + trimestres -->
                     <section class="bg-slate-50 rounded-xl p-4">
                         <h4 class="font-bold text-sm mb-3">🗓️ Período académico y trimestres</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
@@ -2553,14 +2551,6 @@ video {
                             </div>
                         </div>
                         <hr class="border-slate-200 my-3">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end mb-4">
-                            <label class="text-xs font-bold text-slate-600">Máximo anual de solicitudes de recuperación
-                                <input type="number" id="cfg-max-solicitudes-recuperacion" min="0" max="100" step="1" required placeholder="Ingrese el máximo" class="block w-full mt-1 px-3 py-2 bg-white border rounded-lg text-sm">
-                            </label>
-                            <div><button type="button" onclick="guardarMaxSolicitudesRecuperacion()" class="bg-brand-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-brand-700">Guardar máximo</button>
-                            <p class="text-[11px] text-slate-400 mt-1">Por período lectivo y asignatura. El límite debe guardarse aquí; sin este dato no se habilitan solicitudes.</p>
-                            <p id="cfg-max-solicitudes-recuperacion-estado" class="text-[11px] mt-1" aria-live="polite"></p></div>
-                        </div>
                         <h5 class="font-bold text-xs text-slate-600 uppercase mb-2">Trimestres del período</h5>
                         <div id="cfg-trimestres-lista" class="space-y-2"></div>
                         <p class="text-[11px] text-slate-400 mt-2">Cada trimestre debe tener un nombre y un rango de fechas. Los cambios se guardan al pulsar "Guardar trimestres".</p>
@@ -2594,8 +2584,11 @@ video {
                         <div id="cfg-horario-matriz" class="overflow-x-auto rounded-xl border bg-white"></div>
                         <div id="cfg-horario-resumen" class="mt-3 text-xs text-slate-600"></div>
                     </section>
+                    </div>
 
-                    <!-- (B) Fórmula de promedio ponderado -->
+                    <div class="sgc-config-category space-y-3" data-config-title="Calificaciones" data-config-icon="🧮" data-config-meta="Fórmula de cálculo para el Cuadro General.">
+                        <h3 class="flex items-center gap-2 border-b border-slate-200 pb-2 text-sm font-bold text-slate-800"><span aria-hidden="true">🧮</span>Calificaciones</h3>
+<!-- (B) Fórmula de promedio ponderado -->
                     <section class="bg-slate-50 rounded-xl p-4">
                         <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
                             <h4 class="font-bold text-sm">🧮 Fórmula del promedio (Cuadro General)</h4>
@@ -2608,30 +2601,18 @@ video {
                         </div>
                         <p class="text-[11px] text-slate-400 mt-2">Ejemplo personalizado: Examen 40% (los insumos pasarían a valer 60% en conjunto, repartidos a partes iguales entre los 4).</p>
                     </section>
+                    </div>
 
-                    <!-- (B2) Firma de referencia del docente -->
-                    <section class="bg-slate-50 rounded-xl p-4">
-                        <h4 class="font-bold text-sm mb-3">🖊️ Firma de referencia del docente</h4>
-                        <p class="text-[11px] text-slate-500 mb-3">
-                            Sube una foto o escaneo de tu firma. Al evaluar Cuaderno/Libro con IA, el sistema revisará si aparece una firma
-                            manuscrita tuya en el documento del estudiante y qué tan parecida es a esta referencia (comparación por semejanza
-                            de trazo, no exacta — las firmas manuscritas nunca son idénticas). Si no registras una firma aquí, esta verificación
-                            simplemente no se muestra y todo lo demás sigue funcionando igual.
-                        </p>
-                        <div class="flex flex-wrap items-start gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Imagen de la firma (JPG o PNG)</label>
-                                <input type="file" id="cfg-firma-input" accept="image/png,image/jpeg" class="text-xs">
-                                <div class="flex gap-2 mt-2">
-                                    <button onclick="guardarFirmaDocente()" class="bg-brand-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-brand-700">💾 Guardar firma</button>
-                                    <button onclick="eliminarFirmaDocente()" class="bg-rose-50 text-rose-600 px-3 py-2 rounded-lg text-xs font-bold hover:bg-rose-100">🗑️ Eliminar firma</button>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Firma registrada actualmente</label>
-                                <div id="cfg-firma-preview" class="w-48 h-24 bg-white border rounded-lg flex items-center justify-center text-[11px] text-slate-400 p-2">Sin firma registrada</div>
-                            </div>
-                        </div>
+                    <div class="sgc-config-category space-y-3" data-config-title="Estudiantes y nómina" data-config-icon="👥" data-config-meta="Importa, agrega, consulta y administra nóminas.">
+                        <h3 class="flex items-center gap-2 border-b border-slate-200 pb-2 text-sm font-bold text-slate-800"><span aria-hidden="true">👥</span>Estudiantes y nómina</h3>
+<section class="bg-slate-50 rounded-xl p-4"><h4 class="font-bold text-sm mb-3">👥 Nómina de estudiantes</h4><p class="text-[11px] text-slate-500 mb-3">Importa, agrega y consulta estudiantes desde Configuración.</p>
+                <div id="tab-estudiantes" class="p-5">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-slate-50 p-4 rounded-xl col-span-2"><h4 class="font-bold mb-2">📂 Importar estudiantes</h4><div class="border-2 border-dashed rounded-lg p-3 text-center relative mb-2 bg-white"><input type="file" id="file-import" accept=".csv,.txt" onchange="prepararImportacionArchivo(event)" class="absolute inset-0 opacity-0 cursor-pointer"><svg class="w-8 h-8 text-slate-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg><p class="text-xs">Selecciona archivo CSV</p><button onclick="descargarPlantilla()" class="mt-1 text-brand-600 text-xs font-bold">📥 Descargar plantilla</button></div><details><summary class="text-xs font-bold cursor-pointer">✏️ Pegar datos manualmente</summary><textarea id="textarea-importar" rows="3" placeholder="Ord,Nómina,Cédula,Fecha Nac,Correo,Nombre Representante,Cédula R,Cel.Representante,Observaciones" class="w-full p-2 border rounded-lg text-xs mt-2"></textarea><button onclick="prepararImportacionPegado()" class="mt-2 bg-brand-600 text-white text-xs py-1.5 px-3 rounded-lg">Procesar</button></details></div>
+                        <div class="bg-slate-50 p-4 rounded-xl"><h4 class="font-bold mb-2">➕ Agregar individual</h4><div class="space-y-2"><input type="text" id="add-nombre" placeholder="Nombre completo" class="w-full p-2 border rounded-lg text-xs"><div class="grid grid-cols-2 gap-2"><select id="add-curso"><option>1°</option><option>2°</option><option>3°</option></select><select id="add-paralelo"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>H</option><option>I</option></select></div><input type="text" id="add-cedula" placeholder="Cédula" class="w-full p-2 border rounded-lg text-xs"><input type="date" id="add-fecha" class="w-full p-2 border rounded-lg text-xs"><input type="email" id="add-correo" placeholder="Correo" class="w-full p-2 border rounded-lg text-xs"><input type="text" id="add-rep-nombre" placeholder="Representante" class="w-full p-2 border rounded-lg text-xs"><div class="grid grid-cols-2 gap-2"><input type="text" id="add-rep-cedula" placeholder="Cédula R."><input type="text" id="add-rep-celular" placeholder="Celular"></div><textarea id="add-observaciones" placeholder="Observaciones" class="w-full p-2 border rounded-lg text-xs"></textarea><button onclick="agregarEstudiante()" class="w-full bg-slate-800 text-white py-2 rounded-lg text-sm font-bold">Guardar</button></div></div>
+                    </div>
+                    <div class="overflow-x-auto"><table class="min-w-full text-xs"><thead class="bg-slate-50"><tr><th>#</th><th>Nómina</th><th>Curso</th><th>Paralelo</th><th>Cédula</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tabla-estudiantes-body"></tbody></table><div id="no-estudiantes-alert" class="hidden text-center py-6 text-slate-400">👥 No hay estudiantes en este curso/paralelo.</div></div>
+                </div>
                     </section>
 
                     <!-- (C) Gestión de nómina por curso/paralelo -->
@@ -2666,10 +2647,88 @@ video {
                         </div>
                         <p class="text-[11px] text-slate-400 mt-2">Selecciona estudiantes con las casillas para eliminarlos individualmente, o elimina toda la nómina del curso/paralelo con el botón superior.</p>
                     </section>
+                    </div>
 
-                    <!-- (D) Contadores de acceso -->
+                    <div class="sgc-config-category space-y-3" data-config-title="Integraciones" data-config-icon="🔗" data-config-meta="Conecta Google Classroom y gestiona avisos.">
+                        <h3 class="flex items-center gap-2 border-b border-slate-200 pb-2 text-sm font-bold text-slate-800"><span aria-hidden="true">🔗</span>Integraciones</h3>
+<section class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3"><div><h4 class="font-bold text-sm text-blue-900">Avisos automáticos en Google Classroom (prueba)</h4><p class="text-[11px] text-blue-800 mt-1">Conecta la cuenta y carga tus cursos aquí. La relación entre curso/paralelo del sistema y Classroom se elige al configurar los insumos.</p></div><span id="npt-classroom-status" class="text-xs text-slate-600">Requiere configuración Google</span></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3"><input id="npt-classroom-client-id" type="text" placeholder="OAuth Client ID de Aplicación web" class="px-3 py-2 bg-white border rounded-lg text-xs"><button type="button" id="npt-classroom-btn-save" class="bg-white border border-blue-300 text-blue-800 px-3 py-2 rounded-lg text-xs font-bold">Guardar Client ID en este navegador</button></div>
+                        <div class="flex flex-wrap gap-2 mt-2"><button type="button" id="npt-classroom-btn-connect" class="bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold" style="background-color:#1d4ed8;color:#fff;opacity:1">Conectar / actualizar cursos</button><button type="button" id="npt-classroom-btn-pending" class="bg-amber-500 text-white px-3 py-2 rounded-lg text-xs font-bold">Enviar avisos pendientes</button></div>
+                        <p class="text-[11px] text-slate-600 mt-2">Client ID, lista de cursos y vínculos se guardan solo en este navegador. Al guardar una nueva vinculación, los avisos pendientes no se envían automáticamente.</p>
+                    </section>
+                    </div>
+
+                    <div class="sgc-config-category space-y-3" data-config-title="Perfil institucional" data-config-icon="🏛️" data-config-meta="Define el membrete institucional y el dominio de correo estudiantil.">
+                        <h3 class="flex items-center gap-2 border-b border-slate-200 pb-2 text-sm font-bold text-slate-800"><span aria-hidden="true">🏛️</span>Perfil institucional</h3>
+                        <section class="bg-slate-50 rounded-xl p-4">
+                            <p class="text-[11px] text-slate-500 mb-3">Estos datos se muestran en la aplicación y se usan para completar el correo de acceso de los estudiantes.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
+                                <label class="block text-[11px] font-bold text-slate-600 uppercase">Nombre de la institución
+                                    <input type="text" id="cfg-institucion-nombre" maxlength="160" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm normal-case" placeholder="Ingresa el nombre de la institución">
+                                </label>
+                                <label class="block text-[11px] font-bold text-slate-600 uppercase">Dominio del correo estudiantil
+                                    <input type="text" id="cfg-institucion-dominio" maxlength="120" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm normal-case" placeholder="ejemplo.edu.ec">
+                                </label>
+                            </div>
+                            <button onclick="guardarPerfilInstitucional()" class="mt-3 bg-brand-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-brand-700">💾 Guardar perfil institucional</button>
+                        </section>
+                    </div>
+
+                    <div class="sgc-config-category space-y-3" data-config-title="Perfil docente" data-config-icon="🖊️" data-config-meta="Configura la firma de referencia del docente.">
+                        <h3 class="flex items-center gap-2 border-b border-slate-200 pb-2 text-sm font-bold text-slate-800"><span aria-hidden="true">🖊️</span>Perfil docente</h3>
                     <section class="bg-slate-50 rounded-xl p-4">
-                        <h4 class="font-bold text-sm mb-3">📊 Contadores de acceso</h4>
+                        <h4 class="font-bold text-sm mb-2">👤 Nombre del docente</h4>
+                        <p class="text-[11px] text-slate-500 mb-3">Este nombre se mostrará en la pantalla inicial y en los reportes generados por el sistema.</p>
+                        <div class="flex flex-wrap items-end gap-2">
+                            <label class="flex-1 min-w-56 block text-[11px] font-bold text-slate-600 uppercase">Nombre completo
+                                <input type="text" id="cfg-docente-nombre" maxlength="120" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm normal-case" placeholder="Ingresa el nombre del docente">
+                            </label>
+                            <button onclick="guardarPerfilDocente()" class="bg-brand-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-brand-700">💾 Guardar nombre</button>
+                        </div>
+                    </section>
+<!-- (B2) Firma de referencia del docente -->
+                    <section class="bg-slate-50 rounded-xl p-4">
+                        <h4 class="font-bold text-sm mb-3">🖊️ Firma de referencia del docente</h4>
+                        <p class="text-[11px] text-slate-500 mb-3">
+                            Sube una foto o escaneo de tu firma. Al evaluar Cuaderno/Libro con IA, el sistema revisará si aparece una firma
+                            manuscrita tuya en el documento del estudiante y qué tan parecida es a esta referencia (comparación por semejanza
+                            de trazo, no exacta — las firmas manuscritas nunca son idénticas). Si no registras una firma aquí, esta verificación
+                            simplemente no se muestra y todo lo demás sigue funcionando igual.
+                        </p>
+                        <div class="flex flex-wrap items-start gap-4">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Imagen de la firma (JPG o PNG)</label>
+                                <input type="file" id="cfg-firma-input" accept="image/png,image/jpeg" class="text-xs">
+                                <div class="flex gap-2 mt-2">
+                                    <button onclick="guardarFirmaDocente()" class="bg-brand-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-brand-700">💾 Guardar firma</button>
+                                    <button onclick="eliminarFirmaDocente()" class="bg-rose-50 text-rose-600 px-3 py-2 rounded-lg text-xs font-bold hover:bg-rose-100">🗑️ Eliminar firma</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Firma registrada actualmente</label>
+                                <div id="cfg-firma-preview" class="w-48 h-24 bg-white border rounded-lg flex items-center justify-center text-[11px] text-slate-400 p-2">Sin firma registrada</div>
+                            </div>
+                        </div>
+                    </section>
+                    </div>
+
+                    <div class="sgc-config-category space-y-3" data-config-title="Accesos y límites" data-config-icon="🔐" data-config-meta="Límites de acceso y recuperación, junto con sus estadísticas.">
+                        <h3 class="flex items-center gap-2 border-b border-slate-200 pb-2 text-sm font-bold text-slate-800"><span aria-hidden="true">🔐</span>Accesos y límites</h3>
+<!-- (D) Contadores de acceso -->
+                    <section class="bg-slate-50 rounded-xl p-4">
+                        <h4 class="font-bold text-sm mb-3">🔐 Control de accesos</h4>
+                        <div class="bg-white border rounded-lg p-3 mb-3">
+                            <h5 class="text-xs font-bold text-slate-700 mb-2">Límite de recuperación</h5>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end mb-4">
+                            <label class="text-xs font-bold text-slate-600">Máximo anual de solicitudes de recuperación
+                                <input type="number" id="cfg-max-solicitudes-recuperacion" min="0" max="100" step="1" required placeholder="Ingrese el máximo" class="block w-full mt-1 px-3 py-2 bg-white border rounded-lg text-sm">
+                            </label>
+                            <div><button type="button" onclick="guardarMaxSolicitudesRecuperacion()" class="bg-brand-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-brand-700">Guardar máximo</button>
+                            <p class="text-[11px] text-slate-400 mt-1">Por período lectivo y asignatura. El límite debe guardarse aquí; sin este dato no se habilitan solicitudes.</p>
+                            <p id="cfg-max-solicitudes-recuperacion-estado" class="text-[11px] mt-1" aria-live="polite"></p></div>
+                        </div>
+                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                             <div class="bg-white border rounded-lg p-3 text-center">
                                 <p class="text-[11px] text-slate-500 uppercase font-bold">Accesos de estudiantes (general)</p>
@@ -2699,8 +2758,11 @@ video {
                         </details>
                         <p class="text-[11px] text-slate-400 mt-2">Los contadores y el límite diario se leen desde Firebase. Cada acceso autorizado incrementa los contadores correspondientes.</p>
                     </section>
+                    </div>
 
-                    <!-- (E) Backup íntegro descargable -->
+                    <div class="sgc-config-category space-y-3" data-config-title="Respaldo y archivos" data-config-icon="💾" data-config-meta="Descarga respaldos y archiva PDFs por trimestre.">
+                        <h3 class="flex items-center gap-2 border-b border-slate-200 pb-2 text-sm font-bold text-slate-800"><span aria-hidden="true">💾</span>Respaldo y archivos</h3>
+<!-- (E) Backup íntegro descargable -->
                     <section class="bg-slate-50 rounded-xl p-4">
                         <h4 class="font-bold text-sm mb-3">💾 Backup íntegro de la base de datos</h4>
                         <p class="text-[11px] text-slate-500 mb-3">Descarga toda la base de datos (estudiantes, calificaciones, configuración NPT, rúbricas, notas, exámenes y observaciones) en un archivo JSON. Útil para respaldo en disco o migración. <strong>No incluye los archivos PDF de las entregas</strong> (solo su índice: nombre, tamaño, fecha) para evitar sobrecargar el sistema; esos PDFs deben respaldarse por separado.</p>
@@ -2712,46 +2774,21 @@ video {
                         <div id="cfg-backup-resultado" class="hidden mt-3 text-xs p-2 rounded-lg"></div>
                     </section>
 
-                    <!-- (E-bis) Diagnóstico y corrección de nombres con la Ñ dañada -->
-                    <section class="bg-slate-50 rounded-xl p-4">
-                        <h4 class="font-bold text-sm mb-3">🔤 Diagnóstico de texto dañado (Ñ / tildes)</h4>
-                        <p class="text-[11px] text-slate-500 mb-3">
-                            Busca estudiantes cuyo nombre, curso, paralelo, representante u observaciones contengan
-                            el carácter " " (dato dañado). Esto ocurría al importar un CSV de Excel que no estaba
-                            guardado como "CSV UTF-8" (la Ñ se pierde de forma irreversible al leerlo). <strong>Ya se
-                            corrigió la importación</strong> para que esto no vuelva a pasar; esta herramienta solo
-                            ayuda a corregir a mano los registros que quedaron dañados antes de la corrección.
-                        </p>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="buscarTextoDanadoNPT()" class="bg-rose-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-rose-700">🔍 Buscar registros dañados</button>
-                        </div>
-                        <div id="cfg-danado-resultado" class="hidden mt-3 text-xs"></div>
-                    </section>
-
-                    <!-- (F) Medidor de espacio ocupado por PDFs -->
-                    <section class="bg-slate-50 rounded-xl p-4">
-                        <h4 class="font-bold text-sm mb-3">📏 Espacio ocupado por PDFs (entregas NPT)</h4>
-                        <p class="text-[11px] text-slate-500 mb-3">Suma el tamaño de todos los PDFs registrados <strong>usando solo el índice liviano</strong> (nptArchivosMeta): no descarga ningún archivo. Referencia: el plan gratuito (Spark) de Firebase tiene un límite de <strong>1 GB</strong> para toda la base de datos; este medidor muestra qué parte de ese total ocupan los PDFs.</p>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="calcularUsoEspacioNPT()" class="bg-brand-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-brand-700">📏 Calcular espacio usado por PDFs</button>
-                        </div>
-                        <div id="cfg-espacio-resultado" class="hidden mt-3 text-xs"></div>
-                    </section>
-
                     <!-- (G) Archivado manual por trimestre -->
                     <section class="bg-slate-50 rounded-xl p-4">
                         <h4 class="font-bold text-sm mb-3">🗄️ Archivado manual de PDFs por trimestre</h4>
                         <p class="text-[11px] text-slate-500 mb-3">Exporta los PDFs de un trimestre cerrado a un archivo JSON descargable (respaldo aparte) y luego los elimina de la base activa para liberar espacio. <strong>No es automático:</strong> tú decides cuándo hacerlo, y siempre puedes ver primero qué se archivaría antes de confirmar.</p>
                         <div class="flex flex-wrap items-center gap-2 mb-1">
                             <select id="cfg-archivado-trimestre" class="border border-slate-300 rounded-lg px-2 py-2 text-xs">
-                                <option value="1">1er Trimestre (Septiembre – Diciembre)</option>
-                                <option value="2">2do Trimestre (Enero – Marzo)</option>
-                                <option value="3">3er Trimestre (Abril – Junio)</option>
+                                <option value="1">1er Trimestre</option>
+                                <option value="2">2do Trimestre</option>
+                                <option value="3">3er Trimestre</option>
                             </select>
                             <button onclick="analizarArchivadoTrimestre()" class="bg-brand-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-brand-700">🔍 Analizar trimestre (sin descargar PDFs)</button>
                         </div>
                         <div id="cfg-archivado-resultado" class="hidden mt-3 text-xs"></div>
                     </section>
+                    </div>
 
                 </div>
             </div>
@@ -3267,17 +3304,17 @@ video {
     <script>
         // ==================== CONFIGURACIÓN DE FIREBASE ====================
         const firebaseConfig = {
-            apiKey: "AIzaSyCadeeu-AIeWJx4FG4cE1fUroZBgOJcArA",
-            authDomain: "evaluaciones-uefsc-cg.firebaseapp.com",
-            databaseURL: "https://evaluaciones-uefsc-cg-default-rtdb.firebaseio.com",
-            projectId: "evaluaciones-uefsc-cg",
-            storageBucket: "evaluaciones-uefsc-cg.firebasestorage.app",
-            messagingSenderId: "542720530753",
-            appId: "1:542720530753:web:275f50d9e04013c9e969c0"
-        };
+  apiKey: "AIzaSyANNg2ZurpsS0O-K05A_OnMcHx6S1nvxrY",
+  authDomain: "sgc-docentes.firebaseapp.com",
+  databaseURL: "https://sgc-docentes-default-rtdb.firebaseio.com",
+  projectId: "sgc-docentes",
+  storageBucket: "sgc-docentes.firebasestorage.app",
+  messagingSenderId: "307925552431",
+  appId: "1:307925552431:web:db43d3aa15778bb40b65da"
+};
         // Se completará con el UID de la cuenta docente autorizada en Firebase Auth.
         // La misma identidad deberá quedar autorizada en las reglas de Realtime Database.
-        const FIREBASE_DOCENTE_UID_AUTORIZADO = '7iYfnfGhQSS67gfF0ZI8oV4najG3';
+        const FIREBASE_DOCENTE_UID_AUTORIZADO = 'I5EXDPc2ZafvMDw0eJC6DpInOxg2';
 
         let database;
         let fb_modo = 'desconocido'; // 'sdk' | 'rest' | 'local'
@@ -3302,7 +3339,6 @@ video {
         const NPT_EXAMEN_TIEMPO_PREGUNTA = 60;    // segundos por pregunta antes de avanzar automáticamente
         const NPT_EXAMEN_TIEMPO_REVISION = 60;    // segundos para revisar respuestas al terminar
         const NPT_EXAMEN_TIEMPO_FINALIZAR = 10;   // segundos para presionar "Finalizar examen"
-        const NPT_NOMBRE_DOCENTE = 'Ing. César Godoy Rosero, Mgt.';
         // Encabezado institucional oficial (escudo + Ministerio de Educación) usado en TODOS los
         // reportes/informes imprimibles. Se guarda como imagen embebida en Base64 para que los
         // reportes (que se abren en una pestaña/ventana aparte, sin acceso a los archivos del
@@ -3410,6 +3446,13 @@ video {
             return trimestresEfectivos()[0]?.num || 1;
         }
 
+        // Seguridad: tipos MIME que pueden abrirse en una pestaña del propio origen sin ejecutar scripts.
+        // Un archivo subido por un estudiante con otro tipo (text/html, image/svg+xml, etc.) se descarga,
+        // nunca se abre: un blob: hereda el origen de la aplicación.
+        function nptMimeVisualizable(mime) {
+            const tipo = String(mime || 'application/pdf').split(';')[0].trim().toLowerCase();
+            return ['application/pdf','image/png','image/jpeg','image/webp','image/gif'].includes(tipo) ? tipo : null;
+        }
         function escapeHtml(valor) {
             return texto(valor).replace(/[&<>"']/g, ch => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -3598,6 +3641,7 @@ video {
             if(codigo.includes('ESTUDIANTE_CEDULA_NO_ENCONTRADA')) return 'La cédula ingresada no aparece en la nómina consultada. Verifica sus 10 dígitos; si está correcta, solicita al docente que confirme que la ficha no fue eliminada y que la cédula vigente esté registrada.';
             if(codigo.includes('ESTUDIANTE_CORREO_NO_CORRESPONDE')) return 'El correo con el que ingresaste no está asociado a esa cédula en la nómina. Verifica que uses el correo institucional registrado para ese estudiante; si no coincide, solicita al docente que revise la ficha.';
             if(codigo.includes('ESTUDIANTE_REGISTRO_INCONSISTENTE')) return 'La ficha localizada no coincide con la cédula consultada. No se abrió el acceso. Solicita al docente que revise la nómina.';
+            if(codigo.includes('ESTUDIANTE_SIN_FICHA_AUTORIZADA')) return 'La cuenta se autenticó, pero no existe una ficha en la nómina con esa cédula y ese correo. Verifica que la cédula tenga 10 dígitos y que uses exactamente el correo registrado para ese estudiante; si es correcto, solicita al docente que revise la ficha (campo de correo) en la nómina.';
             if(codigo.includes('ESTUDIANTE_NOMINA_NO_VERIFICABLE')) return 'La cuenta se autenticó, pero no se pudo consultar la nómina por un problema de conexión o permisos. Vuelve a intentarlo; si persiste, avisa al docente administrador.';
             if(['NETWORK_REQUEST_FAILED','NETWORK_ERROR','FAILED TO FETCH','TIMEOUT'].some(x=>codigo.includes(x))) return 'No se pudo conectar con Firebase. Comprueba tu conexión e inténtalo nuevamente.';
             if(codigo.includes('OPERATION_NOT_ALLOWED')) return 'El proveedor Correo/Contraseña no está habilitado en Firebase Authentication.';
@@ -3657,7 +3701,13 @@ video {
         }
         function correoEstudianteIngresado() {
             const local=normalizarUsuarioCorreoInstitucional(document.getElementById('input-email-local')?.value);
-            return local?local+DOMINIO_INSTITUCIONAL:'';
+            const dominio = dominioCorreoInstitucionalConfigurado();
+            return local && dominio ? local + dominio : '';
+        }
+        function esCorreoInstitucionalValido(correo) {
+            const dominio = dominioCorreoInstitucionalConfigurado().toLowerCase();
+            const email = String(correo || '').trim().toLowerCase();
+            return !!dominio && email.endsWith(dominio) && email.length > dominio.length && !email.slice(0, -dominio.length).includes('@');
         }
         function mensajeErrorRecuperacionFirebase(error) {
             const codigo=`${error?.code||''} ${error?.message||''}`.toUpperCase().replace(/-/g,'_');
@@ -3676,6 +3726,23 @@ video {
             if(other){other.classList.add('hidden');other.style.display='none';}
             if(box){if(esError){document.getElementById('login-error-text').innerText=mensaje;}else{box.textContent=mensaje;}box.classList.remove('hidden');box.style.display=esError?'flex':'block';}
         }
+        // Muestra u oculta el texto de un campo de contraseña (login de estudiante y de docente)
+        function alternarVisibilidadClave(idInput, boton) {
+            const input = document.getElementById(idInput);
+            if (!input) return;
+            const mostrar = input.type === 'password';
+            input.type = mostrar ? 'text' : 'password';
+            if (boton) {
+                const etiqueta = mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña';
+                boton.setAttribute('aria-label', etiqueta);
+                boton.setAttribute('title', etiqueta);
+                boton.setAttribute('aria-pressed', mostrar ? 'true' : 'false');
+                boton.innerHTML = mostrar
+                    ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>'
+                    : '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+            }
+            input.focus();
+        }
         function ocultarAvisosLoginEstudiante() {
             ['login-error','login-status'].forEach(id=>{
                 const box=document.getElementById(id);
@@ -3683,9 +3750,10 @@ video {
             });
         }
         async function registrarCuentaEstudiante() {
+            if (!await asegurarPerfilParaEstudiante()) return;
             const email=correoEstudianteIngresado(),password=document.getElementById('input-clave-estudiante')?.value||'';
             if(!email) return mostrarEstadoCuentaEstudiante('Escribe primero tu correo institucional.',true);
-            if(!/^[^\s@]+@sagradocorazon\.edu\.ec$/.test(email)) return mostrarEstadoCuentaEstudiante('Usa tu correo institucional completo.',true);
+            if(!esCorreoInstitucionalValido(email)) return mostrarEstadoCuentaEstudiante('Usa tu correo institucional completo.',true);
             if(password.length<8) return mostrarEstadoCuentaEstudiante('Crea una contraseña de al menos 8 caracteres y vuelve a ingresarla en el acceso.',true);
             try {
                 const resp=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(firebaseConfig.apiKey)}`,{
@@ -3705,7 +3773,7 @@ video {
         async function recuperarClaveEstudiante() {
             const email=correoEstudianteIngresado();
             if(!email) return mostrarEstadoCuentaEstudiante('Escribe primero tu correo institucional.',true);
-            if(!/^[^\s@]+@sagradocorazon\.edu\.ec$/.test(email)) return mostrarEstadoCuentaEstudiante('El correo institucional formado por el sistema no es válido. Revisa el usuario que escribiste.',true);
+            if(!esCorreoInstitucionalValido(email)) return mostrarEstadoCuentaEstudiante('El correo institucional formado por el sistema no es válido. Revisa el usuario que escribiste.',true);
             try {
                 await enviarAccionCorreoFirebase({requestType:'PASSWORD_RESET',email});
                 mostrarEstadoCuentaEstudiante('Firebase recibió la solicitud, pero por seguridad no confirma si ese correo tiene una cuenta ni si el mensaje fue entregado. Si nunca creaste la cuenta con “Crear cuenta y establecer contraseña”, la recuperación no puede enviarte un enlace: usa esa opción primero. Tener correo y cédula en la nómina no crea la cuenta de acceso. Si ya tenías cuenta, revisa Spam y confirma que escribiste el usuario institucional correcto. Si no llega en unos minutos, comunica al docente el correo y la hora del intento; no compartas tu contraseña ni códigos.');
@@ -3732,6 +3800,7 @@ video {
             } catch (_) {}
             _authToken=null;_authRefreshToken=null;_authTokenExpiresAt=0;_authIdentity=null;
             try { sessionStorage.removeItem('sgcFirebaseRefreshToken'); } catch(_) {}
+            try { limpiarRespaldosLocales(); } catch (_) {}
         }
         async function obtenerAuthToken(forzarRenovacion = false) {
             const ahora=Date.now();
@@ -3829,18 +3898,6 @@ video {
             }
         }
 
-        async function verificarConexionFirebase() {
-            let ultimoError = null;
-            for (const ruta of RTDB_PROBE_PATHS) {
-                try {
-                    await fetchFirebase(rtdbRestUrl(ruta));
-                    return true;
-                } catch (e) {
-                    ultimoError = e;
-                }
-            }
-            throw ultimoError || new Error('No se pudo verificar Firebase');
-        }
 
         /** Lee un nodo RTDB. Prioriza SDK (tiempo real), cae a REST. */
         async function leerValorRutaFirebase(ruta) {
@@ -3977,7 +4034,14 @@ video {
                     const registroEstudiante=registroElegido?.valor||null;
                     if(registroElegido) rutaEstudiantes=registroElegido.ruta;
                     if(!registroEstudiante) {
-                        if(lecturasNomina.some(x=>x.error)) throw new Error('ESTUDIANTE_NOMINA_NO_VERIFICABLE');
+                        // Con las reglas de RTDB, leer una ficha que NO existe, o cuyo correo no coincide con el de la
+                        // cuenta, devuelve "Permission denied" (igual que un fallo real de permisos). Si TODAS las rutas
+                        // respondieron así, lo más probable es que la cédula no esté en la nómina con este correo;
+                        // si hubo errores de red u otros, se mantiene el mensaje de conexión.
+                        const esDenegado=e=>/permission[_ ]denied|REST 40[13]\b/i.test(String(e?.code||'')+' '+String(e?.message||''));
+                        const conError=lecturasNomina.filter(x=>x.error);
+                        if(conError.length&&conError.every(x=>esDenegado(x.error))) throw new Error('ESTUDIANTE_SIN_FICHA_AUTORIZADA');
+                        if(conError.length) throw new Error('ESTUDIANTE_NOMINA_NO_VERIFICABLE');
                         throw new Error('ESTUDIANTE_CEDULA_NO_ENCONTRADA');
                     }
                     const estudiante=normalizarEstudiante({clave:ced,valor:registroEstudiante,ruta:[ced]});
@@ -4157,15 +4221,6 @@ video {
             nptListenersTiempoReal.push(cancelar);
         }
 
-        function activarListenersFirebase() {
-            cancelarListenersFirebase();
-            escucharRutaFirebase(rutaEstudiantes, 'estudiantes', valor => {
-                estudiantes = normalizarListaEstudiantes(valor);
-            });
-            escucharRutaFirebase(rutaCalificaciones, 'calificaciones', valor => {
-                calificaciones = normalizarListaCalificaciones(valor);
-            });
-        }
 
         async function esperarDatosIniciales() {
             if (datosInicialesCargados) return true;
@@ -4201,26 +4256,23 @@ video {
             actualizarEstadoConexion('🟡 REST preparado; espera el inicio de sesión');
         }
 
-        function mostrarErrorConexion() {
-            document.getElementById('loading-data')?.classList.add('hidden');
-            actualizarEstadoConexion('🔴 Sin conexión a Firebase - Modo local');
-            try {
-                const backupEstudiantes = localStorage.getItem('estudiantes_backup');
-                const backupCalificaciones = localStorage.getItem('calificaciones_backup');
-                estudiantes = backupEstudiantes ? normalizarListaEstudiantes(JSON.parse(backupEstudiantes)) : estudiantes;
-                calificaciones = backupCalificaciones ? normalizarListaCalificaciones(JSON.parse(backupCalificaciones)) : calificaciones;
-            } catch (e) {
-                console.warn('No se pudo restaurar el respaldo local:', e);
-            }
-            datosInicialesCargados = true;
-            actualizarSelectores();
-            actualizarPaneles();
-        }
 
-        function guardarBackup() {
-            localStorage.setItem('estudiantes_backup', JSON.stringify(estudiantes));
-            localStorage.setItem('calificaciones_backup', JSON.stringify(calificaciones));
+        // Privacidad: el respaldo contiene datos personales de menores (cédulas, correos, notas). Se guarda
+        // solo en sessionStorage (se borra al cerrar la pestaña) y se elimina al cerrar sesión; antes
+        // quedaba indefinidamente en localStorage, visible para el siguiente usuario de un equipo compartido.
+        const SGC_CLAVES_RESPALDO_LOCAL = ['estudiantes_backup', 'calificaciones_backup'];
+        function limpiarRespaldosLocales() {
+            SGC_CLAVES_RESPALDO_LOCAL.forEach(clave => {
+                try { localStorage.removeItem(clave); } catch (_) {}
+                try { sessionStorage.removeItem(clave); } catch (_) {}
+            });
         }
+        try { SGC_CLAVES_RESPALDO_LOCAL.forEach(clave => localStorage.removeItem(clave)); } catch (_) {} // respaldos heredados
+        // Rendimiento y privacidad: el respaldo local ya no se escribe. La única función que lo leía
+        // (mostrarErrorConexion) no se invocaba en ningún punto, de modo que cada guardado serializaba
+        // todos los estudiantes y calificaciones sin que nadie usara esa copia. Se conserva la firma para
+        // no tocar a sus llamadores; limpiarRespaldosLocales() sigue eliminando copias de versiones anteriores.
+        function guardarBackup() {}
 
         // ==================== FUNCIONES DE ESCRITURA MEJORADAS ====================
         /**
@@ -4235,31 +4287,51 @@ video {
                 return !!token&&claims.firebase?.sign_in_provider==='password'&&!!claims.email;
             } catch(_) { return false; }
         }
+        // Motivo del último fallo de guardarEstudiante (para mostrarlo en pantalla y en la importación).
+        let ultimoErrorGuardadoEstudiante = '';
+        /**
+         * Guarda un estudiante en Firebase y SOLO si Firebase lo confirma (se vuelve a leer el registro)
+         * lo agrega a la lista local. Antes un error de escritura se ignoraba y se informaba "guardado"
+         * aunque no estuviera en la base de datos. Devuelve true/false; el motivo queda en
+         * ultimoErrorGuardadoEstudiante.
+         */
         async function guardarEstudiante(est) {
+            ultimoErrorGuardadoEstudiante = '';
             est = normalizarEstudiante({ clave: est.cedula, valor: est, ruta: [est.cedula] });
-            if (!est?.cedula || !est.nombre) return false;
+            if (!est?.cedula || !est.nombre) { ultimoErrorGuardadoEstudiante = 'Faltan el nombre o la cédula.'; return false; }
+            if (!/^\d{10}$/.test(est.cedula)) { ultimoErrorGuardadoEstudiante = 'La cédula debe tener 10 dígitos.'; return false; }
             if (estudiantes.some(e => e.cedula === est.cedula)) {
-                console.log(`Estudiante con cédula ${est.cedula} ya existe, omitiendo.`);
+                ultimoErrorGuardadoEstudiante = `La cédula ${est.cedula} ya existe en la nómina.`;
                 return false;
             }
+            if (!esSesionDocenteFirebase()) { ultimoErrorGuardadoEstudiante = 'Solo la sesión del docente administrador puede guardar estudiantes. Vuelve a iniciar sesión como docente.'; return false; }
+            if (!(await ensureAuth())) { ultimoErrorGuardadoEstudiante = 'Tu sesión de Firebase no es válida o expiró. Cierra sesión e inicia de nuevo.'; return false; }
 
-            const authOk = await ensureAuth();
-            if (authOk) {
-                try {
-                    await guardarValorFirebase(`${rutaEstudiantes}/${est.cedula}`, est);
-                    console.log(`✅ Guardado en Firebase: ${est.nombre}`);
-                } catch (error) {
-                    console.error('Error al escribir en Firebase:', error);
+            const registro = JSON.parse(JSON.stringify(est)); // sin valores undefined (el SDK de Firebase los rechaza)
+            // Los campos opcionales vacíos no se escriben (las reglas validan repEmail/repCelular solo si existen).
+            ['repEmail', 'repCelular'].forEach(k => { if (registro[k] === '' || registro[k] == null) delete registro[k]; });
+            const ruta = `${rutaEstudiantes}/${est.cedula}`;
+            try {
+                await guardarValorFirebase(ruta, registro);
+                const verificado = await leerValorRutaFirebase(ruta);
+                if (!verificado || typeof verificado !== 'object' || normalizarCedula(verificado.cedula ?? est.cedula) !== est.cedula) {
+                    throw new Error('Firebase no confirmó el registro tras guardarlo.');
                 }
+            } catch (error) {
+                console.error('Error al escribir el estudiante en Firebase:', error);
+                const detalle = String(error?.message || error);
+                ultimoErrorGuardadoEstudiante = /permission[_ ]denied|REST 40[13]\b/i.test(detalle)
+                    ? `Firebase denegó la escritura en "${rutaEstudiantes}" (permisos). Verifica que las reglas publicadas permitan escribir al UID del docente. Detalle: ${detalle}`
+                    : `No se pudo guardar en Firebase: ${detalle}`;
+                return false;
             }
+            console.log(`✅ Guardado y confirmado en Firebase: ${est.nombre}`);
 
-            // Agregar al array local y refrescar UI
             if (!estudiantes.some(e => e.cedula === est.cedula)) {
                 estudiantes.push(est);
                 guardarBackup();
                 actualizarSelectores();
                 actualizarPaneles();
-                console.log(`💾 Guardado localmente: ${est.nombre}`);
             }
             return true;
         }
@@ -4473,19 +4545,6 @@ video {
                 tbody.insertRow().innerHTML = row;
             });
         }
-        function mostrarTablaCalificaciones() {
-            let tbody = document.getElementById('tabla-calificaciones-body'), noAlert = document.getElementById('no-calif-alert');
-            if(!tbody) return;
-            let califs = calificacionesFiltradas();
-            tbody.innerHTML = '';
-            if(califs.length === 0) { noAlert?.classList.remove('hidden'); return; }
-            noAlert?.classList.add('hidden');
-            califs.forEach((c,i) => {
-                const nota = numero(c.nota);
-                let row = `<tr class="border-b hover:bg-slate-50"><td class="p-3">${i+1}</td><td class="p-3 font-medium">${escapeHtml(c.nombre)}</td><td class="p-3 font-mono">${escapeHtml(c.cedula)}</td><td class="p-3">${escapeHtml(c.curso || cursoActual || '-')} "${escapeHtml(c.paralelo || paraleloActual || '-')}"</td><td class="p-3 text-slate-500">${escapeHtml(nptFormatoFecha(c.fecha))}</td><td class="p-3 text-center">${numero(c.correctas)}/10</td><td class="p-3 text-right font-bold ${nota>=7?'text-emerald-600':'text-rose-500'}">${formatearNota(nota)}</td></tr>`;
-                tbody.insertRow().innerHTML = row;
-            });
-        }
         let cedulaFichaActual = null; // cédula del estudiante que está abierto en el modal de ficha
         const NPT_CURSOS_DISPONIBLES = ['1°', '2°', '3°'];
         const NPT_PARALELOS_DISPONIBLES = ['A','B','C','D','E','F','G','H','I'];
@@ -4630,9 +4689,9 @@ video {
         // al hacer "Guardar como > CSV (delimitado por comas)", genera el archivo en
         // Windows-1252/ANSI por defecto (NO en UTF-8). En ese formato la Ñ ocupa un
         // solo byte (0xD1) que NO es una secuencia válida en UTF-8, así que al forzar
-        // la lectura como UTF-8 el navegador lo reemplaza por el carácter " "
+        // la lectura como UTF-8 el navegador lo reemplaza por el carácter "�"
         // (U+FFFD) de forma IRREVERSIBLE — el dato original ya no se puede recuperar
-        // después de eso. Esto es lo que producía nombres como "A APA PROA O" en
+        // después de eso. Esto es lo que producía nombres como "A�APA PROA�O" en
         // listados y reportes.
         // La solución: leer el archivo como bytes crudos e intentar decodificarlo
         // como UTF-8 en modo estricto (fatal:true). Si el archivo SÍ es UTF-8 válido
@@ -4730,7 +4789,7 @@ video {
                 }
             }
 
-            alert(`✅ ${exitos} estudiantes importados correctamente.\n❌ ${fallos} errores/duplicados.`);
+            alert(`✅ ${exitos} estudiantes importados correctamente.\n❌ ${fallos} errores/duplicados.` + (fallos && ultimoErrorGuardadoEstudiante ? `\n\nÚltimo motivo: ${ultimoErrorGuardadoEstudiante}` : ''));
         }
 
         async function agregarEstudiante() {
@@ -4751,10 +4810,10 @@ video {
             };
             const guardado = await guardarEstudiante(nuevo);
             if(guardado) {
-                alert("Estudiante guardado");
+                alert("✅ Estudiante guardado y confirmado en Firebase.");
                 limpiarFormulario();
             } else {
-                alert("No se pudo guardar (cédula duplicada o error de conexión).");
+                alert("❌ No se guardó el estudiante.\n\n" + (ultimoErrorGuardadoEstudiante || "Error desconocido. Revisa la consola del navegador (F12)."));
             }
         }
         function limpiarFormulario() {
@@ -4772,13 +4831,12 @@ video {
         }
 
         // ==================== EVALUACIÓN ====================
-        const DOMINIO_INSTITUCIONAL = '@sagradocorazon.edu.ec';
         // Acepta la parte local o un correo institucional completo pegado en el campo.
         // Solo elimina el dominio institucional exacto para evitar formar una dirección distinta.
         function normalizarUsuarioCorreoInstitucional(valor) {
             let usuario = texto(valor).trim().toLowerCase();
-            const dominio = DOMINIO_INSTITUCIONAL.toLowerCase();
-            if (usuario.endsWith(dominio)) usuario = usuario.slice(0, -dominio.length);
+            const dominio = dominioCorreoInstitucionalConfigurado().toLowerCase();
+            if (dominio && usuario.endsWith(dominio)) usuario = usuario.slice(0, -dominio.length);
             return usuario.trim();
         }
         // Vista previa en vivo del correo institucional completo mientras el estudiante escribe:
@@ -4790,9 +4848,13 @@ video {
             if (!el || !input) return;
             const local = normalizarUsuarioCorreoInstitucional(input.value);
             if (input.value !== local) input.value = local;
-            if (local) {
-                el.textContent = `Tu correo será: ${local}${DOMINIO_INSTITUCIONAL}`;
+            const dominio = dominioCorreoInstitucionalConfigurado();
+            if (local && dominio) {
+                el.textContent = `Tu correo será: ${local}${dominioCorreoInstitucionalConfigurado()}`;
                 el.className = 'text-xs font-bold text-brand-700 mt-1';
+            } else if (!dominio) {
+                el.textContent = 'El dominio institucional aún no está configurado.';
+                el.className = 'text-[11px] text-amber-700 mt-1';
             } else {
                 el.textContent = 'Solo escribe la parte antes del @, el dominio ya está incluido.';
                 el.className = 'text-[11px] text-slate-400 mt-1';
@@ -4800,6 +4862,7 @@ video {
         }
         async function verificarEstudiante() {
             ocultarAvisosLoginEstudiante();
+            if (!await asegurarPerfilParaEstudiante()) return;
             const local=normalizarUsuarioCorreoInstitucional(document.getElementById('input-email-local')?.value);
             const ced=normalizarCedula(document.getElementById('input-cedula')?.value);
             const password=document.getElementById('input-clave-estudiante')?.value||'';
@@ -4807,7 +4870,9 @@ video {
             if(!/^\d{10}$/.test(ced)){mostrarEstadoCuentaEstudiante('Digita una cédula válida de 10 dígitos.',true);return;}
             if(!password){mostrarEstadoCuentaEstudiante('Escribe tu contraseña. Si es tu primer ingreso, pulsa “Crear cuenta y establecer contraseña” para crearla y confirmar el correo. Si ya tenías una contraseña y la olvidaste, pulsa “Olvidé mi contraseña” y revisa también Spam. La cédula no funciona como contraseña.',true);return;}
             document.getElementById('input-cedula').value=ced;
-            const correoCompleto=local+DOMINIO_INSTITUCIONAL;
+            const dominio = dominioCorreoInstitucionalConfigurado();
+            if (!dominio) { mostrarEstadoCuentaEstudiante('El dominio institucional aún no está configurado. Solicita al docente que lo registre en Configuración.', true); return; }
+            const correoCompleto=local+dominio;
             const btn=document.querySelector('#screen-login button[onclick="verificarEstudiante()"]');
             if(btn){btn.disabled=true;btn.dataset.labelOriginal=btn.textContent;btn.textContent='Verificando…';}
             const inicioAcceso=performance.now();
@@ -5879,7 +5944,7 @@ video {
                 <td class="center">${d.ok ? '✅' : '❌'}</td></tr>`).join('');
             const contenido = `
                 <div class="filtro">
-                    <strong>Docente:</strong> ${escapeHtml(NPT_NOMBRE_DOCENTE)}<br>
+                    <strong>Docente:</strong> ${escapeHtml(nombreDocenteConfigurado())}<br>
                     <strong>Estudiante:</strong> ${escapeHtml(est?.nombre || reg.nombre || '')}<br>
                     <strong>Curso/Paralelo:</strong> ${escapeHtml(est?.curso||'')} "${escapeHtml(est?.paralelo||'')}"<br>
                     <strong>Período:</strong> ${escapeHtml(t?.label||'')} — <strong>${escapeHtml(etiquetaCampo)}</strong>${esInsumoTest ? ' (🧪 Test)' : ''}<br>
@@ -5918,7 +5983,7 @@ video {
             const aprobo = reg.estadoFinal === 'aprueba';
             const contenido = `
                 <div class="filtro">
-                    <strong>Docente:</strong> ${escapeHtml(NPT_NOMBRE_DOCENTE)}<br>
+                    <strong>Docente:</strong> ${escapeHtml(nombreDocenteConfigurado())}<br>
                     <strong>Estudiante:</strong> ${escapeHtml(est?.nombre || reg.nombre || '')}<br>
                     <strong>Curso/Paralelo:</strong> ${escapeHtml(est?.curso||'')} "${escapeHtml(est?.paralelo||'')}"<br>
                     <strong>Período:</strong> Examen Supletorio (Anual)<br>
@@ -6037,9 +6102,11 @@ video {
         //   nptNotas/{cedula}/trimestre{n}/{tipo}                           → { nota, observacion, fechaNota, docente, verificado, fechaVerificacion }
 
         const NPT_TRIMESTRES = [
-            { num: 1, label: '1er Trimestre', meses: 'Septiembre – Diciembre' },
-            { num: 2, label: '2do Trimestre', meses: 'Enero – Marzo' },
-            { num: 3, label: '3er Trimestre', meses: 'Abril – Junio' }
+            // Solo etiquetas genéricas: los meses y las fechas de cada trimestre se leen de
+            // Firebase (configuracion/trimestres) y no se fijan en el código.
+            { num: 1, label: '1er Trimestre', meses: '' },
+            { num: 2, label: '2do Trimestre', meses: '' },
+            { num: 3, label: '3er Trimestre', meses: '' }
         ];
         const NPT_TIPOS = [
             { id: 'cuaderno', label: '📓 Cuaderno',  icono: '📓' },
@@ -6115,7 +6182,6 @@ video {
         // dependen del insumo concreto en ese curso/paralelo/trimestre — todo insumo 'texto' se
         // entrega por URL y se evalúa con rúbrica+IA; todo insumo 'test' NO (se autocalifica).
         function esInsumoURL(curso, paralelo, n, slotId) { return !nptInsumoEsTest(curso, paralelo, n, slotId); }
-        function esInsumoConRubrica(curso, paralelo, n, slotId) { return !nptInsumoEsTest(curso, paralelo, n, slotId); }
         // Decisión de diseño confirmada: en el esquema de 8 espacios NINGÚN insumo bloquea el envío
         // por falta de rúbrica publicada (se unifica al comportamiento permisivo que ya regía para
         // Tarea/Talleres) — la evaluación por IA simplemente queda pendiente hasta que exista rúbrica.
@@ -6155,9 +6221,16 @@ video {
         const NPT_EVAL_API_ENDPOINT = "https://npt-eval-proxy.cesargodoyia25.workers.dev";
         // Endpoint liviano de validación al momento del envío (no gasta cuota de Gemini).
         const NPT_VALIDAR_ENVIO_ENDPOINT = NPT_EVAL_API_ENDPOINT + "/validar-envio";
-        // Secreto compartido con el Worker (mismo valor configurado allí como NPT_SHARED_SECRET).
-        // Se reutiliza en toda llamada al Worker (evaluación e validación) para no duplicarlo.
-        const NPT_AUTH_HEADER = '3f79bbd513edaf0d68bf046dd951929ae3f2a86e3aaaf05f';
+        // Autenticación con el Worker (npt-eval-proxy): ID token de Firebase del usuario en "Authorization: Bearer".
+        // Ya NO hay ningún secreto compartido en este HTML público. El Worker verifica la firma del token
+        // y autoriza por rol: la evaluación con Gemini es EXCLUSIVA del docente; /validar-envio admite
+        // al docente y a estudiantes registrados.
+        // (Autor del sistema: Mgt. César Godoy R.)
+        async function nptEncabezadosWorker() {
+            const token = await obtenerAuthToken();
+            if (!token) throw new Error('Tu sesión no es válida o expiró. Cierra sesión e inicia sesión de nuevo.');
+            return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+        }
 
         let nptConfig = {};                 // { [curso]: { [paralelo]: { [n]: {habilitado, examenHabilitado} } } }
         let nptHabilitacionEstudiantes = {}; // LEGACY/general: { [curso]: { [paralelo]: { [n]: { [cedula]: bool } } } }
@@ -6207,7 +6280,8 @@ video {
         // Período académico activo + trimestres configurables + fórmula de promedio
         // Nodos RTDB:
         //   configuracion/periodoActivo                  → { nombre, activadoEn }
-        //   configuracion/trimestres                     → { 1: {label, meses, desde, hasta}, 2: {...}, 3: {...} }
+        //   configuracion/trimestresPorPeriodo/{PERIODO} → { 1: {label, meses, desde, hasta}, 2: {...}, 3: {...} }  (fuente principal)
+        //   configuracion/trimestres                     → espejo del período activo (compatibilidad con versiones anteriores)
         //   configuracion/formulaPromedio                → { cuaderno: 25, libro: 25, tarea: 20, talleres: 30 }  (porcentajes)
         let cfgPeriodoActivo = null;
         let cfgMaxSolicitudesRecuperacion = null;
@@ -6220,9 +6294,21 @@ video {
         let planificacionesCurriculares = {};
         let asistenciaMesVisible = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         let asistenciaFechaActiva = '';
-        let cfgTrimestres = null;       // null = usar NPT_TRIMESTRES por defecto
+        let cfgTrimestres = null;       // trimestres EFECTIVOS del período activo; null = sin fechas configuradas
+        let cfgTrimestresPorPeriodo = {}; // { CLAVE_PERIODO: {1,2,3} } leído de configuracion/trimestresPorPeriodo
+        let cfgTrimestresLegacy = null;   // configuracion/trimestres (estructura anterior, sin período)
+        let cfgTrimestresHeredados = false; // true si cfgTrimestres proviene de la estructura anterior
         let cfgFormulaPromedio = null;  // null = promedio simple
         let cfgFirmaDocente = null;     // null = sin firma registrada. Si existe: { base64, mime, fecha }
+        let cfgPerfilDocente = { nombre: '' };
+        let cfgPerfilInstitucional = { nombre: '', dominioCorreo: '' };
+
+        function normalizarPerfilInstitucional(perfil) {
+            if (!perfil || typeof perfil !== 'object') return null;
+            const nombre = String(perfil.nombre ?? perfil.nombreInstitucion ?? perfil.institucion ?? '').trim();
+            const dominioCorreo = String(perfil.dominioCorreo ?? perfil.dominioInstitucional ?? perfil.dominio ?? '').trim().toLowerCase().replace(/^@+/, '');
+            return { nombre, dominioCorreo };
+        }
 
         // ==================== CONTADORES DE ACCESO ====================
         // Nodos RTDB:
@@ -6238,6 +6324,119 @@ video {
 
         function sanitizarClave(v) {
             return texto(v).trim().replace(/[.#$\/\[\]\s]+/g, '_').toUpperCase() || '_';
+        }
+        function nombreDocenteConfigurado() {
+            return texto(cfgPerfilDocente?.nombre).trim() || 'Docente no configurado';
+        }
+        function actualizarNombreDocenteVisible() {
+            const nombre = document.getElementById('nombre-docente-inicial');
+            if (nombre) nombre.textContent = nombreDocenteConfigurado();
+            actualizarEstadoAccesoEstudiante();
+        }
+        // ---- Siglas de la institución (iniciales de las palabras significativas del nombre) ----
+        // Ej.: "Unidad Educativa Fiscomisional Sagrado Corazón" → "UEFSC"
+        function siglasInstitucion(nombreInstitucion) {
+            const omitir = new Set(['de','del','la','las','el','los','y','e','en','al','a']);
+            return texto(nombreInstitucion).trim().split(/\s+/)
+                .filter(p => p && !omitir.has(p.toLowerCase()))
+                .map(p => { const m = p.match(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]/); return m ? m[0].toUpperCase() : ''; })
+                .join('');
+        }
+        // ---- Requisitos para habilitar el módulo de estudiante ----
+        // Sin nombre de institución y nombre de docente registrados, el estudiante no puede ingresar.
+        let perfilAccesoEstudianteResuelto = false; // true cuando ya se intentó leer el perfil desde Firebase
+        function faltantesPerfilEstudiante() {
+            const faltan = [];
+            if (!texto(cfgPerfilInstitucional?.nombre).trim()) faltan.push('el nombre de la institución');
+            if (!texto(cfgPerfilDocente?.nombre).trim()) faltan.push('el nombre del docente');
+            return faltan;
+        }
+        function mensajeAccesoEstudianteBloqueado() {
+            return `Acceso de estudiantes no disponible: falta configurar ${faltantesPerfilEstudiante().join(' y ')}. Solicita al docente que lo registre en Configuración.`;
+        }
+        function actualizarEstadoAccesoEstudiante() {
+            const aviso = document.getElementById('aviso-perfil-no-configurado');
+            if (!aviso) return;
+            const bloquear = perfilAccesoEstudianteResuelto && faltantesPerfilEstudiante().length > 0;
+            aviso.classList.toggle('hidden', !bloquear);
+            aviso.textContent = bloquear ? mensajeAccesoEstudianteBloqueado() : '';
+        }
+        async function asegurarPerfilParaEstudiante() {
+            if (faltantesPerfilEstudiante().length) {
+                // Reintenta la lectura por si la carga inicial aún no terminó o falló de forma transitoria.
+                await Promise.allSettled([cargarPerfilInstitucionalDesdeFirebase(), cargarPerfilDocenteDesdeFirebase()]);
+                perfilAccesoEstudianteResuelto = true;
+            }
+            actualizarEstadoAccesoEstudiante();
+            if (!faltantesPerfilEstudiante().length) return true;
+            mostrarEstadoCuentaEstudiante(mensajeAccesoEstudianteBloqueado(), true);
+            return false;
+        }
+        async function cargarPerfilDocenteDesdeFirebase() {
+            try {
+                const perfil = await leerValorRutaFirebase('configuracion/perfilDocente');
+                if (!perfil || typeof perfil !== 'object') return false;
+                cfgPerfilDocente = perfil;
+                actualizarNombreDocenteVisible();
+                return true;
+            } catch (error) {
+                console.warn('[PERFIL] No se pudo cargar el perfil del docente:', error?.message || error);
+                return false;
+            }
+        }
+        // ---- Provincia y país (geolocalización aproximada por IP, sin solicitar permisos al usuario) ----
+        async function cargarUbicacionGeografica() {
+            const el = document.getElementById('ubicacion-geo');
+            if (!el) return;
+            try { const guardada = sessionStorage.getItem('sgc_ubicacion'); if (guardada) { el.textContent = guardada; return; } } catch (_) {}
+            const controlador = new AbortController();
+            const limite = setTimeout(() => controlador.abort(), 6000);
+            try {
+                const resp = await fetch('https://ipwho.is/?lang=es&fields=success,country,region', { signal: controlador.signal });
+                const datos = await resp.json();
+                if (!datos || datos.success === false || !datos.country) throw new Error('Sin datos de ubicación');
+                const ubicacion = '📍 ' + [datos.region, datos.country].filter(Boolean).join(', ');
+                el.textContent = ubicacion;
+                try { sessionStorage.setItem('sgc_ubicacion', ubicacion); } catch (_) {}
+            } catch (error) {
+                el.textContent = '📍 Ubicación no disponible';
+                console.warn('[UBICACION] No se pudo determinar provincia y país:', error?.message || error);
+            } finally {
+                clearTimeout(limite);
+            }
+        }
+        function nombreInstitucionConfigurado() {
+            return texto(cfgPerfilInstitucional?.nombre).trim() || 'Institución no configurada';
+        }
+        function dominioCorreoInstitucionalConfigurado() {
+            const dominio = texto(cfgPerfilInstitucional?.dominioCorreo).trim().toLowerCase().replace(/^@+/, '');
+            return dominio ? `@${dominio}` : '';
+        }
+        function actualizarPerfilInstitucionalVisible() {
+            const nombre = document.getElementById('nombre-institucion-membrete');
+            if (nombre) nombre.textContent = nombreInstitucionConfigurado();
+            const siglas = document.getElementById('siglas-institucion');
+            if (siglas) siglas.textContent = siglasInstitucion(cfgPerfilInstitucional?.nombre) || '—';
+            actualizarEstadoAccesoEstudiante();
+            const dominio = document.getElementById('dominio-correo-estudiante');
+            if (dominio) dominio.textContent = dominioCorreoInstitucionalConfigurado() || '@dominio-no-configurado';
+            actualizarVistaPreviaCorreoNPT();
+        }
+        async function cargarPerfilInstitucionalDesdeFirebase() {
+            try {
+                const perfil = normalizarPerfilInstitucional(await leerValorRutaFirebase('configuracion/perfilInstitucional'));
+                if (!perfil) return false;
+                cfgPerfilInstitucional = perfil;
+                actualizarPerfilInstitucionalVisible();
+                renderTabConfiguracion();
+                return true;
+            } catch (error) {
+                console.warn('[PERFIL] No se pudo cargar el perfil institucional:', error?.message || error);
+                return false;
+            }
+        }
+        function encabezadoReporteInstitucionalHTML() {
+            return `${NPT_ENCABEZADO_REPORTE_HTML}<p style="margin:0 0 10px;font-weight:bold;text-align:center">${escapeHtml(nombreInstitucionConfigurado())}</p>`;
         }
 
         function unicos(lista) {
@@ -7207,7 +7406,7 @@ video {
             const etiquetaLimpia = texto(s.etiqueta).replace(/^[^\wÁÉÍÓÚÑáéíóúñ]+/, '').trim();
             const contenido = `
                 <p style="text-align:right; margin-bottom:24px;">Esmeraldas, ${escapeHtml(nptFechaLargaEs(s.fecha))}</p>
-                <p style="margin-bottom:4px;"><strong>${escapeHtml(NPT_NOMBRE_DOCENTE)}</strong><br>
+                <p style="margin-bottom:4px;"><strong>${escapeHtml(nombreDocenteConfigurado())}</strong><br>
                 DOCENTE DE LA UEFM SAGRADO CORAZÓN<br>
                 Presente. –</p>
                 <p style="text-align:justify; margin-top:18px; line-height:1.6;">
@@ -8306,14 +8505,14 @@ video {
                     } else {
                         const ta = document.querySelector(`.npt-rubrica-insumo[data-insumo-rubrica="${ins.id}"]`);
                         const texto2 = texto(ta?.value).trim();
-                        const registro = { texto: texto2, fecha: new Date().toISOString(), docente: 'Ing. César Godoy Rosero, Mgt.' };
+                        const registro = { texto: texto2, fecha: new Date().toISOString(), docente: nombreDocenteConfigurado() };
                         nptRubricas[cv][pv][trimestre][ins.id] = registro;
                         await guardarValorFirebase(`nptRubricas/${cv}/${pv}/${trimestre}/${ins.id}`, registro);
                         if (ins.recuperacionHabilitado) {
                             const claveRecTexto = nptClaveRecuperacionInsumo(ins.id);
                             const taRec = document.querySelector(`.npt-rubrica-insumo-rec[data-insumo-rubrica-rec="${claveRecTexto}"]`);
                             const textoRec = texto(taRec?.value).trim();
-                            const registroRec = { texto: textoRec, fecha: new Date().toISOString(), docente: 'Ing. César Godoy Rosero, Mgt.' };
+                            const registroRec = { texto: textoRec, fecha: new Date().toISOString(), docente: nombreDocenteConfigurado() };
                             nptRubricas[cv][pv][trimestre][claveRecTexto] = registroRec;
                             await guardarValorFirebase(`nptRubricas/${cv}/${pv}/${trimestre}/${claveRecTexto}`, registroRec);
                         }
@@ -8662,10 +8861,6 @@ video {
                             <button onclick="abrirModalNotaNPT('${escapeHtml(est.cedula)}','${escapeHtml(est.nombre).replace(/'/g,"\\'")}',${t.num},'${claveInsumo}',true)"
                                 class="block w-full bg-amber-600 text-white text-xs px-2 py-1 rounded-lg hover:bg-amber-700">
                                 ${nota ? '✏️ Editar' : '📝 Calificar'}</button>
-                            ${nota && nota.origen === 'otros_medios' ? `
-                                <button onclick="eliminarCalificacionOtrosMediosNPT('${escapeHtml(est.cedula)}','${escapeHtml(est.nombre).replace(/'/g,"\\'")}',${t.num},'${claveInsumo}')"
-                                    class="block w-full bg-rose-100 text-rose-700 text-xs px-2 py-1 rounded-lg hover:bg-rose-200 font-bold">
-                                    🗑️ Eliminar calificación</button>` : ''}
                         </td>`;
                     tbody.appendChild(tr);
                 });
@@ -9026,12 +9221,6 @@ video {
             const min = String(f.getMinutes()).padStart(2, '0');
             return `${nptFormatoFecha(f)} ${hh}:${min}`;
         }
-        function nptDiasDesde(fechaStr) {
-            if (!fechaStr) return Infinity;
-            const f = new Date(fechaStr);
-            if (isNaN(f.getTime())) return Infinity;
-            return (Date.now() - f.getTime()) / 86400000;
-        }
         function nptSolicitudRecuperacionDe(cedula, numTrimestre, clave) {
             return nptSolicitudesRecuperacion[cedula]?.[`trimestre${numTrimestre}`]?.[clave] || null;
         }
@@ -9077,12 +9266,6 @@ video {
             if (clave === 'examen') return nptFechaFinRecuperacionExamen(null, curso, paralelo, numTrimestre);
             // Para insumos, tanto la solicitud como la rendición vencen al cierre oficial del trimestre.
             return nptFechaFinTrimestre(numTrimestre);
-        }
-        function nptDiasDisponiblesSolicitud(fechaInicio, fechaFin) {
-            if (!fechaInicio || !fechaFin) return null;
-            const a = new Date(fechaInicio), b = new Date(fechaFin);
-            if (isNaN(a.getTime()) || isNaN(b.getTime())) return null;
-            return Math.max(0, (b.getTime() - a.getTime()) / 86400000);
         }
         function nptSolicitudExpiradaInfo(curso, paralelo, numTrimestre, clave) {
             const activacion = nptFechaActivacionEvaluacion(curso, paralelo, numTrimestre, clave);
@@ -9653,7 +9836,7 @@ video {
             try {
                 resp = await fetch(NPT_EVAL_API_ENDPOINT, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-NPT-Auth': NPT_AUTH_HEADER },
+                    headers: await nptEncabezadosWorker(),
                     body: JSON.stringify(payload)
                 });
             } catch (fallaRed) {
@@ -9662,7 +9845,7 @@ video {
                 try {
                     resp = await fetch(NPT_EVAL_API_ENDPOINT, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-NPT-Auth': NPT_AUTH_HEADER },
+                        headers: await nptEncabezadosWorker(),
                         body: JSON.stringify(payload)
                     });
                 } catch (reintentoRed) {
@@ -10028,7 +10211,7 @@ video {
                         nota:Math.round(Number(evaluacionIA.nota)*100)/100,
                         observacion:texto(evaluacionIA.comentario||''),
                         fechaNota:evaluacionIA.fecha||new Date().toISOString(),
-                        docente:NPT_NOMBRE_DOCENTE,cedula,
+                        docente:nombreDocenteConfigurado(),cedula,
                         nombre:estudiantes.find(e=>e.cedula===cedula)?.nombre||'',
                         trimestre:numTrimestre,tipo,origen:null
                     } : null);
@@ -10084,9 +10267,10 @@ video {
                 const byteStr   = atob(base64);
                 const byteArr   = new Uint8Array(byteStr.length);
                 for (let i = 0; i < byteStr.length; i++) byteArr[i] = byteStr.charCodeAt(i);
-                const blob      = new Blob([byteArr], { type: arch.mime || 'application/pdf' });
+                const mimeSeguro = nptMimeVisualizable(arch.mime);
+                const blob      = new Blob([byteArr], { type: mimeSeguro || 'application/octet-stream' });
                 const url       = URL.createObjectURL(blob);
-                const ventana   = window.open(url, '_blank');
+                const ventana   = mimeSeguro ? window.open(url, '_blank') : null;
                 if (!ventana) {
                     // Si el navegador bloquea popups, descargar directamente
                     const a = document.createElement('a');
@@ -10104,81 +10288,6 @@ video {
         // ---- Eliminar entrega de un insumo (para que el estudiante lo suba de nuevo) ----
         // Requisito #8: el docente elimina la entrega y deja una observación que verá el estudiante.
         // Nodo de observaciones de devolución: nptObservacionesDevolucion/{cedula}/trimestre{N}/{tipo}
-        // Elimina exclusivamente una calificación registrada desde "Entregas recibidas otros medios".
-        // No utiliza eliminarEntregaNPT porque esa función devuelve/borrar una entrega del sistema.
-        async function eliminarCalificacionOtrosMediosNPT(cedula, nombre, trimestre, tipo) {
-            const trimKey = `trimestre${trimestre}`;
-            const nota = nptNotas[cedula]?.[trimKey]?.[tipo] || null;
-            const arch = nptArchivos[cedula]?.[trimKey]?.[tipo] || null;
-            const meta = nptArchivosMeta[cedula]?.[trimKey]?.[tipo] || null;
-
-            if (!nota || nota.origen !== 'otros_medios') {
-                alert('No se encontró una calificación válida registrada por otros medios. No se realizó ningún cambio.');
-                return;
-            }
-
-            const t = trimestresEfectivos().find(x => x.num === Number(trimestre));
-            const estRef = estudiantes.find(e => e.cedula === cedula);
-            const tp = tipo === 'examen'
-                ? { label: 'Examen' }
-                : (estRef ? nptInsumoObjeto(estRef.curso, estRef.paralelo, Number(trimestre), tipo) : null);
-            const etiqueta = tp?.label || tipo;
-            const confirmacion = confirm(
-                `¿Eliminar la calificación registrada por otros medios?\n\n` +
-                `Estudiante: ${nombre}\n` +
-                `Período: ${t?.label || `Trimestre ${trimestre}`}\n` +
-                `Actividad: ${etiqueta}\n` +
-                `Nota: ${formatearNota(nota.nota)}\n\n` +
-                `Se eliminará la calificación y, si corresponde, la evidencia asociada registrada como otros medios. Esta acción no elimina entregas realizadas en el sistema.`
-            );
-            if (!confirmacion) return;
-
-            try {
-                const authOk = await ensureAuth();
-                if (!authOk) {
-                    alert('No se pudo validar la sesión docente. No se eliminó ningún registro.');
-                    return;
-                }
-
-                // El registro de nota siempre pertenece a otros medios (validado arriba).
-                await borrarValorFirebase(`nptNotas/${cedula}/${trimKey}/${tipo}`);
-
-                // La evidencia solo se elimina cuando su origen confirma que también fue creada
-                // desde otros medios. Nunca se toca un archivo de una entrega del sistema.
-                if (arch?.origen === 'otros_medios') {
-                    await borrarValorFirebase(`nptArchivos/${cedula}/${trimKey}/${tipo}`);
-                }
-                if (meta?.origen === 'otros_medios') {
-                    await borrarValorFirebase(`nptArchivosMeta/${cedula}/${trimKey}/${tipo}`);
-                }
-
-                // Sincronizar las cachés locales después de confirmar los borrados en Firebase.
-                if (nptNotas[cedula]?.[trimKey]) {
-                    delete nptNotas[cedula][trimKey][tipo];
-                    if (Object.keys(nptNotas[cedula][trimKey]).length === 0) delete nptNotas[cedula][trimKey];
-                }
-                if (arch?.origen === 'otros_medios' && nptArchivos[cedula]?.[trimKey]) {
-                    delete nptArchivos[cedula][trimKey][tipo];
-                    if (Object.keys(nptArchivos[cedula][trimKey]).length === 0) delete nptArchivos[cedula][trimKey];
-                }
-                if (meta?.origen === 'otros_medios' && nptArchivosMeta[cedula]?.[trimKey]) {
-                    delete nptArchivosMeta[cedula][trimKey][tipo];
-                    if (Object.keys(nptArchivosMeta[cedula][trimKey]).length === 0) delete nptArchivosMeta[cedula][trimKey];
-                }
-
-                renderNPTDocente();
-                if (typeof renderCuadroGeneral === 'function') renderCuadroGeneral();
-                await registrarAuditoria(
-                    'eliminar_calificacion_otros_medios',
-                    `Calificación eliminada por otros medios: ${nombre} (${cedula}) — T${trimestre}/${tipo}. Nota anterior: ${formatearNota(nota.nota)}.`
-                );
-                alert('✅ Calificación eliminada correctamente. El estudiante vuelve a quedar pendiente en «Entregas recibidas otros medios» y podrás calificarlo nuevamente.');
-            } catch (e) {
-                console.error('Error al eliminar calificación de otros medios:', e);
-                alert('No se pudo completar la eliminación. Verifica la conexión y vuelve a intentarlo. Si hubo un fallo de conexión, revisa el registro antes de repetir la operación.');
-            }
-        }
-
         async function eliminarEntregaNPT(cedula, nombre, trimestre, tipo) {
             const t = trimestresEfectivos().find(x => x.num === trimestre);
             const esRec = nptEsClaveRecuperacionInsumo(tipo);
@@ -10202,7 +10311,7 @@ video {
             const authOk = await ensureAuth();
             const observacion = {
                 fecha: new Date().toISOString(),
-                docente: 'Ing. César Godoy Rosero, Mgt.',
+                docente: nombreDocenteConfigurado(),
                 motivo: motivo.trim()
             };
             try {
@@ -10780,20 +10889,19 @@ video {
         function sgcSolRecuperacionYaRendida(it) {
             return notaNPTDe(it.cedula, it.num, claveRecuperacionNPT(it.clave)) !== null;
         }
-        const SGC_DOCENTE_RESPUESTA = 'Ing. César Godoy Rosero, Mgt.';
         async function sgcSolEjecutarAprobacion(it) {
             const h = sgcSolRutaHabilitacion(it);
             await guardarValorFirebase(h.ruta, true);
             let nodo = h.base;
             h.camino.forEach(k => { if (!nodo[k] || typeof nodo[k] !== 'object') nodo[k] = {}; nodo = nodo[k]; });
             nodo[it.cedula] = true;
-            const registro = { ...it.s, estado: 'aprobada', fechaRespuesta: new Date().toISOString(), docenteRespuesta: SGC_DOCENTE_RESPUESTA };
+            const registro = { ...it.s, estado: 'aprobada', fechaRespuesta: new Date().toISOString(), docenteRespuesta: nombreDocenteConfigurado() };
             delete registro.motivoRespuesta;
             await guardarValorFirebase(`nptSolicitudesRecuperacion/${it.cedula}/trimestre${it.num}/${it.clave}`, registro);
             sgcSolGuardarLocal(it.cedula, it.num, it.clave, registro);
         }
         async function sgcSolEjecutarRechazo(it, motivo) {
-            const registro = { ...it.s, estado: 'rechazada', fechaRespuesta: new Date().toISOString(), docenteRespuesta: SGC_DOCENTE_RESPUESTA, motivoRespuesta: motivo };
+            const registro = { ...it.s, estado: 'rechazada', fechaRespuesta: new Date().toISOString(), docenteRespuesta: nombreDocenteConfigurado(), motivoRespuesta: motivo };
             await guardarValorFirebase(`nptSolicitudesRecuperacion/${it.cedula}/trimestre${it.num}/${it.clave}`, registro);
             sgcSolGuardarLocal(it.cedula, it.num, it.clave, registro);
         }
@@ -10945,7 +11053,7 @@ video {
             if (!filas.length) { sgcFwToast(win, 'No hay solicitudes para exportar.', 'info'); return; }
             // Evita que Excel interprete como fórmula un texto escrito por el representante (=, +, -, @).
             const seguro = (v) => { const x = texto(v); return csvCampo(/^[=+\-@\t\r]/.test(x) ? "'" + x : x); };
-            let csv = 'Docente,' + csvCampo(NPT_NOMBRE_DOCENTE) + '\n\nEstudiante,Cédula,Curso,Paralelo,Trimestre,Evaluación,Estado,Nota original,Motivo,Representante,Cédula representante,Fecha solicitud,Fecha respuesta,Motivo de rechazo\n';
+            let csv = 'Docente,' + csvCampo(nombreDocenteConfigurado()) + '\n\nEstudiante,Cédula,Curso,Paralelo,Trimestre,Evaluación,Estado,Nota original,Motivo,Representante,Cédula representante,Fecha solicitud,Fecha respuesta,Motivo de rechazo\n';
             filas.forEach(e => {
                 const s = e.s;
                 const t = trimestresEfectivos().find(x => x.num === e.num);
@@ -11097,7 +11205,7 @@ video {
                 nota: Math.round(rawNota * 100) / 100,
                 observacion: obs,
                 fechaNota: new Date().toISOString(),
-                docente: 'Ing. César Godoy Rosero, Mgt.',
+                docente: nombreDocenteConfigurado(),
                 cedula, nombre, trimestre, tipo,
                 verificado,
                 fechaVerificacion: verificado ? new Date().toISOString() : null,
@@ -11215,7 +11323,7 @@ video {
             });
             const materia = asignaturasReporteCurso(cursoActual, paraleloActual);
             abrirPrevisualizacionFilas('entregas_recibidas_' + fechaArchivo() + '.xlsx', filas, null,
-                [['Docente', NPT_NOMBRE_DOCENTE], ['Curso', cursoActual], ['Paralelo', paraleloActual], ['Materia', materia], ['Trimestre', filtroT || 'Todos los trimestres']]);
+                [['Docente', nombreDocenteConfigurado()], ['Curso', cursoActual], ['Paralelo', paraleloActual], ['Materia', materia], ['Trimestre', filtroT || 'Todos los trimestres']]);
         }
         // ---- Pantalla estudiante NPT (hub único) ----
         function irANPT() {
@@ -11791,7 +11899,7 @@ video {
                 try {
                     const respValidar = await fetch(NPT_VALIDAR_ENVIO_ENDPOINT, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-NPT-Auth': NPT_AUTH_HEADER },
+                        headers: await nptEncabezadosWorker(),
                         body: JSON.stringify({ url, correoEsperado: estudianteActual.correo || '' })
                     });
                     validacion = await respValidar.json().catch(() => null);
@@ -11889,7 +11997,7 @@ video {
                 try {
                     const respValidar = await fetch(NPT_VALIDAR_ENVIO_ENDPOINT, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-NPT-Auth': NPT_AUTH_HEADER },
+                        headers: await nptEncabezadosWorker(),
                         body: JSON.stringify({ url, correoEsperado: estudianteActual.correo || '' })
                     });
                     validacion = await respValidar.json().catch(() => null);
@@ -12041,18 +12149,6 @@ video {
                 alert(`Error al guardar el archivo: ${e.message}\n\nVerifica tu conexión e inténtalo de nuevo.`);
             }
         }
-        function filtrarCalificaciones() {
-            let term = document.getElementById('buscar-calificacion').value.toLowerCase();
-            let filtradas = calificacionesFiltradas().filter(c => texto(c.nombre).toLowerCase().includes(term) || texto(c.cedula).includes(term));
-            let tbody = document.getElementById('tabla-calificaciones-body');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            if(filtradas.length === 0) { document.getElementById('no-calif-alert')?.classList.remove('hidden'); return; }
-            document.getElementById('no-calif-alert')?.classList.add('hidden');
-            filtradas.forEach((c,i) => {
-                tbody.insertRow().innerHTML = `<tr><td class="p-3">${i+1}</td><td>${escapeHtml(c.nombre)}</td><td>${escapeHtml(c.cedula)}</td><td>${escapeHtml(c.curso || cursoActual || '-')}</td><td>${escapeHtml(nptFormatoFecha(c.fecha))}</td><td class="text-center">${numero(c.correctas)}/10</td><td class="text-right font-bold">${formatearNota(c.nota)}</td></tr>`;
-            });
-        }
         function fechaArchivo() {
             const f = new Date();
             return `${f.getFullYear()}-${String(f.getMonth()+1).padStart(2,'0')}-${String(f.getDate()).padStart(2,'0')}`;
@@ -12156,7 +12252,7 @@ video {
         }
         function sgcFilasReporteHtml(titulo, contenido) {
             const doc = new DOMParser().parseFromString('<!doctype html><html><body><main>' + contenido + '</main></body></html>', 'text/html');
-            const filas = [[titulo], ['Docente', NPT_NOMBRE_DOCENTE], ['Generado', nptFormatoFechaHora(new Date())], []];
+            const filas = [[titulo], ['Docente', nombreDocenteConfigurado()], ['Generado', nptFormatoFechaHora(new Date())], []];
             doc.querySelectorAll('h1,h2,h3,p,.filtro,table').forEach(nodo => {
                 if (nodo.tagName === 'TABLE') {
                     nodo.querySelectorAll('tr').forEach(tr => {
@@ -12293,22 +12389,41 @@ video {
 
 </head>
 <body>
-    ${NPT_ENCABEZADO_REPORTE_HTML}
+    ${encabezadoReporteInstitucionalHTML()}
     <header>
         <h1>${escapeHtml(titulo)}</h1>
-        <div class="meta"><strong>Docente:</strong> ${escapeHtml(NPT_NOMBRE_DOCENTE)}</div>
+        <div class="meta"><strong>Docente:</strong> ${escapeHtml(nombreDocenteConfigurado())}</div>
         <div class="meta">Generado: ${escapeHtml(nptFormatoFechaHora(new Date()))}</div>
     </header>
     <div class="actions"><button onclick="window.print()">Imprimir / Guardar PDF</button></div>
-    ${contenido}
+    ${sgcQuitarContenidoActivo(contenido)}
 
 </body>
 </html>`;
         }
 
-        function sgcSanearReporteHtml(titulo, contenido) {
-            if (/reporte\s+de\s+estudiantes/i.test(String(titulo || ''))) return contenido;
+        // Seguridad: los reportes se escriben con document.write en una ventana del MISMO origen que la
+        // aplicación. Cualquier script o manejador de eventos incrustado (por ejemplo, en un nombre o una
+        // respuesta guardada por un estudiante) se ejecutaría con los privilegios del docente. Esta
+        // función elimina contenido activo y conserva tablas, estilos y formato.
+        function sgcQuitarContenidoActivo(contenido) {
             const doc = new DOMParser().parseFromString('<!doctype html><html><body>' + String(contenido || '') + '</body></html>', 'text/html');
+            doc.body.querySelectorAll('script,iframe,frame,frameset,object,embed,applet,link,meta,base,noscript').forEach(el => el.remove());
+            doc.body.querySelectorAll('style').forEach(el => { el.textContent = (el.textContent || '').replace(/@import[^;]*;?/gi, ''); });
+            const atributosUrl = new Set(['href','src','xlink:href','action','formaction','srcdoc','data','poster','background']);
+            doc.body.querySelectorAll('*').forEach(el => {
+                [...el.attributes].forEach(attr => {
+                    const nombre = attr.name.toLowerCase();
+                    if (nombre.startsWith('on') || nombre === 'srcdoc') { el.removeAttribute(attr.name); return; }
+                    if (atributosUrl.has(nombre) && /^(javascript|vbscript|data:text\/html)/i.test(String(attr.value).replace(/[\u0000- ]/g, ''))) el.removeAttribute(attr.name);
+                });
+            });
+            return doc.body.innerHTML;
+        }
+        function sgcSanearReporteHtml(titulo, contenido) {
+            // El reporte de estudiantes conserva las cédulas, pero igualmente se retira el contenido activo.
+            if (/reporte\s+de\s+estudiantes/i.test(String(titulo || ''))) return sgcQuitarContenidoActivo(contenido);
+            const doc = new DOMParser().parseFromString('<!doctype html><html><body>' + sgcQuitarContenidoActivo(contenido) + '</body></html>', 'text/html');
             doc.querySelectorAll('table').forEach(tabla => {
                 const filas = [...tabla.rows];
                 if (!filas.length) return;
@@ -12380,48 +12495,7 @@ video {
             abrirODescargarReporte("Reporte de Estudiantes", html, `reporte_estudiantes_${fechaArchivo()}.html`);
         }
 
-        function generarReporteEvaluaciones() {
-            if (!validarFiltroReporte()) return;
-            const listaEvaluaciones = calificacionesFiltradas();
-            if(!listaEvaluaciones.length) { alert("No hay evaluaciones para el curso/paralelo seleccionado."); return; }
-            let suma = 0, aprobados = 0;
-            listaEvaluaciones.forEach(c => { const nota = numero(c.nota); suma += nota; if(nota >= 7) aprobados++; });
-            let html = `<div class="filtro"><strong>Filtro aplicado:</strong> ${escapeHtml(etiquetaFiltroReporte())}</div><p><strong>Total de evaluaciones:</strong> ${listaEvaluaciones.length} &nbsp; <strong>Promedio:</strong> ${(suma/listaEvaluaciones.length).toFixed(2)} &nbsp; <strong>Aprobados:</strong> ${aprobados}</p>`;
-            let grupos = {};
-            listaEvaluaciones.forEach(c => {
-                let est = estudiantes.find(e => e.cedula === c.cedula);
-                let key = est ? `${est.curso||'Sin curso'} - ${est.paralelo||'Sin paralelo'}` : `${c.curso||'Desconocido'} - ${c.paralelo||'?'}`;
-                if(!grupos[key]) grupos[key] = [];
-                grupos[key].push(c);
-            });
-            for(let [g, lista] of Object.entries(grupos)) {
-                html += `<h2>${escapeHtml(g)} (${lista.length})</h2><table><tr><th class="col-num">#</th><th class="col-nombre">Estudiante</th><th class="col-fecha">Fecha</th><th class="col-nota right">Nota</th></tr>`;
-                lista.forEach((c,i) => {
-                    html += `<tr><td class="center">${i+1}</td><td>${escapeHtml(c.nombre)}</td><td>${escapeHtml(nptFormatoFecha(c.fecha))}</td><td class="right"><strong>${formatearNota(c.nota)}</strong></td></tr>`;
-                });
-                html += `</table>`;
-            }
-            html += tablaResultadosEvaluacion(listaEvaluaciones);
-            abrirODescargarReporte("Reporte de Evaluaciones", html, `reporte_evaluaciones_${fechaArchivo()}.html`);
-        }
 
-        function exportarResultadosCSV() {
-            if (!validarFiltroReporte()) return;
-            const listaEvaluaciones = calificacionesFiltradas();
-            if(!listaEvaluaciones.length) { alert("No hay evaluaciones para exportar en el filtro seleccionado."); return; }
-            let csv = 'Docente,' + csvCampo(NPT_NOMBRE_DOCENTE) + "\n\nEstudiante,Curso,Paralelo,Nota,Fecha\n";
-            listaEvaluaciones.forEach(c => {
-                let est = estudiantes.find(e => e.cedula === c.cedula);
-                csv += [
-                    csvCampo(c.nombre || est?.nombre),
-                    csvCampo(c.curso || est?.curso),
-                    csvCampo(c.paralelo || est?.paralelo),
-                    csvCampo(formatearNota(c.nota)),
-                    csvCampo(c.fecha)
-                ].join(',') + "\n";
-            });
-            descargarArchivo(`calificaciones_${fechaArchivo()}.csv`, csv, 'text/csv;charset=utf-8');
-        }
 
         // ==================== REPORTES NPT (por trimestre / individual) ====================
         // Requisito #13: reportes de evaluados por trimestre de cada curso y paralelo (con notas de insumos), e individual por estudiante.
@@ -12711,9 +12785,7 @@ video {
             abrirODescargarReporte(`Reporte de notas individual — ${t.label}`, html, `reporte_notas_individual_t${t.num}_${fechaArchivo()}.html`, 'landscape');
             return true;
         }
-        async function limpiarRegistros() { if(confirm("¿Borrar todas las calificaciones?")) await limpiarCalificaciones(); }
         async function limpiarNominaCompleta() { if(confirm("⚠️ ¿Vaciar toda la nómina? Esta acción es irreversible.")) await limpiarEstudiantes(); }
-        async function generarDataSimulada() { if(confirm("Generar calificaciones aleatorias?")) { for(let e of estudiantesFiltrados()) { let correctas = Math.floor(Math.random()*11); await guardarCalificacion({ cedula:e.cedula, nombre:e.nombre, fecha: new Date().toISOString(), correctas, nota: correctas, curso:e.curso, paralelo:e.paralelo }); } alert("Calificaciones simuladas guardadas"); } }
 
         // ==================== SECCIÓN DE CONFIGURACIÓN ====================
         // ---- Auditoría de cambios críticos (trazabilidad) ----
@@ -12725,7 +12797,7 @@ video {
                 const entrada = {
                     accion, detalle,
                     fecha: new Date().toISOString(),
-                    docente: 'Ing. César Godoy Rosero, Mgt.'
+                    docente: nombreDocenteConfigurado()
                 };
                 const key = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
                 await guardarValorFirebase(`auditoria/${key}`, entrada);
@@ -12802,23 +12874,50 @@ video {
             }
         }
 
+        async function leerCamposConfiguracionFirebase(campos, lector) {
+            const leer = lector || (campo => leerValorRutaFirebase('configuracion/' + campo));
+            const pares = await Promise.all(campos.map(async campo => {
+                try {
+                    return [campo, await leer(campo)];
+                } catch (error) {
+                    console.warn('No se pudo leer configuracion/' + campo + ':', error);
+                    return [campo, undefined];
+                }
+            }));
+            return Object.fromEntries(pares);
+        }
+
         async function cargarConfigSistema(opciones = {}) {
             cfgMaxSolicitudesRecuperacion = null;
             cfgMaxSolicitudesRecuperacionError = false;
             cfgPeriodoActivo = null;
             try {
+                const perfilInstitucionalCargado = await cargarPerfilInstitucionalDesdeFirebase();
                 // Leer solo las ramas que usa esta función y en paralelo evita descargar
                 // de una sola vez configuración extensa (por ejemplo, el historial curricular).
                 const campos = opciones.soloEsencialEstudiante && !esSesionDocenteFirebase()
-                    ? ['periodoActivo','trimestres','formulaPromedio','firmaDocente','horarioDocente']
-                    : ['periodoActivo','trimestres','formulaPromedio','firmaDocente','planificacionesCurriculares','calendarioAcademico','horarioDocente','contadores'];
-                const pares = await Promise.all(campos.map(async campo => [campo, await leerValorRutaFirebase(`configuracion/${campo}`)]));
-                const cfg = Object.fromEntries(pares);
+                    ? ['periodoActivo','trimestres','trimestresPorPeriodo','formulaPromedio','perfilInstitucional','perfilDocente','firmaDocente','horarioDocente']
+                    : ['periodoActivo','trimestres','trimestresPorPeriodo','formulaPromedio','perfilInstitucional','perfilDocente','firmaDocente','planificacionesCurriculares','calendarioAcademico','horarioDocente','contadores'];
+                const cfg = await leerCamposConfiguracionFirebase(campos, campo =>
+                    leerValorRutaFirebase(`configuracion/${campo}`)
+                );
                 cfgPeriodoActivo = (cfg && cfg.periodoActivo) || null;
                 await cargarMaxSolicitudesRecuperacionPeriodoActivo();
                 await sincronizarMaximoPeriodoActivoParaLecturaEstudiante();
-                cfgTrimestres = (cfg && cfg.trimestres) || null;
+                cfgTrimestresLegacy = (cfg && cfg.trimestres) || null;
+                cfgTrimestresPorPeriodo = (cfg && cfg.trimestresPorPeriodo && typeof cfg.trimestresPorPeriodo === 'object') ? cfg.trimestresPorPeriodo : {};
+                resolverTrimestresDelPeriodo();
                 cfgFormulaPromedio = (cfg && cfg.formulaPromedio) || null;
+                const perfilInstitucional = normalizarPerfilInstitucional(cfg?.perfilInstitucional);
+                if (perfilInstitucional) {
+                    cfgPerfilInstitucional = perfilInstitucional;
+                    actualizarPerfilInstitucionalVisible();
+                } else if (!perfilInstitucionalCargado) {
+                    cfgPerfilInstitucional = { nombre: '', dominioCorreo: '' };
+                    actualizarPerfilInstitucionalVisible();
+                }
+                cfgPerfilDocente = (cfg && cfg.perfilDocente && typeof cfg.perfilDocente === 'object') ? cfg.perfilDocente : { nombre: '' };
+                actualizarNombreDocenteVisible();
                 if (!opciones.soloEsencialEstudiante || esSesionDocenteFirebase()) {
                     cfgFirmaDocente = (cfg && cfg.firmaDocente) || null;
                     planificacionesCurriculares = (cfg && cfg.planificacionesCurriculares) || {};
@@ -13073,11 +13172,55 @@ video {
                 // conservar selección si sigue existiendo
                 if ([...sel.options].some(o => o.value === val)) sel.value = val;
             });
+            // Selector de archivado (Configuración): etiquetas y meses tomados de la configuración guardada
+            const selArchivado = document.getElementById('cfg-archivado-trimestre');
+            if (selArchivado) {
+                const valArchivado = selArchivado.value;
+                selArchivado.innerHTML = trim.map(t => `<option value="${t.num}">${escapeHtml(t.label)}${t.meses ? ` (${escapeHtml(t.meses)})` : ''}</option>`).join('');
+                if ([...selArchivado.options].some(o => o.value === valArchivado)) selArchivado.value = valArchivado;
+            }
         }
-        // Actualiza el badge de período activo en el header del panel
+        // Actualiza los badges de período activo: encabezado público y header del panel docente
         function actualizarBadgePeriodo() {
+            const nombre = texto(cfgPeriodoActivo?.nombre).trim();
             const badge = document.getElementById('badge-periodo-activo');
-            if (badge) badge.textContent = cfgPeriodoActivo?.nombre ? `🗓️ Período: ${cfgPeriodoActivo.nombre}` : '🗓️ Sin período activo';
+            if (badge) badge.textContent = nombre ? `🗓️ Período: ${nombre}` : '🗓️ Sin período activo';
+            const cabecera = document.getElementById('badge-periodo-cabecera');
+            if (cabecera) cabecera.textContent = nombre ? `Período ${nombre}` : 'Período no configurado';
+        }
+        // Lectura previa al inicio de sesión (requiere regla pública de lectura en configuracion/periodoActivo)
+        async function cargarPeriodoActivoPublico() {
+            try {
+                const periodo = await leerValorRutaFirebase('configuracion/periodoActivo');
+                if (periodo && typeof periodo === 'object' && !cfgPeriodoActivo) cfgPeriodoActivo = periodo;
+            } catch (error) {
+                console.warn('[PERIODO] No se pudo cargar el período activo:', error?.message || error);
+            } finally {
+                actualizarBadgePeriodo();
+            }
+        }
+        // ---- Trimestres por período académico ----
+        function claveTrimestresPeriodo(nombre = cfgPeriodoActivo?.nombre) {
+            const n = texto(nombre).trim();
+            return n ? sanitizarClave(n) : '';
+        }
+        // Determina cfgTrimestres para el período activo:
+        //  1) registro propio del período; 2) si aún no existe ningún registro por período, se usan
+        //  las fechas de la estructura anterior (migración); 3) en otro caso, sin fechas (no se
+        //  arrastran las de otro año).
+        function resolverTrimestresDelPeriodo() {
+            const clave = claveTrimestresPeriodo();
+            const propios = clave ? cfgTrimestresPorPeriodo?.[clave] : null;
+            const hayRegistros = !!cfgTrimestresPorPeriodo && Object.keys(cfgTrimestresPorPeriodo).length > 0;
+            cfgTrimestresHeredados = false;
+            if (propios && typeof propios === 'object') {
+                cfgTrimestres = propios;
+            } else if (!hayRegistros && cfgTrimestresLegacy && typeof cfgTrimestresLegacy === 'object') {
+                cfgTrimestres = cfgTrimestresLegacy;
+                cfgTrimestresHeredados = true;
+            } else {
+                cfgTrimestres = null;
+            }
         }
         // Devuelve la lista de trimestres efectiva (configurada o por defecto)
         function trimestresEfectivos() {
@@ -13200,32 +13343,72 @@ video {
 
         // ---- Render del tab de configuración ----
         function organizarConfiguracionProfesional(){
-            const root=document.getElementById('tab-configuracion');
-            if(!root||root.dataset.organizada==='1')return;
-            const sections=[...root.children].filter(el=>el.tagName==='SECTION');
-            if(!sections.length)return;
-            const nav=document.createElement('div');nav.className='sgc-config-nav';nav.innerHTML=`
-                <button type="button" onclick="abrirGrupoConfiguracion('cfg-grupo-1')"><span class="num">1</span><span><strong>Período académico</strong><span>Período activo y trimestres</span></span></button>
-                <button type="button" onclick="abrirGrupoConfiguracion('cfg-grupo-2')"><span class="num">2</span><span><strong>Calendario académico</strong><span>Solo excepciones no laborables</span></span></button>
-                <button type="button" onclick="abrirGrupoConfiguracion('cfg-grupo-3')"><span class="num">3</span><span><strong>Horario académico</strong><span>Asignatura, curso y paralelo</span></span></button>
-                <button type="button" onclick="abrirGrupoConfiguracion('cfg-grupo-4')"><span class="num">4</span><span><strong>Estudiantes y nómina</strong><span>Importación y gestión por curso</span></span></button>
-                <button type="button" onclick="abrirGrupoConfiguracion('cfg-grupo-5')"><span class="num">5</span><span><strong>Evaluación y firma</strong><span>Fórmula y referencia docente</span></span></button>
-                <button type="button" onclick="abrirGrupoConfiguracion('cfg-grupo-6')"><span class="num">6</span><span><strong>Monitoreo y respaldo</strong><span>Accesos, backup y almacenamiento</span></span></button>`;
-            root.insertBefore(nav,root.firstChild);
-            const groups=[
-                {id:'cfg-grupo-1',title:'1. Período académico',icon:'🗓️',meta:'Define el período vigente y los trimestres antes de alimentar calificaciones.',idx:[1]},
-                {id:'cfg-grupo-2',title:'2. Calendario académico',icon:'📅',meta:'Registra únicamente fechas no laborables; lunes a viernes son laborables por defecto.',idx:[2]},
-                {id:'cfg-grupo-3',title:'3. Horario académico',icon:'🕒',meta:'Construye la matriz semanal por asignatura, curso y paralelo.',idx:[3]},
-                {id:'cfg-grupo-4',title:'4. Estudiantes y nómina',icon:'👥',meta:'Carga estudiantes y administra las nóminas por curso y paralelo.',idx:[0,6]},
-                {id:'cfg-grupo-5',title:'5. Evaluación y firma',icon:'🧮',meta:'Configura la fórmula del promedio y la firma de referencia.',idx:[4,5]},
-                {id:'cfg-grupo-6',title:'6. Monitoreo y respaldo',icon:'🛡️',meta:'Accesos, copias de seguridad, diagnóstico y almacenamiento de archivos.',idx:[7,8,9,10,11]}
-            ];
-            groups.forEach((g,gi)=>{
-                const det=document.createElement('details');det.id=g.id;det.className='sgc-config-group';det.open=gi<3;
-                const sum=document.createElement('summary');sum.innerHTML=`<span class="group-title"><span class="group-icon">${g.icon}</span><span><strong>${g.title}</strong><span class="group-meta">${g.meta}</span></span></span><span class="chev">⌄</span>`;det.appendChild(sum);
-                const body=document.createElement('div');body.className='sgc-config-body';g.idx.forEach(i=>{if(sections[i])body.appendChild(sections[i]);});det.appendChild(body);root.appendChild(det);
+            const root = document.getElementById('tab-configuracion');
+            if (!root || root.dataset.organizada === '1') return;
+            const categories = [...root.children].filter(el => el.classList.contains('sgc-config-category'));
+            if (!categories.length) return;
+
+            const nav = document.createElement('div');
+            nav.className = 'sgc-config-nav';
+            nav.setAttribute('aria-label', 'Secciones de configuración');
+
+            categories.forEach((category, index) => {
+                const title = category.dataset.configTitle || `Sección ${index + 1}`;
+                const icon = category.dataset.configIcon || '⚙️';
+                const meta = category.dataset.configMeta || '';
+                const id = `cfg-grupo-${index + 1}`;
+
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.setAttribute('aria-label', `Abrir ${title}`);
+                button.addEventListener('click', () => abrirGrupoConfiguracion(id));
+                const number = document.createElement('span');
+                number.className = 'num';
+                number.textContent = String(index + 1);
+                const text = document.createElement('span');
+                const strong = document.createElement('strong');
+                strong.textContent = title;
+                const description = document.createElement('span');
+                description.textContent = meta;
+                text.append(strong, description);
+                button.append(number, text);
+                nav.appendChild(button);
+
+                category.querySelector(':scope > h3')?.remove();
+                const details = document.createElement('details');
+                details.id = id;
+                details.className = 'sgc-config-group';
+                details.open = index === 0;
+                const summary = document.createElement('summary');
+                const titleWrap = document.createElement('span');
+                titleWrap.className = 'group-title';
+                const iconWrap = document.createElement('span');
+                iconWrap.className = 'group-icon';
+                iconWrap.setAttribute('aria-hidden', 'true');
+                iconWrap.textContent = icon;
+                const textWrap = document.createElement('span');
+                const groupTitle = document.createElement('strong');
+                groupTitle.textContent = `${index + 1}. ${title}`;
+                const groupMeta = document.createElement('span');
+                groupMeta.className = 'group-meta';
+                groupMeta.textContent = meta;
+                textWrap.append(groupTitle, groupMeta);
+                titleWrap.append(iconWrap, textWrap);
+                const chevron = document.createElement('span');
+                chevron.className = 'chev';
+                chevron.setAttribute('aria-hidden', 'true');
+                chevron.textContent = '⌄';
+                summary.append(titleWrap, chevron);
+
+                const body = document.createElement('div');
+                body.className = 'sgc-config-body';
+                body.appendChild(category);
+                details.append(summary, body);
+                root.appendChild(details);
             });
-            root.dataset.organizada='1';
+
+            root.insertBefore(nav, root.firstChild);
+            root.dataset.organizada = '1';
         }
         function abrirGrupoConfiguracion(id){const el=document.getElementById(id);if(el){el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'});}}
 
@@ -13413,6 +13596,12 @@ video {
         }
 
         function renderTabConfiguracion() {
+            const inputNombreInstitucion = document.getElementById('cfg-institucion-nombre');
+            const inputDominioInstitucion = document.getElementById('cfg-institucion-dominio');
+            if (inputNombreInstitucion) inputNombreInstitucion.value = texto(cfgPerfilInstitucional?.nombre).trim();
+            if (inputDominioInstitucion) inputDominioInstitucion.value = texto(cfgPerfilInstitucional?.dominioCorreo).trim().replace(/^@+/, '');
+            const inputNombreDocente = document.getElementById('cfg-docente-nombre');
+            if (inputNombreDocente) inputNombreDocente.value = texto(cfgPerfilDocente?.nombre).trim();
             // (A) Período activo
             const inputP = document.getElementById('cfg-periodo-nombre');
             const estadoP = document.getElementById('cfg-periodo-estado');
@@ -13421,15 +13610,25 @@ video {
             if (estadoP) estadoP.innerHTML = cfgPeriodoActivo?.nombre
                 ? `<span class="text-emerald-600 font-bold">🟢 ${escapeHtml(cfgPeriodoActivo.nombre)}</span><br><span class="text-[11px] text-slate-400">Activado: ${escapeHtml(nptFormatoFechaHora(cfgPeriodoActivo.activadoEn))}</span>`
                 : '<span class="text-slate-400">No hay período activo configurado</span>';
-            // Badge de período en el header del panel
-            const badge = document.getElementById('badge-periodo-activo');
-            if (badge) badge.textContent = cfgPeriodoActivo?.nombre ? `🗓️ Período: ${cfgPeriodoActivo.nombre}` : '🗓️ Sin período activo';
+            // Badges de período (encabezado público y header del panel)
+            actualizarBadgePeriodo();
 
             // Trimestres
             const listaT = document.getElementById('cfg-trimestres-lista');
             if (listaT) {
                 const trim = trimestresEfectivos();
-                listaT.innerHTML = trim.map(t => {
+                const trimSinFechas = trim.filter(t => !(cfgTrimestres?.[t.num]?.desde && cfgTrimestres?.[t.num]?.hasta)).map(t => t.label);
+                const avisosTrim = [];
+                if (!cfgPeriodoActivo?.nombre) avisosTrim.push('No hay un período académico activo configurado.');
+                else if (cfgTrimestresHeredados) avisosTrim.push(`Se muestran fechas guardadas antes de separar los trimestres por período. Revísalas y pulsa "Guardar trimestres" para asociarlas al período ${escapeHtml(cfgPeriodoActivo.nombre)}.`);
+                if (trimSinFechas.length) avisosTrim.push(`Sin fechas "Desde/Hasta": ${trimSinFechas.map(escapeHtml).join(', ')}. Mientras falte la fecha final, la recuperación de insumos de ese trimestre se considera vencida.`);
+                const avisoHtml = avisosTrim.length
+                    ? `<div class="bg-amber-50 border border-amber-300 text-amber-800 rounded-lg p-2 text-[11px]" role="alert">⚠️ ${avisosTrim.join('<br>⚠️ ')}</div>`
+                    : '';
+                const infoPeriodoHtml = cfgPeriodoActivo?.nombre
+                    ? `<p class="text-[11px] text-slate-600">Fechas del período académico: <strong>${escapeHtml(cfgPeriodoActivo.nombre)}</strong></p>`
+                    : '';
+                listaT.innerHTML = infoPeriodoHtml + avisoHtml + trim.map(t => {
                     const cfg = cfgTrimestres?.[t.num] || {};
                     return `<div class="grid grid-cols-1 md:grid-cols-4 gap-2 items-center bg-white border rounded-lg p-2">
                         <div>
@@ -13504,7 +13703,6 @@ video {
         function normalizarDiaHorario(dia) { return String(dia || '').trim().toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
         function asistenciaEsFinDeSemana(fecha) { const d = new Date(`${fecha}T12:00:00`).getDay(); return d === 0 || d === 6; }
         function fechaEsLaborable(fecha) { return !!fecha && !asistenciaEsFinDeSemana(fecha) && calendarioAcademico?.[fecha]?.tipo !== 'no-laborable'; }
-        function escaparCSV(valor) { return `"${String(valor ?? '').replace(/"/g, '""')}"`; }
 
         function actualizarCampoMotivoCalendario() {}
         function renderCalendarioConfiguracion() {
@@ -13922,6 +14120,7 @@ video {
                 ...(maximoDelMismoPeriodo !== null ? { maxSolicitudesRecuperacionAnuales: maximoDelMismoPeriodo } : {})
             };
             cfgPeriodoActivo = registro;
+            resolverTrimestresDelPeriodo(); // los trimestres dependen del período: se recalculan al cambiarlo
             const authOk = await ensureAuth();
             if (authOk) {
                 try { await guardarValorFirebase('configuracion/periodoActivo', registro); await registrarAuditoria('periodo_activo', `Período activo: ${nombre}`); }
@@ -13929,6 +14128,9 @@ video {
             }
             await cargarMaxSolicitudesRecuperacionPeriodoActivo();
             if (authOk) await sincronizarMaximoPeriodoActivoParaLecturaEstudiante();
+            actualizarSelectoresTrimestre();
+            renderControlTrimestres();
+            renderTrimestresEstudiante();
             renderTabConfiguracion();
             alert('✅ Período académico activo guardado: ' + nombre);
         }
@@ -13968,16 +14170,57 @@ video {
                 const campo = inp.getAttribute('data-campo');
                 if (data[n]) data[n][campo] = inp.value.trim();
             });
+            // ---- Validaciones antes de guardar ----
+            const errores = [];
+            const clavePeriodo = claveTrimestresPeriodo();
+            if (!clavePeriodo) { alert('Configura y guarda primero el período académico activo: las fechas de los trimestres se guardan asociadas a ese período.'); return; }
+            [1,2,3].forEach(n => {
+                const t = data[n];
+                if (!t.label) t.label = NPT_TRIMESTRES.find(x => x.num === n)?.label || `Trimestre ${n}`;
+                const ok = c => /^\d{4}-\d{2}-\d{2}$/.test(t[c]) && !isNaN(new Date(t[c] + 'T00:00:00'));
+                if (!ok('desde') || !ok('hasta')) { errores.push(`${t.label}: indica las fechas "Desde" y "Hasta".`); return; }
+                if (t.hasta < t.desde) errores.push(`${t.label}: la fecha "Hasta" (${t.hasta}) es anterior a "Desde" (${t.desde}).`);
+            });
+            if (!errores.length) {
+                [2,3].forEach(n => {
+                    if (data[n].desde <= data[n-1].hasta) errores.push(`${data[n].label} se solapa con ${data[n-1].label}: debe iniciar después del ${data[n-1].hasta}.`);
+                });
+            }
+            if (errores.length) { alert('No se guardaron los trimestres:\n\n• ' + errores.join('\n• ')); return; }
+            // Coherencia con el período activo (advertencia, el docente decide)
+            const aniosPeriodo = (texto(cfgPeriodoActivo?.nombre).match(/\d{4}/g) || []).map(Number);
+            const advertencias = [];
+            if (!aniosPeriodo.length) {
+                advertencias.push('No hay un período activo con años (ej. 2026-2027) para comparar las fechas.');
+            } else {
+                const anioMin = Math.min(...aniosPeriodo), anioMax = Math.max(...aniosPeriodo);
+                [1,2,3].forEach(n => ['desde','hasta'].forEach(c => {
+                    const anio = Number(data[n][c].slice(0,4));
+                    if (anio < anioMin || anio > anioMax) advertencias.push(`${data[n].label}: "${c}" (${data[n][c]}) está fuera del período ${cfgPeriodoActivo.nombre}.`);
+                }));
+            }
+            if (advertencias.length && !confirm('Revisa estos puntos:\n\n• ' + advertencias.join('\n• ') + '\n\n¿Guardar de todos modos?')) return;
             cfgTrimestres = data;
+            cfgTrimestresPorPeriodo = { ...(cfgTrimestresPorPeriodo || {}), [clavePeriodo]: data };
+            cfgTrimestresLegacy = data;
+            cfgTrimestresHeredados = false;
             const authOk = await ensureAuth();
             if (authOk) {
-                try { await guardarValorFirebase('configuracion/trimestres', data); await registrarAuditoria('trimestres', `Trimestres configurados: ${JSON.stringify(data)}`); }
+                try {
+                    // Escritura atómica: registro del período + espejo legado (configuracion/trimestres) para compatibilidad.
+                    await guardarActualizacionMultipleFirebase({
+                        [`configuracion/trimestresPorPeriodo/${clavePeriodo}`]: data,
+                        'configuracion/trimestres': data
+                    });
+                    await registrarAuditoria('trimestres', `Trimestres del período ${cfgPeriodoActivo.nombre}: ${JSON.stringify(data)}`);
+                }
                 catch(e) { console.error(e); alert('Error al guardar los trimestres.'); return; }
             }
             alert('✅ Trimestres guardados. Se actualizarán en todo el sistema.');
             actualizarSelectoresTrimestre();
             renderControlTrimestres();
             renderTrimestresEstudiante();
+            renderTabConfiguracion();
         }
 
         // ---- Fórmula de promedio ----
@@ -14033,6 +14276,41 @@ video {
         }
 
         // ---- Firma de referencia del docente ----
+        async function guardarPerfilInstitucional() {
+            const nombre = texto(document.getElementById('cfg-institucion-nombre')?.value).trim();
+            const dominioCorreo = texto(document.getElementById('cfg-institucion-dominio')?.value).trim().toLowerCase().replace(/^@+/, '');
+            if (!nombre) return alert('Ingresa el nombre de la institución.');
+            if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/.test(dominioCorreo)) return alert('Ingresa un dominio válido, sin @. Ejemplo: institucion.edu.ec');
+            const registro = { nombre, dominioCorreo, actualizadoEn: new Date().toISOString() };
+            if (!await ensureAuth()) return alert('No se pudo autenticar al docente.');
+            try {
+                await guardarValorFirebase('configuracion/perfilInstitucional', registro);
+                await registrarAuditoria('perfil_institucional', 'Perfil institucional actualizado');
+                cfgPerfilInstitucional = registro;
+                actualizarPerfilInstitucionalVisible();
+                alert('✅ Perfil institucional guardado.');
+            } catch(e) {
+                console.error(e);
+                alert('No se pudo guardar el perfil institucional.');
+            }
+        }
+        async function guardarPerfilDocente() {
+            const input = document.getElementById('cfg-docente-nombre');
+            const nombre = texto(input?.value).trim();
+            if (!nombre) return alert('Ingresa el nombre del docente.');
+            const registro = { nombre, actualizadoEn: new Date().toISOString() };
+            if (!await ensureAuth()) return alert('No se pudo autenticar al docente.');
+            try {
+                await guardarValorFirebase('configuracion/perfilDocente', registro);
+                await registrarAuditoria('perfil_docente', 'Nombre del docente actualizado');
+                cfgPerfilDocente = registro;
+                actualizarNombreDocenteVisible();
+                alert('✅ Nombre del docente guardado.');
+            } catch(e) {
+                console.error(e);
+                alert('No se pudo guardar el nombre del docente.');
+            }
+        }
         function renderFirmaDocentePreview() {
             const cont = document.getElementById('cfg-firma-preview');
             if (!cont) return;
@@ -14322,160 +14600,6 @@ video {
             event.target.value = '';
         }
 
-        // ==================== DIAGNÓSTICO/CORRECCIÓN DE TEXTO DAÑADO (Ñ, tildes) ====================
-        // Campos de "estudiantes" donde puede haberse guardado texto dañado por la
-        // importación antigua (CSV no-UTF-8). El carácter U+FFFD (" ") aparece cuando
-        // un byte no se pudo decodificar como UTF-8; es una pérdida de información
-        // IRREVERSIBLE a nivel de programa: no se puede reconstruir la Ñ original por
-        // código, así que esta herramienta solo ayuda a UBICAR los registros afectados
-        // para que alguien los corrija a mano (comparando con la cédula/lista real).
-        const NPT_CAMPOS_DIAGNOSTICO_DANO = [
-            { campo: 'nombre',     etiqueta: 'Nombre del estudiante' },
-            { campo: 'curso',      etiqueta: 'Curso' },
-            { campo: 'paralelo',   etiqueta: 'Paralelo' },
-            { campo: 'repNombre',  etiqueta: 'Nombre del representante' },
-            { campo: 'observaciones', etiqueta: 'Observaciones' }
-        ];
-        function buscarTextoDanadoNPT() {
-            const cont = document.getElementById('cfg-danado-resultado');
-            if (!cont) return;
-            const hallazgos = [];
-            estudiantes.forEach(e => {
-                NPT_CAMPOS_DIAGNOSTICO_DANO.forEach(({ campo, etiqueta }) => {
-                    const valor = texto(e[campo]);
-                    if (valor.includes('\uFFFD')) {
-                        hallazgos.push({ cedula: e.cedula, nombre: e.nombre, campo, etiqueta, valor });
-                    }
-                });
-            });
-            cont.classList.remove('hidden');
-            if (hallazgos.length === 0) {
-                cont.className = 'mt-3 text-xs p-3 rounded-lg bg-emerald-50 text-emerald-700';
-                cont.textContent = '✅ No se encontró texto dañado ( ) en los estudiantes registrados.';
-                return;
-            }
-            cont.className = 'mt-3 text-xs';
-            const filas = hallazgos.map((h, i) => {
-                const inputId = `npt-danado-fix-${i}`;
-                return `<tr class="border-b">
-                    <td class="p-2 font-mono">${escapeHtml(h.cedula)}</td>
-                    <td class="p-2">${escapeHtml(h.etiqueta)}</td>
-                    <td class="p-2 text-rose-600 font-mono">${escapeHtml(h.valor)}</td>
-                    <td class="p-2"><input id="${inputId}" type="text" value="${escapeHtml(h.valor.replace(/\uFFFD/g, ''))}" class="border rounded px-2 py-1 w-48 text-xs" placeholder="Escribe el valor correcto (con Ñ)"></td>
-                    <td class="p-2"><button onclick="corregirCampoEstudianteNPT('${h.cedula}','${h.campo}','${inputId}')" class="bg-brand-600 text-white px-2 py-1 rounded text-[11px] font-bold hover:bg-brand-700">💾 Corregir</button></td>
-                </tr>`;
-            }).join('');
-            cont.innerHTML = `
-                <p class="mb-2 p-2 rounded-lg bg-amber-50 text-amber-700">⚠️ Se encontraron ${hallazgos.length} campo(s) dañado(s). Escribe el valor correcto en cada casilla (incluyendo la Ñ) y presiona "Corregir".</p>
-                <div class="overflow-x-auto border rounded-lg max-h-80 overflow-y-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-100"><tr>
-                            <th class="p-2">Cédula</th><th class="p-2">Campo</th><th class="p-2">Valor actual (dañado)</th><th class="p-2">Valor corregido</th><th class="p-2"></th>
-                        </tr></thead>
-                        <tbody>${filas}</tbody>
-                    </table>
-                </div>`;
-        }
-        async function corregirCampoEstudianteNPT(cedula, campo, inputId) {
-            const est = estudiantes.find(e => e.cedula === cedula);
-            if (!est) { alert('No se encontró ese estudiante (puede que ya haya sido editado o eliminado).'); return; }
-            const input = document.getElementById(inputId);
-            const nuevoValor = texto(input?.value);
-            if (!nuevoValor) { alert('Escribe el valor correcto antes de guardar.'); return; }
-            if (nuevoValor.includes('\uFFFD')) { alert('El valor sigue conteniendo el carácter dañado " ". Vuelve a escribirlo manualmente.'); return; }
-            const valorAnterior = est[campo];
-            est[campo] = (campo === 'nombre' || campo === 'repNombre') ? nuevoValor.toUpperCase() : nuevoValor;
-            try {
-                const authOk = await ensureAuth();
-                if (authOk) await guardarValorFirebase(`${rutaEstudiantes}/${cedula}`, est);
-                guardarBackup();
-                actualizarSelectores();
-                actualizarPaneles();
-                try { await registrarAuditoria('corregir_texto_danado', `Cédula ${cedula}, campo "${campo}": "${valorAnterior}" -> "${est[campo]}"`); } catch {}
-                buscarTextoDanadoNPT();
-            } catch (e) {
-                console.error(e);
-                alert('No se pudo guardar la corrección. Revisa la conexión e intenta de nuevo.');
-            }
-        }
-
-        // ---- Medidor de espacio ocupado por PDFs (sin descargar archivos) ----
-        // Lee ÚNICAMENTE nptArchivosMeta (índice liviano: nombre, tamaño en bytes,
-        // fecha), nunca nptArchivos (que contiene el Base64 pesado). Por eso este
-        // cálculo no representa carga adicional para el sistema ni para Firebase.
-        const LIMITE_SPARK_BYTES = 1024 * 1024 * 1024; // Techo del plan gratuito Firebase Spark: 1 GB para TODA la base de datos
-
-        function formatearBytes(bytes) {
-            if (!bytes || bytes < 0) return '0 KB';
-            const mb = bytes / (1024 * 1024);
-            if (mb < 1) return `${(bytes / 1024).toFixed(1)} KB`;
-            if (mb < 1024) return `${mb.toFixed(2)} MB`;
-            return `${(mb / 1024).toFixed(2)} GB`;
-        }
-
-        async function calcularUsoEspacioNPT() {
-            const resultado = document.getElementById('cfg-espacio-resultado');
-            if (resultado) { resultado.classList.remove('hidden'); resultado.className = 'mt-3 text-xs p-2 rounded-lg bg-blue-50 text-blue-700'; resultado.textContent = '⏳ Leyendo índice de archivos (nptArchivosMeta)...'; }
-            try {
-                await ensureAuth();
-                // Lectura fresca y directa del índice liviano. NUNCA se lee 'nptArchivos' (los PDFs).
-                const meta = (await leerValorRutaFirebase('nptArchivosMeta')) || {};
-
-                let totalBytes = 0;
-                let totalArchivos = 0;
-                const porTrimestre = {};
-                const porEstudiante = [];
-
-                Object.entries(meta).forEach(([cedula, trimestres]) => {
-                    if (!trimestres || typeof trimestres !== 'object') return;
-                    let bytesEst = 0, archivosEst = 0, nombreEst = cedula;
-                    Object.entries(trimestres).forEach(([trimKey, tipos]) => {
-                        if (!tipos || typeof tipos !== 'object') return;
-                        Object.values(tipos).forEach(item => {
-                            if (!item || typeof item !== 'object') return;
-                            const bytes = Number(item.tamanio) || 0;
-                            totalBytes += bytes;
-                            totalArchivos++;
-                            bytesEst += bytes;
-                            archivosEst++;
-                            if (item.nombreEstudiante) nombreEst = item.nombreEstudiante;
-                            porTrimestre[trimKey] = (porTrimestre[trimKey] || 0) + bytes;
-                        });
-                    });
-                    if (archivosEst > 0) porEstudiante.push({ cedula, nombre: nombreEst, bytes: bytesEst, archivos: archivosEst });
-                });
-
-                porEstudiante.sort((a, b) => b.bytes - a.bytes);
-                const top10 = porEstudiante.slice(0, 10);
-
-                const pct = Math.min(100, (totalBytes / LIMITE_SPARK_BYTES) * 100);
-                const colorBarra = pct >= 80 ? 'bg-rose-500' : pct >= 50 ? 'bg-amber-500' : 'bg-emerald-500';
-
-                const filasTrimestre = Object.entries(porTrimestre)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([t, b]) => `<tr><td class="p-1">${escapeHtml(t)}</td><td class="p-1 text-right">${formatearBytes(b)}</td></tr>`)
-                    .join('');
-
-                const filasTop = top10.map(e => `<tr><td class="p-1">${escapeHtml(e.nombre)}</td><td class="p-1">${escapeHtml(e.cedula)}</td><td class="p-1 text-center">${e.archivos}</td><td class="p-1 text-right">${formatearBytes(e.bytes)}</td></tr>`).join('');
-
-                if (resultado) {
-                    resultado.className = 'mt-3 text-xs p-3 rounded-lg bg-white border';
-                    resultado.innerHTML = `
-                        <p class="mb-1"><strong>${formatearBytes(totalBytes)}</strong> ocupados por <strong>${totalArchivos}</strong> PDF(s) de un total gratuito de <strong>1 GB</strong> (${pct.toFixed(1)}% usado).</p>
-                        <p class="text-[10px] text-slate-500 mb-2">El límite de 1 GB es para <em>toda</em> la base de datos (Spark), no solo para los PDFs. Este porcentaje asume que el resto de las colecciones (estudiantes, notas, configuración) pesa poco en comparación, lo cual es normal en un sistema de este tamaño.</p>
-                        <div class="bg-slate-100 h-3 rounded-full overflow-hidden mb-3">
-                            <div class="${colorBarra} h-3" style="width:${pct}%"></div>
-                        </div>
-                        ${filasTrimestre ? `<p class="font-bold mb-1">Peso por trimestre:</p><table class="w-full mb-3"><tbody>${filasTrimestre}</tbody></table>` : '<p class="text-slate-500">Aún no hay archivos registrados.</p>'}
-                        ${filasTop ? `<p class="font-bold mb-1">Top 10 estudiantes con más peso en PDFs:</p><div class="overflow-x-auto"><table class="w-full"><thead><tr class="text-left text-slate-500"><th class="p-1">Estudiante</th><th class="p-1">Cédula</th><th class="p-1 text-center">Archivos</th><th class="p-1 text-right">Peso</th></tr></thead><tbody>${filasTop}</tbody></table></div>` : ''}
-                    `;
-                }
-            } catch (e) {
-                if (resultado) { resultado.className = 'mt-3 text-xs p-2 rounded-lg bg-rose-50 text-rose-700'; resultado.textContent = `❌ Error al calcular: ${e.message}`; }
-                console.error('Error calculando uso de espacio NPT:', e);
-            }
-        }
-
         // ---- Archivado manual por trimestre (exportar PDFs + borrarlos de la base activa) ----
         // Flujo en dos pasos, igual patrón que el resto del sistema:
         //   1) analizarArchivadoTrimestre(): SOLO lee nptArchivosMeta (liviano) y muestra
@@ -14623,9 +14747,10 @@ video {
                 const byteStr = atob(base64);
                 const byteArr = new Uint8Array(byteStr.length);
                 for (let i = 0; i < byteStr.length; i++) byteArr[i] = byteStr.charCodeAt(i);
-                const blob = new Blob([byteArr], { type: arch.mime || 'application/pdf' });
+                const mimeSeguro = nptMimeVisualizable(arch.mime);
+                const blob = new Blob([byteArr], { type: mimeSeguro || 'application/octet-stream' });
                 const url  = URL.createObjectURL(blob);
-                const w    = window.open(url, '_blank');
+                const w    = mimeSeguro ? window.open(url, '_blank') : null;
                 if (!w) {
                     const a = document.createElement('a');
                     a.href = url; a.download = arch.nombre || `evidencia_T${numTrimestre}_${tipo}.pdf`; a.click();
@@ -14665,10 +14790,10 @@ video {
                 </style>
                 
 </head><body>
-                ${NPT_ENCABEZADO_REPORTE_HTML}
+                ${encabezadoReporteInstitucionalHTML()}
                 <h1>Notas del Trimestre (NPT)</h1>
                 <table>
-                    <tr><th>Docente</th><td>${escapeHtml(NPT_NOMBRE_DOCENTE)}</td></tr>
+                    <tr><th>Docente</th><td>${escapeHtml(nombreDocenteConfigurado())}</td></tr>
                     <tr><th>Estudiante</th><td>${escapeHtml(estudianteActual.nombre)}</td></tr>
 
                     <tr><th>Curso / Paralelo</th><td>${escapeHtml(estudianteActual.curso)} "${escapeHtml(estudianteActual.paralelo)}"</td></tr>
@@ -14727,7 +14852,6 @@ video {
         window.renderNPTDocente = renderNPTDocente;
         window.cambiarModoEntregasNPT = cambiarModoEntregasNPT;
         window.abrirModalNotaNPT = abrirModalNotaNPT;
-        window.eliminarCalificacionOtrosMediosNPT = eliminarCalificacionOtrosMediosNPT;
         window.cerrarModalNotaNPT = cerrarModalNotaNPT;
         window.guardarNotaNPT = guardarNotaNPT;
         window.exportarNPTCSV = exportarNPTCSV;
@@ -14801,11 +14925,11 @@ video {
         window.eliminarEstudiantesSeleccionados = eliminarEstudiantesSeleccionados;
         window.generarBackupJSON = generarBackupJSON;
         window.restaurarBackupJSON = restaurarBackupJSON;
-        window.buscarTextoDanadoNPT = buscarTextoDanadoNPT;
-        window.corregirCampoEstudianteNPT = corregirCampoEstudianteNPT;
         window.asignarPeriodoActivoALegacy = asignarPeriodoActivoALegacy;
         window.registrarAccesoEstudiante = registrarAccesoEstudiante;
         window.registrarAccesoDocente = registrarAccesoDocente;
+        window.guardarPerfilInstitucional = guardarPerfilInstitucional;
+        window.guardarPerfilDocente = guardarPerfilDocente;
         window.procesarRestauracionBackup = procesarRestauracionBackup;
         // Reportes NPT
         window.generarReporteNPTPorTrimestre = generarReporteNPTPorTrimestre;
@@ -14875,7 +14999,11 @@ video {
         document.getElementById('npt-classroom-btn-save')?.addEventListener('click', nptClassroomGuardarClientId);
         document.addEventListener('click', event => { const button=event.target.closest?.('#npt-classroom-btn-connect, #npt-classroom-insumo-connect'); if(button){event.preventDefault();nptClassroomConectar();} });
         document.getElementById('npt-classroom-btn-pending')?.addEventListener('click', nptClassroomEnviarPendientes);        document.addEventListener('DOMContentLoaded', nptClassroomInit);
-        iniciarFirebase();
+        iniciarFirebase()
+            .then(() => Promise.allSettled([cargarPerfilInstitucionalDesdeFirebase(), cargarPerfilDocenteDesdeFirebase(), cargarPeriodoActivoPublico()]))
+            .catch(error => console.warn('[PERFIL] No se pudo inicializar la carga pública del perfil institucional:', error?.message || error))
+            .finally(() => { perfilAccesoEstudianteResuelto = true; actualizarEstadoAccesoEstudiante(); });
+        cargarUbicacionGeografica();
     </script>
 </body>
 </html>
