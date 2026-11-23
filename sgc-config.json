@@ -1,0 +1,12 @@
+{
+  "firebaseConfig": {
+    "apiKey": "AIzaSyCadeeu-AIeWJx4FG4cE1fUroZBgOJcArA",
+    "authDomain": "evaluaciones-uefsc-cg.firebaseapp.com",
+    "databaseURL": "https://evaluaciones-uefsc-cg-default-rtdb.firebaseio.com",
+    "projectId": "evaluaciones-uefsc-cg",
+    "storageBucket": "evaluaciones-uefsc-cg.firebasestorage.app",
+    "messagingSenderId": "542720530753",
+    "appId": "1:542720530753:web:275f50d9e04013c9e969c0"
+  },
+  "docenteUid": "7iYfnfGhQSS67gfF0ZI8oV4najG3"
+}
